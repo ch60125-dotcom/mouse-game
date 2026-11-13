@@ -49,37 +49,56 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 .hurt{animation:flashred .4s}
 /* title */
 .title{text-align:center;padding:30px 10px}
-.title .logo{font-size:90px;animation:bob 2s infinite}
+.title .logo{width:150px;height:150px;margin:0 auto;animation:bob 2s infinite}
+/* art */
+.sv{width:100%;height:100%;display:block;overflow:visible}
+.ic{width:1.6em;height:1.6em;display:inline-block;vertical-align:middle;overflow:visible}
+.hc{width:22px;height:22px;display:inline-block;vertical-align:middle}
+.eye{transform-box:fill-box;transform-origin:center;animation:blinkEye 4.5s infinite}
+@keyframes blinkEye{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.aura{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.12);opacity:.4}}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bob{animation:bob 2.6s ease-in-out infinite}
+.float{animation:floaty 3.4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.drift{animation:drift 60s linear infinite}
+@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(1300px)}}
+.spark{position:absolute;width:14px;height:14px;pointer-events:none;z-index:40;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:spark .6s ease-out forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(.3);opacity:0}}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:250;pointer-events:none;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes hitfx{0%{transform:translateX(0);filter:brightness(2.4)}25%{transform:translateX(-10px)}60%{transform:translateX(8px);filter:brightness(1.4)}100%{transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.eye,.aura,.spin,.bob,.float,.drift,.title .logo,.foe .m{animation:none!important}}
 .title h1{font-size:46px;font-weight:900;letter-spacing:4px;color:var(--ink);text-shadow:4px 4px 0 var(--gold)}
 .title .sub{font-size:18px;color:#555;margin-bottom:24px}
 /* map */
-.map{position:relative;height:520px;border-radius:14px;border:3px solid var(--ink);overflow:hidden;background:
- radial-gradient(ellipse at 87% 22%,#6d2e2e 0 9%,transparent 10%),
- radial-gradient(ellipse at 16% 68%,#2d6a4f 0 13%,transparent 14%),
- linear-gradient(160deg,#b7e4c7,#74c69d 55%,#52b788)}
-.river{position:absolute;left:-10%;top:48%;width:120%;height:46px;background:#48cae4;border-top:4px solid #90e0ef;border-bottom:4px solid #0096c7;transform:rotate(-8deg);opacity:.85}
-.map svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.map{position:relative;height:520px;border-radius:14px;border:3px solid var(--ink);overflow:hidden;background:#95d5b2}
+.map>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .node{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer;border:none;background:none;font:inherit;padding:0}
-.node .ico{font-size:58px;display:block;filter:drop-shadow(0 5px 0 #0005);transition:transform .15s}
+.node .ico{width:86px;height:86px;display:block;margin:0 auto;filter:drop-shadow(0 5px 0 #0004);transition:transform .15s}
 .node:hover .ico{transform:scale(1.15) translateY(-5px)}
 .node .lbl{display:inline-block;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:2px 10px;font-weight:900;white-space:nowrap}
 .node.locked .ico{filter:grayscale(1) brightness(.75) drop-shadow(0 5px 0 #0005)}
 .node.done .lbl{background:var(--green)}
 .node .tipx{display:none;position:absolute;left:50%;top:-34px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;white-space:nowrap;z-index:5}
 .node:hover .tipx{display:block}
+.tpanel{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#e8dcf7;border:3px solid var(--purple);border-radius:12px;padding:10px 14px}
 .hint{margin-top:12px;background:#fff;border:3px dashed var(--ink);border-radius:12px;padding:10px 14px;font-weight:700}
 /* dialog */
-.scene{height:540px;display:flex;align-items:center;justify-content:center;font-size:120px;border-radius:14px;border:3px solid var(--ink)}
+.scene{position:relative;height:540px;border-radius:14px;border:3px solid var(--ink);overflow:hidden}
+.scene>svg{display:block;width:100%;height:100%}
 .dlg{position:absolute;left:24px;right:24px;bottom:24px;background:#fff;border:4px solid var(--ink);border-radius:14px;padding:14px 16px 26px 100px;min-height:120px;cursor:pointer;z-index:50;box-shadow:0 6px 0 #0005}
-.dlg .face{position:absolute;left:16px;top:12px;font-size:62px}
+.dlg .face{position:absolute;left:12px;top:10px;width:76px;height:76px}
 .dlg .who{font-weight:900;color:var(--blue)}
 .dlg .txt{font-size:20px;line-height:1.6}
 .dlg .nx{position:absolute;right:16px;bottom:6px;font-size:13px;color:#888;animation:blink 1s infinite}
 /* battle */
-.foe{display:flex;align-items:center;gap:16px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 16px}
-.foe .m{font-size:76px;line-height:1}
-.foe .info{flex:1}
-.foe.hit .m{animation:shake .3s}
+.foe{position:relative;display:flex;align-items:center;gap:16px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 16px}
+.foe .m{width:120px;height:120px;flex:none;animation:bob 2.6s ease-in-out infinite}
+.foe .info{flex:1;background:#fffc;border-radius:10px;padding:6px 10px}
+.foe.hit .m{animation:hitfx .35s}
 .foe.atk .m{animation:lunge .45s}
 #challenge{margin-top:14px;min-height:330px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:18px;text-align:center;position:relative}
 .zy{font-size:22px;color:var(--blue);letter-spacing:3px;font-weight:700}
@@ -95,10 +114,17 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 /* arena */
 .arena{position:relative;height:400px;border:3px solid var(--ink);border-radius:14px;margin-top:12px;overflow:hidden;background:radial-gradient(circle at 30% 30%,#d8f3dc,#95d5b2 60%,#74c69d);cursor:crosshair}
 .mini-arena{position:relative;height:260px;border:3px solid var(--ink);border-radius:12px;background:#d8f3dc;overflow:hidden}
-.bug{position:absolute;font-size:46px;cursor:pointer;animation:spawn .2s;line-height:1;touch-action:none}
+.bug{position:absolute;width:60px;height:60px;cursor:pointer;animation:spawn .2s;touch-action:none;z-index:2}
 .bug:hover{transform:scale(1.15)}
+.bug .sv{pointer-events:none}
 .bug.gem{filter:drop-shadow(0 0 8px #fff)}
-.bag{position:absolute;right:12px;bottom:12px;width:96px;height:96px;border:3px dashed var(--ink);border-radius:16px;background:#fff8;display:flex;align-items:center;justify-content:center;font-size:52px}
+.bug .tag{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:8px;padding:0 5px;font-size:11px;font-weight:900;white-space:nowrap;pointer-events:none}
+.arenabg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.legend .ic{width:26px;height:26px}
+.hint .sv{width:38px;height:38px;display:inline-block;vertical-align:middle}
+.modal .big .sv{width:110px;height:110px;margin:0 auto;animation:spawn .4s}
+.bag{position:absolute;right:12px;bottom:12px;width:96px;height:96px;border:3px dashed var(--ink);border-radius:16px;background:#fff8;display:flex;align-items:center;justify-content:center;z-index:1}
+.bag .sv{width:76px;height:76px}
 .legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
 .legend span{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:3px 10px;font-weight:700}
 .dragging{opacity:.9;transform:scale(1.15);cursor:grabbing}
@@ -117,27 +143,36 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
 .gcard{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 5px 0 var(--ink);transition:transform .1s}
 .gcard:hover{transform:translateY(-4px)}
-.gcard .e{font-size:50px}
+.gcard .e{width:100%;height:110px;border:3px solid var(--ink);border-radius:10px;padding:8px;margin-bottom:8px;display:flex;justify-content:center}
+.gcard .e .sv{width:94px;height:94px;transition:transform .2s}
+.gcard:hover .e .sv{transform:scale(1.1) rotate(-4deg)}
 .gcard h3{font-size:20px}
 .gcard p{margin:4px 0;color:#555;font-size:14px}
 .folders{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
 .folder{border:3px solid var(--ink);border-radius:14px;background:#ffe8a3;min-height:130px;text-align:center;padding:8px;transition:transform .1s}
-.folder .fi{font-size:44px}
+.folder .fi{width:70px;height:70px;margin:0 auto}
 .folder .fn{font-weight:900}
 .folder .cnt{font-size:13px;color:#555}
 .folder.flash{background:var(--green)}
 .tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:100px;border:3px dashed #aaa;border-radius:14px;padding:12px;background:#fff}
 .file{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;text-align:center;cursor:grab;width:110px;touch-action:none}
-.file .fe{font-size:30px}
+.file .fe{width:40px;height:40px;margin:0 auto;pointer-events:none}
 .file .nm{font-weight:700;font-size:15px;word-break:break-all}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:620px;margin:10px auto}
 .mc{height:100px;border:3px solid var(--ink);border-radius:12px;background:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:#fff;box-shadow:0 4px 0 var(--ink)}
+.mc:not(.up){background:repeating-linear-gradient(45deg,#118ab2 0 10px,#1597c2 10px 20px)}
+.mc .sv{width:72px;height:72px}
 .mc.up{background:#fff;color:var(--ink)}
 .mc.up.txt{font-size:24px}
 .mc.got{background:var(--green);cursor:default}
 .shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .item{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:14px;text-align:center}
-.item .e{font-size:54px}
+.item .e{width:90px;height:90px;margin:0 auto;transition:transform .2s}
+.item:hover .e{transform:translateY(-4px) rotate(-5deg)}
+.keeper{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
+.keeper .kp{width:96px;height:96px;flex:none;animation:bob 2.6s ease-in-out infinite}
+.bubble{position:relative;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 14px;font-weight:700;line-height:1.6}
+.bubble::before{content:'';position:absolute;left:-14px;top:50%;margin-top:-10px;border:10px solid transparent;border-right:12px solid var(--ink);border-left:0}
 /* modal & toast */
 .ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
 .modal{background:var(--paper);border:4px solid var(--ink);border-radius:18px;padding:22px 26px;max-width:480px;width:100%;text-align:center;box-shadow:0 8px 0 #0008;animation:spawn .2s}
@@ -206,13 +241,14 @@ const KLAB=c=>({Minus:'-',Semicolon:';',Comma:',',Period:'.',Slash:'/'}[c]||c.re
    ★ 老師設定：貼上 Google Apps Script「網頁應用程式」網址
      （留空 '' = 單機模式，進度只存在這台電腦，不記錄成績）
    ========================================================= */
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwhk7uBsXPPtlZlXyhh6OtZajadI2gzWCh9gVkCrIZ1bHyUKeK1D8avBGPPxiwivyQl/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyhstVReYzNVx1Rrk-HI6MT3b47DBYc7jfSz98STs18RuCMWX7JtCQbjYzXQfTWJ4S9/exec';
 
 /* ---------- 狀態與存檔 ---------- */
 const FRESH=()=>({name:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},cleared:false,sound:true});
 let S=FRESH();
 let ACC=null; // 登入的學生帳號 {id,pw,name,cls,seat}；訪客／單機模式為 null
-function save(){if(ACC){cloudSave();return}try{localStorage.setItem('pcquest_v1',JSON.stringify(S))}catch(e){}}
+let TEACHER=false,GOD=false; // 教師模式（全部解鎖、不記錄成績）、無敵
+function save(){if(TEACHER)return;if(ACC){cloudSave();return}try{localStorage.setItem('pcquest_v1',JSON.stringify(S))}catch(e){}}
 
 /* ---------- 雲端同步（Google 試算表） ---------- */
 let syncT=null,syncLogs=[],syncBusy=false,dirty=false,syncState='ok';
@@ -249,24 +285,122 @@ function dialog(lines,cb){let i=0;const d=document.createElement('div');d.classN
  const draw=()=>{const [face,who,txt]=lines[i];d.innerHTML=`<div class="face">${face}</div><div class="who">${who}</div><div class="txt">${txt.replace(/\{name\}/g,esc(S.name))}</div><div class="nx">▼ 用滑鼠點一下繼續</div>`};
  d.onclick=()=>{sfx.click();i++;if(i>=lines.length){d.remove();cb&&cb()}else draw()};draw()}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const OWL='🦉',OWLN='貓頭鷹老師';
+/* =========================================================
+   🎨 美術資源：全部為內嵌 SVG 向量圖（不需外部檔案）
+   風格：粗墨線外框＋扁平色塊，跟介面按鈕一致
+   ========================================================= */
+const K='#22223b',SK=`stroke="${K}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`,SK2=`stroke="${K}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
+const f1=n=>n.toFixed(1);
+const starPts=(cx,cy,r,ri=r*.45)=>[...Array(10)].map((_,i)=>{const a=-Math.PI/2+i*Math.PI/5,q=i%2?ri:r;return f1(cx+q*Math.cos(a))+','+f1(cy+q*Math.sin(a))}).join(' ');
+const pine=(x,y,s=1,c='#2d6a4f')=>`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="2" width="10" height="16" fill="#7f5539" ${SK}/><path d="M0 -34 L28 6 H-28Z" fill="${c}" ${SK}/><path d="M0 -52 L22 -16 H-22Z" fill="${c}" ${SK}/></g>`;
+const house=(x,y,s,roof)=>`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-30" y="-34" width="60" height="34" fill="#ffe8d6" ${SK}/><path d="M-38 -32 L0 -64 L38 -32Z" fill="${roof}" ${SK}/><rect x="-8" y="-20" width="16" height="20" fill="#9c6644" ${SK2}/><rect x="-24" y="-27" width="11" height="10" fill="#caf0f8" ${SK2}/><rect x="13" y="-27" width="11" height="10" fill="#caf0f8" ${SK2}/></g>`;
+const castle=(x,y,s,wall='#e9ecef',roof='#9b5de5')=>`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-74" y="-110" width="34" height="110" fill="${wall}" ${SK}/><rect x="40" y="-110" width="34" height="110" fill="${wall}" ${SK}/><rect x="-42" y="-80" width="84" height="80" fill="${wall}" ${SK}/><rect x="-18" y="-130" width="36" height="52" fill="${wall}" ${SK}/><path d="M-78 -110 L-57 -150 L-36 -110Z" fill="${roof}" ${SK}/><path d="M36 -110 L57 -150 L78 -110Z" fill="${roof}" ${SK}/><path d="M-22 -130 L0 -172 L22 -130Z" fill="${roof}" ${SK}/><path d="M0 -172 V-192 L18 -185 L0 -178" fill="#ef476f" ${SK2}/><path d="M-16 0 V-26 A16 16 0 0 1 16 -26 V0Z" fill="${K}"/><rect x="-62" y="-90" width="10" height="16" rx="5" fill="${K}"/><rect x="52" y="-90" width="10" height="16" rx="5" fill="${K}"/><rect x="-5" y="-118" width="10" height="16" rx="5" fill="${K}"/></g>`;
+const cloud=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="#fff" opacity=".85"><ellipse cx="0" cy="0" rx="42" ry="16"/><circle cx="-14" cy="-10" r="16"/><circle cx="12" cy="-14" r="20"/></g>`;
+const gemSvg=c=>`<polygon points="30,18 70,18 86,38 50,94 14,38" fill="${c}" ${SK}/><polygon points="30,18 40,38 14,38" fill="#fff" opacity=".55"/><path d="M14 38H86M30 18L40 38L50 94L60 38L70 18M40 38L50 18L60 38" fill="none" ${SK2}/><polygon points="${starPts(80,14,6)}" fill="#fff"/>`;
+const CH={
+ owl:`<path d="M22 40 L16 12 L38 30Z" fill="#7f5539" ${SK}/><path d="M78 40 L84 12 L62 30Z" fill="#7f5539" ${SK}/><path d="M20 60 Q8 76 22 90 Q28 74 20 60Z" fill="#7f5539" ${SK}/><path d="M80 60 Q92 76 78 90 Q72 74 80 60Z" fill="#7f5539" ${SK}/><ellipse cx="50" cy="62" rx="31" ry="33" fill="#9c6644" ${SK}/><ellipse cx="50" cy="73" rx="19" ry="19" fill="#ede0d4" ${SK2}/><path d="M41 70q4.5 4 9 0q4.5 4 9 0M43 80q3.5 3.5 7 0q3.5 3.5 7 0" fill="none" stroke="#b08968" stroke-width="2" stroke-linecap="round"/><g class="eye"><circle cx="37" cy="47" r="11" fill="#fff"/><circle cx="63" cy="47" r="11" fill="#fff"/><circle cx="39" cy="48" r="5.5" fill="${K}"/><circle cx="61" cy="48" r="5.5" fill="${K}"/><circle cx="41" cy="46" r="1.8" fill="#fff"/><circle cx="63" cy="46" r="1.8" fill="#fff"/></g><circle cx="37" cy="47" r="12.5" fill="none" ${SK}/><circle cx="63" cy="47" r="12.5" fill="none" ${SK}/><path d="M45 57 L50 67 L55 57Z" fill="#ffb703" ${SK2}/><path d="M40 95l-3 4M45 95v4M55 95v4M60 95l3 4" stroke="#ffb703" stroke-width="3.5" stroke-linecap="round"/><path d="M24 24 L50 13 L76 24 L50 35Z" fill="${K}"/><rect x="38" y="25" width="24" height="9" rx="2" fill="${K}"/><path d="M76 24V36" stroke="#ffc93c" stroke-width="2.5"/><circle cx="76" cy="38" r="3.5" fill="#ffc93c" ${SK2}/>`,
+ beetle:`<path d="M26 60L10 52M24 72L8 76M28 84L14 96M74 60L90 52M76 72L92 76M72 84L86 96M44 26Q36 8 26 10M56 26Q64 8 74 10" fill="none" ${SK}/><circle cx="26" cy="10" r="4" fill="#ffc93c" ${SK2}/><circle cx="74" cy="10" r="4" fill="#ffc93c" ${SK2}/><ellipse cx="50" cy="68" rx="30" ry="27" fill="#2d6a4f" ${SK}/><path d="M50 46V95" ${SK}/><circle cx="38" cy="62" r="5" fill="#74c69d"/><circle cx="62" cy="62" r="5" fill="#74c69d"/><circle cx="39" cy="80" r="4" fill="#74c69d"/><circle cx="61" cy="80" r="4" fill="#74c69d"/><circle cx="50" cy="40" r="17" fill="#1b4332" ${SK}/><g class="eye"><circle cx="43" cy="40" r="5.5" fill="#fff"/><circle cx="57" cy="40" r="5.5" fill="#fff"/><circle cx="44" cy="41" r="2.6" fill="${K}"/><circle cx="56" cy="41" r="2.6" fill="${K}"/></g><path d="M36 32L46 35M64 32L54 35" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M44 49Q50 53 56 49" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M37 27L39 14L44.5 21L50 11L55.5 21L61 14L63 27Z" fill="#ffc93c" ${SK2}/>`,
+ ghost:`<text x="0" y="28" font-size="17" font-weight="900" fill="#9b5de5">ㄅ?</text><text x="82" y="20" font-size="15" font-weight="900" fill="#ef476f">ㄆ</text><text x="84" y="64" font-size="15" font-weight="900" fill="#118ab2">ㄇ</text><path d="M22 62Q8 60 6 46M78 62Q92 60 94 46" fill="none" ${SK}/><path d="M22 88V46A28 28 0 0 1 78 46V88l-7 -7 -7 7 -7 -7 -7 7 -7 -7 -7 7 -7 -7 -7 7Z" fill="#f8f9fa" ${SK}/><g class="eye"><ellipse cx="40" cy="50" rx="5" ry="7" fill="${K}"/><ellipse cx="60" cy="50" rx="5" ry="7" fill="${K}"/><circle cx="41.5" cy="47.5" r="1.8" fill="#fff"/><circle cx="61.5" cy="47.5" r="1.8" fill="#fff"/></g><path d="M32 39L45 43M68 39L55 43" ${SK}/><ellipse cx="31" cy="61" rx="5" ry="3" fill="#ffafcc"/><ellipse cx="69" cy="61" rx="5" ry="3" fill="#ffafcc"/><path d="M40 67q5 -5 10 0q5 5 10 0" fill="none" ${SK}/>`,
+ robot:`<path d="M50 14V6" ${SK}/><circle cx="50" cy="5" r="4.5" fill="#ef476f" ${SK2}/><rect x="10" y="60" width="13" height="26" rx="6" fill="#adb5bd" ${SK}/><rect x="77" y="60" width="13" height="26" rx="6" fill="#adb5bd" ${SK}/><rect x="24" y="56" width="52" height="38" rx="7" fill="#ced4da" ${SK}/><rect x="34" y="63" width="32" height="15" rx="3" fill="#fff" ${SK2}/><circle cx="41" cy="70.5" r="3.2" fill="#ef476f"/><circle cx="50" cy="70.5" r="3.2" fill="#ffc93c"/><circle cx="59" cy="70.5" r="3.2" fill="#118ab2"/><text x="50" y="90" font-size="9" font-weight="900" text-anchor="middle" fill="${K}">#@!%</text><rect x="44" y="49" width="12" height="8" fill="#6c757d" ${SK2}/><rect x="19" y="24" width="7" height="14" rx="2" fill="#6c757d" ${SK2}/><rect x="74" y="24" width="7" height="14" rx="2" fill="#6c757d" ${SK2}/><rect x="25" y="13" width="50" height="37" rx="8" fill="#adb5bd" ${SK}/><rect x="31" y="19" width="38" height="25" rx="4" fill="${K}"/><g class="eye"><rect x="37" y="25" width="9" height="6" rx="1" fill="#06d6a0"/><rect x="54" y="25" width="9" height="6" rx="1" fill="#06d6a0"/></g><path d="M38 38h4v-3h4v3h4v-3h4v3h4v-3h4" fill="none" stroke="#06d6a0" stroke-width="2"/>`,
+ boss:(()=>{let sp='';[0,1,2,3,4,7].forEach(i=>{const a=i*Math.PI/4+Math.PI/8,c=Math.cos(a),s=Math.sin(a);sp+=`<path d="M${f1(50+26*c)} ${f1(52+26*s)}L${f1(50+40*c)} ${f1(52+40*s)}" ${SK}/><circle cx="${f1(50+42*c)}" cy="${f1(52+42*s)}" r="5" fill="#c77dff" ${SK2}/>`});
+  return `<circle class="aura" cx="50" cy="52" r="46" fill="#ef476f" opacity=".22"/>${sp}<path d="M32 34L20 8L44 26Z" fill="#f8f9fa" ${SK}/><path d="M68 34L80 8L56 26Z" fill="#f8f9fa" ${SK}/><circle cx="50" cy="52" r="30" fill="#7b2cbf" ${SK}/><circle cx="31" cy="62" r="4" fill="#9d4edd"/><circle cx="70" cy="64" r="5" fill="#9d4edd"/><circle cx="62" cy="76" r="3" fill="#9d4edd"/><g class="eye"><circle cx="50" cy="46" r="12" fill="#fff" ${SK2}/><circle cx="50" cy="47" r="6.5" fill="#ef476f"/><circle cx="50" cy="47" r="2.8" fill="${K}"/></g><path d="M35 31L50 38L65 31" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 62Q50 76 64 62Z" fill="${K}" ${SK2}/><path d="M40 63l3 5l3 -5M54 63l3 5l3 -5" fill="#fff" stroke="#fff" stroke-width="1"/>`})(),
+ pc:`<rect x="12" y="8" width="76" height="54" rx="9" fill="#118ab2" ${SK}/><rect x="19" y="15" width="62" height="40" rx="5" fill="#caf0f8" ${SK2}/><g class="eye"><circle cx="39" cy="32" r="4.5" fill="${K}"/><circle cx="61" cy="32" r="4.5" fill="${K}"/><circle cx="40.5" cy="30.5" r="1.5" fill="#fff"/><circle cx="62.5" cy="30.5" r="1.5" fill="#fff"/></g><ellipse cx="31" cy="41" rx="4" ry="2.5" fill="#ffafcc"/><ellipse cx="69" cy="41" rx="4" ry="2.5" fill="#ffafcc"/><path d="M42 41Q50 49 58 41" fill="none" ${SK}/><path d="M42 62h16l4 10h-24Z" fill="#adb5bd" ${SK}/><rect x="8" y="76" width="64" height="15" rx="4" fill="#fff" ${SK}/><path d="M15 81h5M24 81h5M33 81h5M42 81h5M51 81h5M60 81h5M22 86h28" stroke="${K}" stroke-width="2" stroke-linecap="round"/><ellipse cx="85" cy="83" rx="8" ry="10" fill="#fff" ${SK}/><path d="M85 73v7" ${SK2}/><polygon points="${starPts(92,9,7)}" fill="#ffc93c" ${SK2}/>`,
+ cat:`<path d="M20 74v8M38 72v8M56 70v8" ${SK}/><circle cx="22" cy="64" r="13" fill="#b5e48c" ${SK}/><circle cx="40" cy="60" r="14" fill="#99d98c" ${SK}/><circle cx="58" cy="57" r="15" fill="#76c893" ${SK}/><path d="M70 32L64 18M82 32L88 18" ${SK}/><circle cx="64" cy="17" r="3.5" fill="#ef476f" ${SK2}/><circle cx="88" cy="17" r="3.5" fill="#ef476f" ${SK2}/><circle cx="76" cy="47" r="17" fill="#52b69a" ${SK}/><g class="eye"><circle cx="70" cy="43" r="4.5" fill="#fff" ${SK2}/><circle cx="82" cy="43" r="4.5" fill="#fff" ${SK2}/><circle cx="71" cy="44" r="2" fill="${K}"/><circle cx="83" cy="44" r="2" fill="${K}"/></g><path d="M71 53q5 4 10 0" fill="none" ${SK2}/>`,
+ lady:`<path d="M22 50L10 44M20 66L8 68M24 82L12 90M78 50L90 44M80 66L92 68M76 82L88 90" ${SK}/><circle cx="50" cy="28" r="16" fill="${K}"/><g class="eye"><circle cx="44" cy="23" r="4" fill="#fff"/><circle cx="56" cy="23" r="4" fill="#fff"/></g><circle cx="50" cy="62" r="30" fill="#ef476f" ${SK}/><path d="M50 32V92" ${SK}/><circle cx="36" cy="52" r="6" fill="${K}"/><circle cx="64" cy="52" r="6" fill="${K}"/><circle cx="38" cy="75" r="5" fill="${K}"/><circle cx="62" cy="75" r="5" fill="${K}"/><ellipse cx="34" cy="42" rx="6" ry="3" fill="#fff" opacity=".6" transform="rotate(-30 34 42)"/>`,
+ alien:`<path d="M50 20V8" ${SK}/><circle cx="50" cy="7" r="4.5" fill="#06d6a0" ${SK2}/><path d="M18 62Q18 20 50 20Q82 20 82 62Q76 80 70 66Q64 82 58 66Q50 84 42 66Q36 82 30 66Q24 80 18 62Z" fill="#9b5de5" ${SK}/><g class="eye"><circle cx="35" cy="44" r="7" fill="#fff" ${SK2}/><circle cx="50" cy="37" r="8" fill="#fff" ${SK2}/><circle cx="65" cy="44" r="7" fill="#fff" ${SK2}/><circle cx="35" cy="45" r="3" fill="${K}"/><circle cx="50" cy="38" r="3.4" fill="${K}"/><circle cx="65" cy="45" r="3" fill="${K}"/></g><path d="M42 56q8 6 16 0" fill="none" ${SK2}/>`,
+ gem:gemSvg('#4cc9f0'),
+ bag:`<path d="M28 42Q12 92 50 93Q88 92 72 42Z" fill="#bc6c25" ${SK}/><path d="M33 40L38 22L50 32L62 22L67 40Z" fill="#dda15e" ${SK}/><path d="M28 42H72" stroke="#ffc93c" stroke-width="5" stroke-linecap="round"/><polygon points="${starPts(50,68,13)}" fill="#ffc93c" ${SK2}/>`,
+ shop:`<rect x="18" y="40" width="64" height="50" fill="#ffe8d6" ${SK}/><rect x="42" y="62" width="16" height="28" fill="#9c6644" ${SK2}/><rect x="23" y="55" width="14" height="13" fill="#caf0f8" ${SK2}/><rect x="63" y="55" width="14" height="13" fill="#caf0f8" ${SK2}/><path d="M12 40L20 22H80L88 40Z" fill="#ef476f"/><path d="M34 22h11l-1 18h-13ZM55 22h11l3 18h-13Z" fill="#fff"/><path d="M12 40L20 22H80L88 40Z" fill="none" ${SK}/><path d="M12 40q6.3 9 12.7 0q6.3 9 12.7 0q6.3 9 12.7 0q6.3 9 12.6 0q6.3 9 12.7 0q6.3 9 12.6 0" fill="#ef476f" ${SK2}/><circle cx="50" cy="12" r="9" fill="#ffc93c" ${SK2}/><text x="50" y="16.5" font-size="12" font-weight="900" text-anchor="middle" fill="${K}">$</text>`,
+ forest:pine(50,64,.85,'#40916c')+pine(26,80,.7)+pine(74,82,.7,'#1b4332'),
+ village:house(32,70,.62,'#e76f51')+house(70,86,.58,'#118ab2'),
+ castle:castle(50,96,.46),
+ volcano:`<circle cx="46" cy="19" r="8" fill="#adb5bd" ${SK2}/><circle cx="57" cy="11" r="9" fill="#ced4da" ${SK2}/><circle cx="48" cy="5" r="5" fill="#adb5bd" ${SK2}/><path d="M6 92L36 32H64L94 92Z" fill="#6d4c41" ${SK}/><path d="M36 32H64L60 44L54 38L49 50L44 40L39 46Z" fill="#ef476f" ${SK2}/><path d="M49 50Q47 64 42 74M60 46Q64 58 68 64" fill="none" stroke="#f77f00" stroke-width="4" stroke-linecap="round"/><path d="M20 80L30 76M72 84L80 78" stroke="#4e342e" stroke-width="3" stroke-linecap="round"/>`,
+ wheel:(()=>{let sp='',cab='';const cols=['#ef476f','#ffc93c','#06d6a0','#118ab2','#9b5de5','#f77f00'];for(let i=0;i<6;i++){const a=i*Math.PI/3,x=f1(50+30*Math.cos(a)),y=f1(42+30*Math.sin(a));sp+=`<path d="M50 42L${x} ${y}" stroke="${K}" stroke-width="2"/>`;cab+=`<circle cx="${x}" cy="${y}" r="6.5" fill="${cols[i]}" ${SK2}/>`}
+  return `<path d="M50 42L30 90M50 42L70 90" stroke="${K}" stroke-width="4" stroke-linecap="round"/><rect x="18" y="88" width="64" height="7" rx="2" fill="#adb5bd" ${SK2}/><g class="spin"><circle cx="50" cy="42" r="30" fill="none" ${SK}/>${sp}${cab}</g><circle cx="50" cy="42" r="5" fill="#ffc93c" ${SK2}/>`})()
+};
+const ch=(n,c='')=>`<svg class="sv ${c}" viewBox="0 0 100 100">${CH[n]}</svg>`;
+const ic=n=>`<svg class="ic" viewBox="0 0 100 100">${CH[n]}</svg>`;
+const gi=c=>`<svg class="ic" viewBox="0 0 100 100">${gemSvg(c)}</svg>`;
+const CRY={mouse:'#06d6a0',zhuyin:'#118ab2',know:'#9b5de5'};
+const put=(n,x,y,s,cls='bob',d=0)=>`<g class="${cls}" style="animation-delay:${d}s"><svg x="${x}" y="${y}" width="${s}" height="${s}" viewBox="0 0 100 100" overflow="visible">${CH[n]}</svg></g>`;
+
+/* ---------- 場景插畫 ---------- */
+function scene(kind){
+ const sky={kingdom:['#1d3557','#2a9d8f'],forest:['#a8dadc','#e9f5db'],village:['#ff9f80','#ffe5b4'],castle:['#240046','#9d79bc'],volcano:['#1a0306','#9d0208']}[kind];
+ const stars=n=>[...Array(n)].map((_,i)=>`<circle cx="${(i*173)%800}" cy="${(i*67)%200+10}" r="${i%3?1.5:2.5}" fill="#fff" opacity=".8"/>`).join('');
+ const owl=put('owl',50,140,210,'bob');let art='';
+ if(kind==='kingdom')art=`${stars(24)}<g opacity=".9"><ellipse cx="620" cy="70" rx="170" ry="45" fill="#3d0c11" opacity=".55"/><ellipse cx="520" cy="90" rx="110" ry="30" fill="#3d0c11" opacity=".45"/></g>${put('boss',600,20,120,'float')}${put('boss',420,70,46,'float',.6)}${put('boss',730,140,40,'float',1.1)}
+  <path d="M0 290Q160 220 320 280T640 260T800 250V540H0Z" fill="#2d6a4f"/>${castle(500,330,1.25,'#e9ecef','#118ab2')}<path d="M0 330Q200 300 400 330T800 320V540H0Z" fill="#52b788"/>${owl}`;
+ if(kind==='forest')art=`<circle cx="700" cy="70" r="40" fill="#ffd166"/>${cloud(200,70,1)}${cloud(520,50,.8)}<path d="M0 260Q200 190 400 250T800 230V540H0Z" fill="#95d5b2"/>${[60,150,250,560,650,760].map((x,i)=>pine(x,270+(i%2)*10,1.1,i%2?'#2d6a4f':'#40916c')).join('')}<path d="M0 320Q200 300 400 330T800 315V540H0Z" fill="#52b788"/>${put('beetle',470,100,230)}${put('cat',340,270,72,'bob',.3)}${put('lady',710,262,72,'bob',.7)}${owl}`;
+ if(kind==='village')art=`<circle cx="640" cy="250" r="80" fill="#ffd166" opacity=".9"/><path d="M0 280Q200 230 400 270T800 250V540H0Z" fill="#e9c46a"/>${house(330,330,1.3,'#e76f51')}${house(730,325,1.1,'#118ab2')}${house(600,335,.8,'#9b5de5')}<path d="M0 330Q200 318 400 336T800 326V540H0Z" fill="#b5c99a"/>${put('ghost',460,60,240,'float')}<g class="float" style="animation-delay:.4s" font-size="40" font-weight="900"><text x="330" y="120" fill="#9b5de5">ㄅ</text><text x="720" y="110" fill="#ef476f">ㄆ?</text><text x="400" y="230" fill="#118ab2">ㄇ</text></g>${owl}`;
+ if(kind==='castle')art=`${stars(40)}<circle cx="120" cy="80" r="34" fill="#fff3b0"/><circle cx="134" cy="72" r="30" fill="#240046" opacity=".35"/>${castle(590,340,1.7,'#adb5bd','#9b5de5')}<path d="M0 330Q200 318 400 340T800 330V540H0Z" fill="#4a4e69"/>${put('robot',440,110,230)}${owl}`;
+ if(kind==='volcano')art=`${[...Array(16)].map((_,i)=>`<circle class="float" style="animation-delay:${(i%5)*.3}s" cx="${(i*97)%800}" cy="${(i*41)%300+20}" r="${2+i%3}" fill="#f77f00" opacity=".8"/>`).join('')}<circle cx="600" cy="40" r="40" fill="#495057" opacity=".7"/><circle cx="650" cy="20" r="34" fill="#6c757d" opacity=".6"/><path d="M340 340L560 90H660L800 280V340Z" fill="#4e342e" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M560 90H660L640 120L615 104L598 136L580 112Z" fill="#ef476f" stroke="${K}" stroke-width="3" stroke-linejoin="round"/><path d="M598 136Q590 210 560 280M640 120Q660 200 700 250" fill="none" stroke="#f77f00" stroke-width="10" stroke-linecap="round"/><path d="M0 320Q200 300 400 330T800 320V540H0Z" fill="#3d0c11"/>${put('boss',430,40,280,'float')}${owl}`;
+ return `<div class="scene"><svg viewBox="0 0 800 540" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs><rect width="800" height="540" fill="url(#skyg)"/>${art}</svg></div>`}
+
+/* ---------- 世界地圖底圖 ---------- */
+function mapBg(){
+ const trees=[[60,250,.8],[250,470,.9],[300,110,.7],[560,80,.75],[610,470,.9],[790,480,.8],[960,420,.9],[540,350,.7],[330,330,.75],[90,480,.85],[920,290,.7],[240,30,.6],[690,190,.7],[20,140,.7],[800,410,.6]].map(([x,y,s],i)=>pine(x,y,s,i%2?'#2d6a4f':'#40916c')).join('');
+ const fl=[...Array(36)].map((_,i)=>`<circle cx="${(i*137)%1000}" cy="${(i*89+40)%520}" r="4" fill="${['#ffafcc','#ffc93c','#fff','#cdb4db'][i%4]}" stroke="${K}" stroke-width="1.5"/>`).join('');
+ const rv='M-20 300C150 250 300 330 480 270S760 190 1020 230';
+ return `<svg class="mapbg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid slice"><rect width="1000" height="520" fill="#95d5b2"/>
+ <ellipse cx="200" cy="380" rx="230" ry="130" fill="#74c69d"/><ellipse cx="450" cy="465" rx="210" ry="70" fill="#d8f3dc"/><ellipse cx="130" cy="110" rx="150" ry="85" fill="#e9edc9"/><ellipse cx="690" cy="350" rx="170" ry="90" fill="#cdb4db" opacity=".6"/>
+ <ellipse cx="880" cy="100" rx="200" ry="135" fill="#7f4f24" opacity=".55"/><ellipse cx="880" cy="100" rx="125" ry="82" fill="#6d2e2e" opacity=".6"/><circle cx="790" cy="190" r="10" fill="#6c757d" stroke="${K}" stroke-width="2"/><circle cx="960" cy="200" r="13" fill="#6c757d" stroke="${K}" stroke-width="2"/>
+ <path d="${rv}" fill="none" stroke="#0096c7" stroke-width="56" stroke-linecap="round"/><path d="${rv}" fill="none" stroke="#48cae4" stroke-width="44" stroke-linecap="round"/><path d="${rv}" fill="none" stroke="#caf0f8" stroke-width="5" stroke-dasharray="18 34" stroke-linecap="round" opacity=".9"/>
+ ${fl}${trees}<g class="drift">${cloud(100,60,1)}${cloud(620,30,.8)}</g><g class="drift" style="animation-duration:90s;animation-delay:-40s">${cloud(300,200,.7)}</g></svg>`}
+const arenaBg=`<svg class="arenabg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">${[[40,70,1.1],[130,45,.9],[700,70,1.1],[780,40,.9],[60,400,1],[740,410,1]].map(([x,y,s],i)=>pine(x,y,s,i%2?'#2d6a4f':'#40916c')).join('')}${[...Array(20)].map((_,i)=>`<circle cx="${(i*157)%800}" cy="${(i*71+30)%400}" r="4" fill="${['#ffafcc','#ffc93c','#fff'][i%3]}" stroke="${K}" stroke-width="1.5"/>`).join('')}</svg>`;
+
+/* ---------- 特效 ---------- */
+function fx(el,c,ms){el.classList.remove(c);void el.offsetWidth;el.classList.add(c);setTimeout(()=>el.classList.remove(c),ms)}
+function burst(parent,x,y,n=10){for(let i=0;i<n;i++){const s=document.createElement('div'),a=Math.random()*Math.PI*2,d=40+Math.random()*50;s.className='spark';s.style.left=x-7+'px';s.style.top=y-7+'px';s.style.setProperty('--dx',f1(Math.cos(a)*d)+'px');s.style.setProperty('--dy',f1(Math.sin(a)*d)+'px');s.style.background=['#ffc93c','#ef476f','#06d6a0','#fff'][i%4];parent.appendChild(s);setTimeout(()=>s.remove(),650)}}
+function confetti(){const cols=['#ffc93c','#ef476f','#06d6a0','#118ab2','#9b5de5'];for(let i=0;i<70;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=cols[i%5];c.style.animationDuration=2+Math.random()*1.6+'s';c.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4500)}}
+
+const OWL=ch('owl'),OWLN='貓頭鷹老師',BOSS=ch('boss');
+CH.coin=`<circle cx="50" cy="50" r="40" fill="#ffc93c" ${SK}/><circle cx="50" cy="50" r="29" fill="none" stroke="#e09f3e" stroke-width="4"/><text x="50" y="64" font-size="40" font-weight="900" text-anchor="middle" fill="#9c6644">$</text>`;
+const COIN=ic('coin');
+/* --- 商店道具 --- */
+Object.assign(CH,{
+ potion:`<rect x="40" y="8" width="20" height="13" rx="3" fill="#bc6c25" ${SK}/><path d="M42 21V36Q18 46 18 68A32 26 0 0 0 82 68Q82 46 58 36V21Z" fill="#fff"/><path d="M21 62Q50 54 79 62Q80 88 50 92Q20 88 21 62Z" fill="#ef476f"/><path d="M42 21V36Q18 46 18 68A32 26 0 0 0 82 68Q82 46 58 36V21Z" fill="none" ${SK}/><circle cx="38" cy="74" r="4" fill="#fff" opacity=".7"/><circle cx="58" cy="82" r="3" fill="#fff" opacity=".6"/><path d="M30 50Q26 56 26 63" stroke="#caf0f8" stroke-width="4" stroke-linecap="round" fill="none"/>`,
+ bento:`<path d="M20 22L84 14M22 27L86 20" stroke="#bc6c25" stroke-width="4" stroke-linecap="round"/><rect x="10" y="32" width="80" height="56" rx="8" fill="#ef476f" ${SK}/><rect x="17" y="39" width="66" height="42" rx="5" fill="#fff" ${SK2}/><path d="M50 39V81" ${SK2}/><path d="M24 74L33.5 50L43 74Z" fill="#fff" ${SK2}/><rect x="28" y="65" width="11" height="9" fill="${K}"/><rect x="55" y="45" width="22" height="10" rx="3" fill="#ffc93c" ${SK2}/><circle cx="60" cy="68" r="6" fill="#52b788" ${SK2}/><circle cx="71" cy="66" r="6" fill="#52b788" ${SK2}/><path d="M64 76h12" stroke="#ef476f" stroke-width="6" stroke-linecap="round"/>`,
+ shield:`<path d="M50 8L84 20V48Q84 76 50 94Q16 76 16 48V20Z" fill="#118ab2" ${SK}/><path d="M50 18L74 27V48Q74 68 50 82Q26 68 26 48V27Z" fill="#caf0f8" ${SK2}/><path d="M38 50L47 60L64 40" fill="none" stroke="#06d6a0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`,
+ scroll:`<rect x="22" y="20" width="56" height="62" fill="#ffe8d6" ${SK}/><rect x="14" y="12" width="72" height="12" rx="6" fill="#dda15e" ${SK}/><rect x="14" y="78" width="72" height="12" rx="6" fill="#dda15e" ${SK}/><path d="M32 36h36M32 46h26M32 56h18" stroke="#b08968" stroke-width="3" stroke-linecap="round"/><polygon points="${starPts(64,62,10)}" fill="#ffc93c" ${SK2}/>`,
+ kitty:`<path d="M24 36L22 8L46 26Z" fill="#f4a261" ${SK}/><path d="M76 36L78 8L54 26Z" fill="#f4a261" ${SK}/><path d="M28 29L27 17L37 25Z" fill="#ffafcc"/><path d="M72 29L73 17L63 25Z" fill="#ffafcc"/><path d="M22 98Q22 68 50 68Q78 68 78 98Z" fill="#f4a261" ${SK}/><path d="M36 98V78H64V98" fill="#fff" ${SK2}/><circle cx="50" cy="84" r="4" fill="#ffc93c" ${SK2}/><circle cx="50" cy="45" r="28" fill="#f4a261" ${SK}/><path d="M44 19v7M50 17v8M56 19v7" stroke="#e76f51" stroke-width="3" stroke-linecap="round"/><path d="M35 44q5 -6 10 0M55 44q5 -6 10 0" fill="none" ${SK}/><ellipse cx="33" cy="54" rx="5" ry="3" fill="#ffafcc"/><ellipse cx="67" cy="54" rx="5" ry="3" fill="#ffafcc"/><path d="M47 51h6l-3 3Z" fill="#ef476f" ${SK2}/><path d="M44 57q3 3 6 0q3 3 6 0" fill="none" ${SK2}/><path d="M16 50h13M16 57l13 -2M84 50h-13M84 57l-13 -2" stroke="${K}" stroke-width="2" stroke-linecap="round"/>`,
+ trophy:`<path d="M28 24H14Q14 46 32 48M72 24H86Q86 46 68 48" fill="none" stroke="${K}" stroke-width="4" stroke-linecap="round"/><path d="M28 16H72V40Q72 62 50 64Q28 62 28 40Z" fill="#ffc93c" ${SK}/><rect x="44" y="64" width="12" height="12" fill="#e09f3e" ${SK2}/><rect x="30" y="76" width="40" height="14" rx="3" fill="#9c6644" ${SK}/><polygon points="${starPts(50,38,12)}" fill="#fff" ${SK2}/>`,
+/* --- 小遊戲 --- */
+ folder:`<path d="M8 80V24Q8 18 14 18H36L44 26H86Q92 26 92 32V80Z" fill="#e09f3e" ${SK}/><rect x="20" y="30" width="56" height="30" fill="#fff" ${SK2} transform="rotate(-6 48 45)"/><path d="M5 40H95L88 86H12Z" fill="#ffc93c" ${SK}/>`,
+ pic:`<rect x="16" y="20" width="68" height="56" rx="5" fill="#caf0f8" ${SK}/><circle cx="66" cy="36" r="8" fill="#ffc93c" ${SK2}/><path d="M16 70L38 44L54 60L63 51L84 70V76H16Z" fill="#52b788" ${SK2}/>`,
+ mus:`<path d="M38 70V28L74 20V62" fill="none" stroke="${K}" stroke-width="6" stroke-linejoin="round"/><path d="M38 34L74 26" stroke="${K}" stroke-width="6"/><ellipse cx="29" cy="70" rx="11" ry="9" fill="#9b5de5" ${SK}/><ellipse cx="65" cy="62" rx="11" ry="9" fill="#9b5de5" ${SK}/>`,
+ vid:`<rect x="14" y="38" width="72" height="46" rx="5" fill="${K}"/><path d="M14 28L82 18L84 32L16 42Z" fill="#fff" ${SK}/><path d="M28 26L33 39M45 24L50 37M62 21L67 34" stroke="${K}" stroke-width="5"/><polygon points="43,50 43,74 63,62" fill="#ef476f"/>`,
+ doc:`<path d="M24 10H62L78 26V90H24Z" fill="#fff" ${SK}/><path d="M62 10V26H78" fill="none" ${SK2}/><path d="M34 42H68M34 54H68M34 66H58M34 78H64" stroke="#118ab2" stroke-width="4" stroke-linecap="round"/>`,
+ paper:`<path d="M22 8H62L80 26V92H22Z" fill="#fff" ${SK}/><path d="M62 8V26H80" fill="#e9ecef" ${SK2}/><text x="51" y="72" font-size="40" font-weight="900" text-anchor="middle" fill="#adb5bd">?</text>`,
+ kbd:(()=>{let k='';for(let r=0;r<3;r++)for(let i=0;i<7;i++){const hl=(r*7+i)%5===1;k+=`<rect x="${12+11.3*i}" y="${33+12*r}" width="9" height="9" rx="2" fill="${hl?'#ffc93c':'#fff'}" stroke="${K}" stroke-width="1.8"/>`}
+  return `<rect x="5" y="26" width="90" height="56" rx="8" fill="#ced4da" ${SK}/>${k}<rect x="28" y="70" width="44" height="7" rx="2" fill="#fff" stroke="${K}" stroke-width="1.8"/><text x="50" y="20" font-size="18" font-weight="900" text-anchor="middle" fill="#118ab2">ㄅㄆㄇ</text>`})(),
+ ninja:`<path d="M80 30L97 22L93 37ZM82 38L99 40L89 48Z" fill="#ef476f" ${SK2}/><circle cx="50" cy="54" r="36" fill="#3d405b" ${SK}/><rect x="16" y="28" width="68" height="11" rx="4" fill="#ef476f" ${SK2}/><rect x="22" y="44" width="56" height="21" rx="10" fill="#ffe8d6" ${SK2}/><g class="eye"><ellipse cx="39" cy="55" rx="4" ry="5" fill="${K}"/><ellipse cx="61" cy="55" rx="4" ry="5" fill="${K}"/></g><path d="M31 48L44 51M69 48L56 51" ${SK2}/><polygon points="${starPts(80,84,13,5)}" fill="#adb5bd" ${SK2}/><circle cx="80" cy="84" r="3" fill="${K}"/>`,
+ cards:`<g transform="rotate(-12 34 52)"><rect x="12" y="20" width="44" height="64" rx="7" fill="#118ab2" ${SK}/><text x="34" y="64" font-size="34" font-weight="900" text-anchor="middle" fill="#fff">?</text></g><g transform="rotate(10 66 52)"><rect x="44" y="20" width="44" height="64" rx="7" fill="#fff" ${SK}/><rect x="58" y="34" width="16" height="26" rx="8" fill="#fff" ${SK2}/><path d="M58 44H74M66 34V44" stroke="${K}" stroke-width="2"/><text x="66" y="76" font-size="11" font-weight="900" text-anchor="middle" fill="${K}">滑鼠</text></g>`,
+/* --- 電腦零件 --- */
+ mouse:`<path d="M50 20Q52 8 66 6" fill="none" ${SK}/><rect x="28" y="20" width="44" height="72" rx="22" fill="#fff" ${SK}/><path d="M28 46H72M50 20V46" ${SK2}/><rect x="46" y="28" width="8" height="11" rx="4" fill="#adb5bd" ${SK2}/>`,
+ mon:`<rect x="8" y="12" width="84" height="58" rx="6" fill="${K}"/><rect x="14" y="18" width="72" height="46" rx="3" fill="#48cae4"/><path d="M20 58L40 36L52 48L62 40L80 58Z" fill="#caf0f8" opacity=".7"/><circle cx="70" cy="30" r="5" fill="#ffc93c"/><path d="M42 70h16l4 12h-24Z" fill="#adb5bd" ${SK}/><rect x="26" y="82" width="48" height="8" rx="3" fill="#adb5bd" ${SK2}/>`,
+ printer:`<rect x="26" y="8" width="48" height="26" fill="#fff" ${SK}/><rect x="10" y="30" width="80" height="38" rx="6" fill="#6c757d" ${SK}/><circle cx="78" cy="42" r="4" fill="#06d6a0"/><rect x="24" y="58" width="52" height="34" fill="#fff" ${SK}/><path d="M32 70H68M32 80H60" stroke="#adb5bd" stroke-width="3" stroke-linecap="round"/>`,
+ phones:`<path d="M18 62V50A32 32 0 0 1 82 50V62" fill="none" stroke="${K}" stroke-width="7" stroke-linecap="round"/><rect x="9" y="54" width="22" height="34" rx="9" fill="#ef476f" ${SK}/><rect x="69" y="54" width="22" height="34" rx="9" fill="#ef476f" ${SK}/>`,
+ mic:`<rect x="36" y="6" width="28" height="50" rx="14" fill="#adb5bd" ${SK}/><path d="M40 20H60M40 30H60M40 40H60" stroke="${K}" stroke-width="2"/><path d="M26 44Q26 70 50 70Q74 70 74 44" fill="none" ${SK}/><path d="M50 70V86M34 90H66" ${SK}/>`
+});
+const BUGART={click:ch('cat')+'<span class="tag">點一下</span>',dbl:ch('lady')+'<span class="tag">點兩下</span>',right:ch('alien')+'<span class="tag">右鍵</span>',gem:ch('gem')+'<span class="tag">拖曳</span>'};
 
 /* ---------- HUD / 角色成長 ---------- */
 const need=()=>S.lv*50;
 const atkBonus=()=>(S.lv-1)*2;
 function hud(){const h=$('#hud');if(!S.name){h.innerHTML='';return}
  const c=S.crystals;
- h.innerHTML=`<div class="stat">🧒 ${esc(S.name)} <span class="px">Lv${S.lv}</span></div>${ACC?'<div class="stat" id="cloud"></div>':''}
+ h.innerHTML=`<div class="stat">${TEACHER?'🎓':'🧒'} ${esc(S.name)} <span class="px">Lv${S.lv}</span></div>${ACC?'<div class="stat" id="cloud"></div>':''}
  <div class="stat">❤️ <div class="meter"><i style="width:${S.hp/S.maxHp*100}%"></i></div><span class="px">${S.hp}/${S.maxHp}</span></div>
  <div class="stat">⭐ <div class="meter exp"><i style="width:${S.exp/need()*100}%"></i></div></div>
- <div class="stat">🪙 <span class="px">${S.coins}</span></div>
- <button class="btn sm alt" id="potbtn" title="使用補血藥水 +40 HP">🧪 × ${S.potions}</button>
- <div class="stat" title="收集三顆水晶打倒魔王！">水晶 ${c.mouse?'🟢':'⚪'}${c.zhuyin?'🔵':'⚪'}${c.know?'🟣':'⚪'}</div>
+ <div class="stat">${COIN} <span class="px">${S.coins}</span></div>
+ <button class="btn sm alt" id="potbtn" title="使用補血藥水 +40 HP">${ic('potion')} × ${S.potions}</button>
+ <div class="stat" title="收集三顆水晶打倒魔王！">水晶 ${['mouse','zhuyin','know'].map(k=>`<svg class="hc" viewBox="0 0 100 100">${gemSvg(c[k]?CRY[k]:'#dee2e6')}</svg>`).join('')}</div>
  <button class="btn sm alt" id="sndbtn" title="音效開關">${S.sound?'🔊':'🔇'}</button>`;
  $('#potbtn').onclick=usePotion;$('#sndbtn').onclick=()=>{S.sound=!S.sound;save();hud()};setCloud(syncState)}
 function usePotion(){if(S.potions<=0){toast('沒有藥水了，去商店買吧！');return}if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return}S.potions--;S.hp=Math.min(S.maxHp,S.hp+40);sfx.good();toast('🧪 回復 40 HP！');save();hud()}
 function gainExp(n){S.exp+=n;while(S.exp>=need()){S.exp-=need();S.lv++;S.maxHp+=10;S.hp=S.maxHp;sfx.up();toast(`🎉 升級！現在是 Lv${S.lv}，HP 上限 +10`,2400)}save();hud()}
-function damage(n){if(S.hp<=0)return;S.hp=Math.max(0,S.hp-n);main.classList.remove('hurt');void main.offsetWidth;main.classList.add('hurt');hud();if(S.hp<=0)defeat()}
+function damage(n){if(S.hp<=0||(TEACHER&&GOD))return;S.hp=Math.max(0,S.hp-n);main.classList.remove('hurt');void main.offsetWidth;main.classList.add('hurt');hud();if(S.hp<=0)defeat()}
 function defeat(){gen++;clearTimers();keyHandler=null;const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下','');hud();sfx.bad();
  showModal(`<div class="big">😵</div><h2>你倒下了…</h2><p>貓頭鷹老師把你救回地圖，掉了 ${lost} 枚金幣。<br>去小遊戲廣場賺金幣、到商店買藥水，再來挑戰吧！</p>`,[{t:'回到地圖',f:()=>go(mapScreen)}])}
 
@@ -287,7 +421,7 @@ function makeDrag(el,onDrop){
 function titleScreen(){
  if(!SCRIPT_URL)return titleLocal();
  let last='';try{last=localStorage.getItem('pcquest_lastid')||''}catch(e){}
- main.innerHTML=`<div class="title"><div class="logo">🖥️</div><h1>電腦王國大冒險</h1>
+ main.innerHTML=`<div class="title"><div class="logo">${ch('pc')}</div><h1>電腦王國大冒險</h1>
  <div class="sub">滑鼠 × 注音打字 × 電腦知識 的冒險 RPG</div>
  <p style="font-size:18px;font-weight:700">請輸入老師給你的 <b>帳號</b> 和 <b>密碼</b>：</p>
  <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
@@ -295,6 +429,7 @@ function titleScreen(){
  <input class="tin" id="apw" type="password" inputmode="numeric" maxlength="12" placeholder="密碼" autocomplete="off"></div>
  <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
  <button class="btn g" id="login">🔑 登入</button><button class="btn alt" id="guest">🙋 訪客試玩（不記錄成績）</button></div>
+ <div style="margin-top:14px"><button class="btn sm alt" id="tlogin">🎓 教師登入</button></div>
  <div class="tip">💡 帳號、密碼都是數字，打錯了可以按 <span class="keycap">Backspace</span> 刪掉</div></div>`;
  const aid=$('#aid'),apw=$('#apw'),btn=$('#login');setTimeout(()=>(last?apw:aid).focus(),100);
  const bad=(el,msg)=>{el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);toast(msg,2200)};
@@ -311,9 +446,10 @@ function titleScreen(){
    else{logRec('登入','繼續冒險');go(mapScreen)}}
   catch(e){if(my!==gen)return;btn.disabled=false;btn.textContent='🔑 登入';sfx.bad();toast('連不上網路，請檢查網路或告訴老師',2600)}};
  [aid,apw].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){if(el===aid&&!apw.value)apw.focus();else btn.click()}}));
- $('#guest').onclick=()=>{sfx.click();go(titleLocal)}}
+ $('#guest').onclick=()=>{sfx.click();go(titleLocal)};
+ $('#tlogin').onclick=()=>{sfx.click();go(teacherLogin)}}
 function nameScreen(){
- main.innerHTML=`<div class="title"><div class="logo">🦉</div><h1 style="font-size:36px">歡迎來到電腦王國！</h1>
+ main.innerHTML=`<div class="title"><div class="logo">${OWL}</div><h1 style="font-size:36px">歡迎來到電腦王國！</h1>
  <p style="font-size:18px;font-weight:700">第一次來嗎？請用 <span class="keycap">注音輸入法</span> 打出你的名字：</p>
  <input class="tin" id="nm" maxlength="8" placeholder="例如：王小明" autocomplete="off">
  <div class="tip">💡 切換中文／英文：按一下 <span class="keycap">Shift</span>，或按 <span class="keycap">Ctrl</span>+<span class="keycap">空白鍵</span><br>打完注音按 <span class="keycap">空白鍵</span> 選字，名字取好之後就不能改了喔！</div>
@@ -326,11 +462,42 @@ function nameScreen(){
   sfx.click();S.name=v;ACC.name=v;logRec('登入','第一次登入','取名：'+v);go(introStory)};
  nm.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)$('#ok').click()});
  $('#out').onclick=logout}
-function logout(){beaconFlush();clearTimeout(syncT);ACC=null;S=FRESH();go(titleScreen)}
+function logout(){beaconFlush();clearTimeout(syncT);ACC=null;TEACHER=false;GOD=false;S=FRESH();go(titleScreen)}
+
+/* ---------- 教師模式 ---------- */
+function teacherLogin(){
+ main.innerHTML=`<div class="title"><div class="logo">${OWL}</div><h1 style="font-size:36px">🎓 教師登入</h1>
+ <p style="font-size:17px;font-weight:700">輸入教師密碼，可解鎖全部關卡與教學工具。<br><span style="color:#888;font-weight:500">教師模式不會記錄任何成績。</span></p>
+ <input class="tin" id="tpw" type="password" maxlength="40" placeholder="教師密碼" autocomplete="off">
+ <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" id="tok">🔓 解鎖</button><button class="btn alt" id="tback">⬅ 返回</button></div></div>`;
+ const inp=$('#tpw'),btn=$('#tok');setTimeout(()=>inp.focus(),100);
+ btn.onclick=async()=>{const pw=inp.value;if(!pw){toast('請輸入教師密碼');return}
+  btn.disabled=true;btn.textContent='⏳ 驗證中…';const my=gen;
+  try{const r=await api({action:'teacher',pw});if(my!==gen)return;
+   if(!r.ok){btn.disabled=false;btn.textContent='🔓 解鎖';inp.value='';sfx.bad();inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);toast(r.msg||'教師密碼錯誤',2400);return}
+   ACC=null;TEACHER=true;GOD=false;S=FRESH();S.name='老師';S.coins=999;S.potions=9;sfx.up();toast('🎓 已進入教師模式：全部關卡解鎖',2400);go(mapScreen)}
+  catch(e){if(my!==gen)return;btn.disabled=false;btn.textContent='🔓 解鎖';sfx.bad();toast('連不上網路，無法驗證教師密碼',2600)}};
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)btn.click()});
+ $('#tback').onclick=()=>go(titleScreen)}
+function teacherPanel(){
+ const c=S.crystals,all=c.mouse&&c.zhuyin&&c.know;
+ return `<div class="tpanel"><b>🎓 教師模式</b><span class="tip" style="margin:0">全部關卡已解鎖・不記錄成績</span>
+ <button class="btn sm alt" data-t="hp">❤️ 補滿 HP</button><button class="btn sm alt" data-t="god">${GOD?'🛡️ 無敵：開':'🛡️ 無敵：關'}</button>
+ <button class="btn sm alt" data-t="cry">${all?'💎 清除水晶':'💎 集滿水晶'}</button><button class="btn sm alt" data-t="lv">⭐ 升 1 級</button>
+ <button class="btn sm alt" data-t="end">🏆 看結局證書</button><button class="btn sm alt" data-t="reset">🔄 重設進度</button></div>`}
+function bindTeacherPanel(){main.querySelectorAll('.tpanel [data-t]').forEach(b=>b.onclick=()=>{sfx.click();const t=b.dataset.t,c=S.crystals;
+ if(t==='hp'){S.hp=S.maxHp;toast('HP 已補滿')}
+ if(t==='god'){GOD=!GOD;toast(GOD?'無敵模式開啟：不會扣 HP':'無敵模式關閉')}
+ if(t==='cry'){const v=!(c.mouse&&c.zhuyin&&c.know);c.mouse=c.zhuyin=c.know=v;toast(v?'三顆水晶已集滿':'水晶已清除')}
+ if(t==='lv'){gainExp(need()-S.exp)}
+ if(t==='end'){S.cleared=true;go(ending);return}
+ if(t==='reset'){S=Object.assign(FRESH(),{name:'老師',coins:999,potions:9});toast('進度已重設')}
+ go(mapScreen)})}
+const teacherWinBtn='<button class="btn sm g" id="twin" title="教師模式：直接打倒敵人">⏭ 直接獲勝</button>';
 
 function titleLocal(){
  const old=loadSave();
- main.innerHTML=`<div class="title"><div class="logo">🖥️</div><h1>電腦王國大冒險</h1>
+ main.innerHTML=`<div class="title"><div class="logo">${ch('pc')}</div><h1>電腦王國大冒險</h1>
  <div class="sub">滑鼠 × 注音打字 × 電腦知識 的冒險 RPG</div>
  <p style="font-size:18px;font-weight:700">勇者，請用 <span class="keycap">注音輸入法</span> 打出你的名字：</p>
  <input class="tin" id="nm" maxlength="8" placeholder="例如：小明" autocomplete="off">
@@ -345,28 +512,30 @@ function titleLocal(){
  if(old)$('#cont').onclick=()=>{sfx.click();S=Object.assign(FRESH(),old);go(mapScreen)}}
 
 function introStory(){
- main.innerHTML=`<div class="scene" style="background:linear-gradient(#264653,#2a9d8f)">🏯🦠</div>`;
- dialog([[OWL,OWLN,'{name}，歡迎來到「電腦王國」！'],[OWL,OWLN,'可怕的 <b>Bug魔王</b> 🦠 把病毒散布到王國各地，電腦都當機了！'],[OWL,OWLN,'要打倒牠，你需要收集三顆神奇水晶：<br>🟢 滑鼠水晶、🔵 注音水晶、🟣 知識水晶。'],[OWL,OWLN,'先到地圖上的 <b>🌲 滑鼠森林</b> 練習滑鼠吧！把滑鼠移到地點上，會出現說明喔。']],()=>go(mapScreen))}
+ main.innerHTML=scene('kingdom');
+ dialog([[OWL,OWLN,'{name}，歡迎來到「電腦王國」！'],[OWL,OWLN,`可怕的 <b>Bug魔王</b> ${ic('boss')} 把病毒散布到王國各地，電腦都當機了！`],[OWL,OWLN,`要打倒牠，你需要收集三顆神奇水晶：<br>${gi(CRY.mouse)} 滑鼠水晶、${gi(CRY.zhuyin)} 注音水晶、${gi(CRY.know)} 知識水晶。`],[OWL,OWLN,`先到地圖上的 <b>${ic('forest')} 滑鼠森林</b> 練習滑鼠吧！把滑鼠移到地點上，會出現說明喔。`]],()=>go(mapScreen))}
 
 /* =========================================================
    世界地圖
    ========================================================= */
 const NODES=[
- {id:'shop',name:'道具商店',e:'🏪',x:13,y:22,d:'買藥水、升級裝備',go:()=>go(shopScreen)},
- {id:'forest',name:'滑鼠森林',e:'🌲',x:17,y:68,d:'練習：點一下、點兩下、右鍵、拖曳',done:()=>S.crystals.mouse,go:()=>go(forestIntro)},
- {id:'village',name:'注音村',e:'🏘️',x:43,y:36,d:'用注音輸入法打字攻擊！',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 🟢 滑鼠水晶才能進入注音村！',done:()=>S.crystals.zhuyin,go:()=>go(villageIntro)},
- {id:'castle',name:'知識城堡',e:'🏰',x:68,y:66,d:'電腦知識問答＋快捷鍵',lock:()=>!S.crystals.zhuyin,lockMsg:'先拿到 🔵 注音水晶才能進入知識城堡！',done:()=>S.crystals.know,go:()=>go(castleIntro)},
- {id:'boss',name:'Bug魔王城',e:'🌋',x:87,y:22,d:'最終決戰！',lock:()=>!(S.crystals.mouse&&S.crystals.zhuyin&&S.crystals.know),lockMsg:'要集滿三顆水晶，魔王城的大門才會打開！',done:()=>S.cleared,go:()=>go(bossIntro)},
- {id:'arcade',name:'小遊戲廣場',e:'🎡',x:45,y:85,d:'玩小遊戲賺金幣和經驗',go:()=>go(arcadeScreen)}
+ {id:'shop',name:'道具商店',art:'shop',x:13,y:22,d:'買藥水、升級裝備',go:()=>go(shopScreen)},
+ {id:'forest',name:'滑鼠森林',art:'forest',x:17,y:68,d:'練習：點一下、點兩下、右鍵、拖曳',done:()=>S.crystals.mouse,go:()=>go(forestIntro)},
+ {id:'village',name:'注音村',art:'village',x:43,y:36,d:'用注音輸入法打字攻擊！',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 🟢 滑鼠水晶才能進入注音村！',done:()=>S.crystals.zhuyin,go:()=>go(villageIntro)},
+ {id:'castle',name:'知識城堡',art:'castle',x:68,y:66,d:'電腦知識問答＋快捷鍵',lock:()=>!S.crystals.zhuyin,lockMsg:'先拿到 🔵 注音水晶才能進入知識城堡！',done:()=>S.crystals.know,go:()=>go(castleIntro)},
+ {id:'boss',name:'Bug魔王城',art:'volcano',x:87,y:22,d:'最終決戰！',lock:()=>!(S.crystals.mouse&&S.crystals.zhuyin&&S.crystals.know),lockMsg:'要集滿三顆水晶，魔王城的大門才會打開！',done:()=>S.cleared,go:()=>go(bossIntro)},
+ {id:'arcade',name:'小遊戲廣場',art:'wheel',x:45,y:85,d:'玩小遊戲賺金幣和經驗',go:()=>go(arcadeScreen)}
 ];
 function mapScreen(){
  const P=id=>NODES.find(n=>n.id===id);const pts=['forest','village','castle','boss'].map(id=>`${P(id).x},${P(id).y}`).join(' ');
- main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC?'🚪 登出':'🏠 標題'}</button></div>
- <div class="map"><div class="river"></div><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#fffbea" stroke-width="1.2" stroke-dasharray="2 2"/><polyline points="${P('forest').x},${P('forest').y} ${P('arcade').x},${P('arcade').y}" fill="none" stroke="#fffbea" stroke-width=".8" stroke-dasharray="1.5 2"/><polyline points="${P('forest').x},${P('forest').y} ${P('shop').x},${P('shop').y}" fill="none" stroke="#fffbea" stroke-width=".8" stroke-dasharray="1.5 2"/></svg>
- ${NODES.map(n=>{const lk=n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${n.e}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}</span></button>`}).join('')}
- </div><div class="hint">${OWL} ${nextHint()}</div>`;
- main.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const n=P(b.dataset.id);sfx.click();if(n.lock&&n.lock()){toast(n.lockMsg);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);return}n.go()});
- $('#help').onclick=helpModal;$('#ttl').onclick=()=>{if(ACC)logout();else{S=FRESH();go(titleScreen)}};save()}
+ main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC||TEACHER?'🚪 登出':'🏠 標題'}</button></div>
+ ${(()=>{const road=(p,w)=>`<polyline points="${p}" fill="none" stroke="#bc8a5f" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#f1dca7" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 10" vector-effect="non-scaling-stroke"/>`;const xy=id=>`${P(id).x},${P(id).y}`;
+  return `<div class="map">${mapBg()}<svg viewBox="0 0 100 100" preserveAspectRatio="none">${road(`${xy('forest')} ${xy('arcade')}`,9)}${road(`${xy('forest')} ${xy('shop')}`,9)}${road(pts,13)}</svg>`})()}
+ ${NODES.map(n=>{const lk=!TEACHER&&n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${ch(n.art)}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}</span></button>`}).join('')}
+ </div>${TEACHER?teacherPanel():`<div class="hint">${OWL} ${nextHint()}</div>`}`;
+ if(TEACHER)bindTeacherPanel();
+ main.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const n=P(b.dataset.id);sfx.click();if(!TEACHER&&n.lock&&n.lock()){toast(n.lockMsg);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);return}n.go()});
+ $('#help').onclick=helpModal;$('#ttl').onclick=()=>{if(ACC||TEACHER)logout();else{S=FRESH();go(titleScreen)}};save()}
 function nextHint(){const c=S.crystals;
  if(S.cleared)return '你已經是電腦王國的英雄了！可以繼續玩小遊戲挑戰高分喔。';
  if(!c.mouse)return '下一步：到 🌲 <b>滑鼠森林</b> 收集滑鼠水晶！';
@@ -379,24 +548,25 @@ function helpModal(){showModal(`<h2>📖 操作說明</h2><p style="text-align:l
    第一關：滑鼠森林
    ========================================================= */
 function forestIntro(){
- main.innerHTML=`<div class="scene" style="background:linear-gradient(#b7e4c7,#40916c)">🌲🪲🌲</div>`;
- dialog([[OWL,OWLN,'這裡是滑鼠森林，<b>蟲蟲大王</b> 🪲 帶著一群小蟲在搗蛋！'],[OWL,OWLN,'🐛 用<b>左鍵點一下</b>　🐞 用<b>左鍵快速點兩下</b>　👾 要按<b>右鍵</b>！'],[OWL,OWLN,'看到 💎 寶石時，<b>按住左鍵拖曳</b>到右下角的 👜 包包，傷害最高！'],[OWL,OWLN,'60 秒內把蟲蟲大王的 HP 打到 0 就贏了，點錯會扣 HP 喔。出發！']],forestBattle)}
+ main.innerHTML=scene('forest');
+ dialog([[OWL,OWLN,`這裡是滑鼠森林，<b>蟲蟲大王</b> ${ic('beetle')} 帶著一群小蟲在搗蛋！`],[OWL,OWLN,`${ic('cat')} 毛毛蟲用<b>左鍵點一下</b><br>${ic('lady')} 瓢蟲用<b>左鍵快速點兩下</b><br>${ic('alien')} 外星蟲要按<b>右鍵</b>！`],[OWL,OWLN,`看到 ${ic('gem')} 寶石時，<b>按住左鍵拖曳</b>到右下角的 ${ic('bag')} 包包，傷害最高！`],[OWL,OWLN,'60 秒內把蟲蟲大王的 HP 打到 0 就贏了，點錯會扣 HP 喔。出發！']],forestBattle)}
 function forestBattle(){
  let bhp=100,time=60,alive=0,over=false;where='滑鼠森林';
- main.innerHTML=`<div class="foe" id="foe"><div class="m">🪲</div><div class="info"><b>蟲蟲大王</b> <span class="px" id="bhpt">100/100</span><div class="meter foehp"><i id="bhp" style="width:100%"></i></div></div><div class="center"><div class="px">TIME</div><div class="px" id="tm" style="font-size:22px;margin-top:6px">60</div></div></div>
- <div class="arena" id="arena"><div class="bag" id="bag">👜</div></div>
- <div class="legend"><span>🐛 點一下</span><span>🐞 點兩下</span><span>👾 右鍵</span><span>💎 拖到 👜</span></div>`;
+ main.innerHTML=`<div class="foe" id="foe" style="background:linear-gradient(90deg,#d8f3dc,#95d5b2)"><div class="m">${ch('beetle')}</div><div class="info"><b>蟲蟲大王</b> <span class="px" id="bhpt">100/100</span><div class="meter foehp"><i id="bhp" style="width:100%"></i></div></div><div class="center"><div class="px">TIME</div><div class="px" id="tm" style="font-size:22px;margin-top:6px">60</div></div>${TEACHER?teacherWinBtn:''}</div>
+ <div class="arena" id="arena">${arenaBg}<div class="bag" id="bag">${ch('bag')}</div></div>
+ <div class="legend"><span>${ic('cat')} 點一下</span><span>${ic('lady')} 點兩下</span><span>${ic('alien')} 右鍵</span><span>${ic('gem')} 拖到 ${ic('bag')}</span></div>`;
  const ar=$('#arena');ar.oncontextmenu=e=>e.preventDefault();
- const hitBoss=(el,d)=>{if(over)return;const r=el.getBoundingClientRect(),a=ar.getBoundingClientRect();pop(ar,r.left-a.left+20,r.top-a.top,'-'+d);el.remove();alive--;sfx.hit();bhp=Math.max(0,bhp-d);
-  $('#bhp').style.width=bhp+'%';$('#bhpt').textContent=bhp+'/100';const f=$('#foe');f.classList.remove('hit');void f.offsetWidth;f.classList.add('hit');
+ if(TEACHER)$('#twin').onclick=()=>{if(over)return;over=true;clearTimers();bhp=0;$('#bhp').style.width='0%';$('#bhpt').textContent='0/100';fx($('#foe'),'hit',360);after(()=>winArea('mouse'),400)};
+ const hitBoss=(el,d)=>{if(over)return;const r=el.getBoundingClientRect(),a=ar.getBoundingClientRect();pop(ar,r.left-a.left+20,r.top-a.top,'-'+d);burst(ar,r.left-a.left+30,r.top-a.top+30,8);el.remove();alive--;sfx.hit();bhp=Math.max(0,bhp-d);
+  $('#bhp').style.width=bhp+'%';$('#bhpt').textContent=bhp+'/100';const f=$('#foe');fx(f,'hit',360);burst(f,76,66,6);
   if(bhp<=0){over=true;clearTimers();after(()=>winArea('mouse'),400)}};
  const wrong=(el,msg)=>{if(over)return;sfx.bad();toast(msg);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);damage(3)};
  const spawn=()=>{if(over||alive>=6)return;const w=ar.clientWidth,h=ar.clientHeight;let x,y;do{x=rnd(w-60);y=rnd(h-60)}while(x>w-140&&y>h-140);
   const r=Math.random(),t=r<.4?'click':r<.65?'dbl':r<.9?'right':'gem';
-  const el=document.createElement('div');el.className='bug'+(t==='gem'?' gem':'');el.textContent={click:'🐛',dbl:'🐞',right:'👾',gem:'💎'}[t];el.style.left=x+'px';el.style.top=y+'px';ar.appendChild(el);alive++;
-  if(t==='click'){el.onclick=()=>hitBoss(el,5);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'🐛 要用「左鍵」點一下！')}}
-  if(t==='dbl'){el.ondblclick=()=>hitBoss(el,7);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'🐞 要用「左鍵」快速點兩下！')}}
-  if(t==='right'){el.oncontextmenu=e=>{e.preventDefault();hitBoss(el,7)};el.onclick=()=>wrong(el,'👾 要按滑鼠「右鍵」！')}
+  const el=document.createElement('div');el.className='bug'+(t==='gem'?' gem':'');el.innerHTML=BUGART[t];el.style.left=x+'px';el.style.top=y+'px';ar.appendChild(el);alive++;
+  if(t==='click'){el.onclick=()=>hitBoss(el,5);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'毛毛蟲要用「左鍵」點一下！')}}
+  if(t==='dbl'){el.ondblclick=()=>hitBoss(el,7);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'瓢蟲要用「左鍵」快速點兩下！')}}
+  if(t==='right'){el.oncontextmenu=e=>{e.preventDefault();hitBoss(el,7)};el.onclick=()=>wrong(el,'外星蟲要按滑鼠「右鍵」！')}
   if(t==='gem'){makeDrag(el,(target)=>{if(target&&target.closest('#bag')){ar.appendChild(el);hitBoss(el,12);toast('💎 拖曳成功！大傷害！')}else if(el.dataset.exp&&el.isConnected){el.remove();alive--}})}
   after(()=>{if(!el.isConnected)return;if(el.dataset.drag)el.dataset.exp='1';else{el.remove();alive--}},t==='gem'?5500:2700)};
  every(spawn,800);spawn();
@@ -407,14 +577,15 @@ function forestBattle(){
    ========================================================= */
 function battle(cfg){
  let mhp=cfg.hp,atk=0;const my=gen;where=cfg.area||cfg.name;
- main.innerHTML=`<div class="foe" id="foe"><div class="m">${cfg.emoji}</div><div class="info"><b>${cfg.name}</b> <span class="px" id="mhpt">${mhp}/${cfg.hp}</span><div class="meter foehp"><i id="mhp" style="width:100%"></i></div>
+ main.innerHTML=`<div class="foe" id="foe" style="background:${cfg.bg||'#fff'}"><div class="m">${ch(cfg.art)}</div><div class="info"><b>${cfg.name}</b> <span class="px" id="mhpt">${mhp}/${cfg.hp}</span><div class="meter foehp"><i id="mhp" style="width:100%"></i></div>
  ${cfg.atkEvery?`<div style="font-size:12px;margin-top:6px;color:#666">敵人蓄力中…（滿了會攻擊你 ${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div>`:''}</div>
- <button class="btn sm alt" id="flee">🏃 逃跑</button></div><div id="challenge"></div>`;
+ <div style="display:flex;flex-direction:column;gap:6px">${TEACHER?teacherWinBtn:''}<button class="btn sm alt" id="flee">🏃 逃跑</button></div></div><div id="challenge"></div>`;
  $('#flee').onclick=()=>go(mapScreen);
- const ch=$('#challenge'),foe=$('#foe');
- if(cfg.atkEvery)every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/cfg.atkEvery*100)+'%';if(atk>=cfg.atkEvery){atk=0;foe.classList.remove('atk');void foe.offsetWidth;foe.classList.add('atk');sfx.bad();toast(`${cfg.name} 攻擊！-${cfg.atkDmg} HP`);damage(cfg.atkDmg)}},100);
- const next=()=>{keyHandler=null;cfg.next(ch,(ok,dmg)=>{if(my!==gen)return;keyHandler=null;
-  if(ok){dmg+=atkBonus();mhp=Math.max(0,mhp-dmg);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;foe.classList.remove('hit');void foe.offsetWidth;foe.classList.add('hit');sfx.good();pop(foe,90,10,'-'+dmg);
+ if(TEACHER)$('#twin').onclick=()=>{if(mhp<=0)return;mhp=0;$('#mhp').style.width='0%';$('#mhpt').textContent='0/'+cfg.hp;keyHandler=null;clearTimers();$('#challenge').innerHTML='';fx($('#foe'),'hit',360);after(cfg.onWin,400)};
+ const chal=$('#challenge'),foe=$('#foe');
+ if(cfg.atkEvery)every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/cfg.atkEvery*100)+'%';if(atk>=cfg.atkEvery){atk=0;fx(foe,'atk',500);sfx.bad();toast(`${cfg.name} 攻擊！-${cfg.atkDmg} HP`);damage(cfg.atkDmg)}},100);
+ const next=()=>{keyHandler=null;cfg.next(chal,(ok,dmg)=>{if(my!==gen)return;keyHandler=null;
+  if(ok){dmg+=atkBonus();mhp=Math.max(0,mhp-dmg);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;fx(foe,'hit',360);burst(foe,76,66,12);sfx.good();pop(foe,90,10,'-'+dmg);
    if(mhp<=0){clearTimers();after(cfg.onWin,500);return}}
   else{damage(cfg.missDmg);if(S.hp<=0)return}
   after(next,cfg.gap||700)})};
@@ -453,10 +624,10 @@ function runShortcut(s,ch,done,dmg=25){let fin=false;const end=ok=>{if(fin)retur
  if(document.activeElement)document.activeElement.blur();
  keyHandler=e=>{if(!(e.ctrlKey||e.metaKey))return;if(!e.code.startsWith('Key'))return;e.preventDefault();end(e.code==='Key'+s.k)}}
 function runClick(ch,done,dmg=25){let fin=false,left=5;
- ch.innerHTML=`<div style="font-weight:700;color:#666">🖱️ 7 秒內清光所有蟲蟲！ 🐛點一下　🐞點兩下　👾右鍵</div><div class="mini-arena" id="ma"></div>`;
+ ch.innerHTML=`<div style="font-weight:700;color:#666">🖱️ 7 秒內清光所有蟲蟲！ ${ic('cat')}點一下　${ic('lady')}點兩下　${ic('alien')}右鍵</div><div class="mini-arena" id="ma">${arenaBg}</div>`;
  const ma=ch.querySelector('#ma');ma.oncontextmenu=e=>e.preventDefault();
  const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;done(true,dmg)}};
- for(let i=0;i<5;i++){const t=['click','dbl','right'][rnd(3)],el=document.createElement('div');el.className='bug';el.textContent={click:'🐛',dbl:'🐞',right:'👾'}[t];
+ for(let i=0;i<5;i++){const t=['click','dbl','right'][rnd(3)],el=document.createElement('div');el.className='bug';el.innerHTML=BUGART[t];
   el.style.left=3+rnd(80)+'%';el.style.top=10+rnd(70)+'%';ma.appendChild(el);
   if(t==='click')el.onclick=()=>kill(el);if(t==='dbl')el.ondblclick=()=>kill(el);if(t==='right')el.oncontextmenu=e=>{e.preventDefault();kill(el)}}
  after(()=>{if(!fin){fin=true;toast('時間到！');done(false)}},7000)}
@@ -465,9 +636,9 @@ function runClick(ch,done,dmg=25){let fin=false,left=5;
    第二關：注音村
    ========================================================= */
 function villageIntro(){
- main.innerHTML=`<div class="scene" style="background:linear-gradient(#ffe5b4,#f4a261)">🏘️👻🏘️</div>`;
- dialog([[OWL,OWLN,'注音村被 <b>錯字幽靈</b> 👻 佔領了，村民打的字全都變成亂碼！'],[OWL,OWLN,'畫面上會出現詞語和注音，請用<b>注音輸入法</b>打出來。打對就會自動攻擊！'],[OWL,OWLN,'小提醒：按 <span class="keycap">Shift</span> 切換中英文；打完一個字的注音後按 <span class="keycap">空白鍵</span> 選字。'],[OWL,OWLN,'幽靈蓄力滿了會攻擊你，動作要快！越後面詞越難喔！']],()=>{
-  const cfg={name:'錯字幽靈',area:'注音村',emoji:'👻',hp:110,atkEvery:20000,atkDmg:10,missDmg:6,
+ main.innerHTML=scene('village');
+ dialog([[OWL,OWLN,`注音村被 <b>錯字幽靈</b> ${ic('ghost')} 佔領了，村民打的字全都變成亂碼！`],[OWL,OWLN,'畫面上會出現詞語和注音，請用<b>注音輸入法</b>打出來。打對就會自動攻擊！'],[OWL,OWLN,'小提醒：按 <span class="keycap">Shift</span> 切換中英文；打完一個字的注音後按 <span class="keycap">空白鍵</span> 選字。'],[OWL,OWLN,'幽靈蓄力滿了會攻擊你，動作要快！越後面詞越難喔！']],()=>{
+  const cfg={name:'錯字幽靈',area:'注音村',art:'ghost',bg:'linear-gradient(90deg,#ffe5b4,#f4a261)',hp:110,atkEvery:20000,atkDmg:10,missDmg:6,
    next:(ch,done)=>{const r=(main.querySelector('#mhp')?.style.width||'100%');const p=parseFloat(r);runTyping(pickWord(p>66?'easy':p>33?'mid':'hard'),ch,done)},
    onWin:()=>winArea('zhuyin')};battle(cfg)})}
 
@@ -475,9 +646,9 @@ function villageIntro(){
    第三關：知識城堡
    ========================================================= */
 function castleIntro(){
- main.innerHTML=`<div class="scene" style="background:linear-gradient(#cdb4db,#6d597a)">🏰🤖🏰</div>`;
- dialog([[OWL,OWLN,'知識城堡的守衛是 <b>亂碼機器人</b> 🤖，牠只怕「正確的電腦知識」！'],[OWL,OWLN,'用滑鼠點選正確答案攻擊牠。有時候會出現 <b>快捷鍵挑戰</b>，要真的按下鍵盤喔！'],[OWL,OWLN,'快捷鍵小抄：Ctrl+C 複製、Ctrl+V 貼上、Ctrl+X 剪下、Ctrl+Z 復原、Ctrl+A 全選、Ctrl+S 儲存。']],()=>{
-  let n=0;battle({name:'亂碼機器人',area:'知識城堡',emoji:'🤖',hp:130,atkEvery:25000,atkDmg:10,missDmg:10,
+ main.innerHTML=scene('castle');
+ dialog([[OWL,OWLN,`知識城堡的守衛是 <b>亂碼機器人</b> ${ic('robot')}，牠只怕「正確的電腦知識」！`],[OWL,OWLN,'用滑鼠點選正確答案攻擊牠。有時候會出現 <b>快捷鍵挑戰</b>，要真的按下鍵盤喔！'],[OWL,OWLN,'快捷鍵小抄：Ctrl+C 複製、Ctrl+V 貼上、Ctrl+X 剪下、Ctrl+Z 復原、Ctrl+A 全選、Ctrl+S 儲存。']],()=>{
+  let n=0;battle({name:'亂碼機器人',area:'知識城堡',art:'robot',bg:'linear-gradient(90deg,#e0d4f0,#9d79bc)',hp:130,atkEvery:25000,atkDmg:10,missDmg:10,
    next:(ch,done)=>{n++;if(n%3===0)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runQuiz(pickQuiz(),ch,done)},
    onWin:()=>winArea('know')})})}
 
@@ -485,22 +656,22 @@ function castleIntro(){
    最終關：Bug魔王
    ========================================================= */
 function bossIntro(){
- main.innerHTML=`<div class="scene" style="background:linear-gradient(#3d0c11,#9d0208)">🌋🦠🌋</div>`;
- dialog([['🦠','Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],['🦠','Bug魔王','來吧！讓我的病毒吞掉你的檔案！']],()=>{
-  battle({name:'Bug魔王',area:'Bug魔王城',emoji:'🦠',hp:220,atkEvery:16000,atkDmg:12,missDmg:12,
+ main.innerHTML=scene('volcano');
+ dialog([[BOSS,'Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],[BOSS,'Bug魔王','來吧！讓我的病毒吞掉你的檔案！']],()=>{
+  battle({name:'Bug魔王',area:'Bug魔王城',art:'boss',bg:'linear-gradient(90deg,#3d0c11,#9d0208)',hp:220,atkEvery:16000,atkDmg:12,missDmg:12,
    next:(ch,done)=>{const r=rnd(4);if(r===0)runTyping(pickWord(Math.random()<.5?'mid':'hard'),ch,done);else if(r===1)runQuiz(pickQuiz(),ch,done,22);else if(r===2)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runClick(ch,done)},
-   onWin:()=>{sfx.win();const first=!S.cleared;S.cleared=true;gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP`);go(ending)}})})}
+   onWin:()=>{sfx.win();const first=!S.cleared;S.cleared=true;gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP`);confetti();go(ending)}})})}
 
 function winArea(key){sfx.win();const first=!S.crystals[key];S.crystals[key]=true;gainExp(first?60:25);S.coins+=first?40:15;save();hud();
  logRec({mouse:'滑鼠森林',zhuyin:'注音村',know:'知識城堡'}[key],'過關',(first?'獲得水晶':'再次挑戰')+`，剩 ${S.hp} HP`);
- const nm={mouse:'🟢 滑鼠水晶',zhuyin:'🔵 注音水晶',know:'🟣 知識水晶'}[key];
- showModal(`<div class="big">🎉</div><h2>勝利！</h2><p>${first?`獲得 <b>${nm}</b>！<br>`:''}經驗 +${first?60:25}　金幣 +${first?40:15}</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
+ const nm={mouse:'滑鼠水晶',zhuyin:'注音水晶',know:'知識水晶'}[key];confetti();
+ showModal(`<div class="big"><svg class="sv" viewBox="0 0 100 100">${gemSvg(CRY[key])}</svg></div><h2>勝利！</h2><p>${first?`獲得 <b>${nm}</b>！<br>`:''}經驗 +${first?60:25}　金幣 +${first?40:15}</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
 
 function ending(){
  const d=new Date();
- main.innerHTML=`<div class="cert"><div style="font-size:70px">🏆</div><h1>電腦小勇者證書</h1>
- <p style="font-size:20px;line-height:1.9">茲證明 <b style="font-size:30px;color:var(--blue)">${esc(S.name)}</b><br>精通滑鼠操作、注音打字與電腦知識，<br>成功打倒 Bug魔王 🦠，拯救了電腦王國！</p>
- <p class="px" style="margin-top:20px">LV ${S.lv}　　${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}</p><p>🦉 貓頭鷹老師 頒發</p></div>
+ main.innerHTML=`<div class="cert"><div style="width:100px;height:100px;margin:0 auto">${ch('trophy')}</div><h1>電腦小勇者證書</h1>
+ <p style="font-size:20px;line-height:1.9">茲證明 <b style="font-size:30px;color:var(--blue)">${esc(S.name)}</b><br>精通滑鼠操作、注音打字與電腦知識，<br>成功打倒 Bug魔王 ${ic('boss')}，拯救了電腦王國！</p>
+ <p class="px" style="margin-top:20px">LV ${S.lv}　　${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}</p><p>${ic('owl')} 貓頭鷹老師 頒發</p></div>
  <div class="center" style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" onclick="go(mapScreen)">🗺️ 回地圖繼續玩</button><button class="btn alt" onclick="go(arcadeScreen)">🎡 小遊戲廣場</button></div>`;
  dialog([[OWL,OWLN,'太厲害了，{name}！你是電腦王國真正的英雄！'],[OWL,OWLN,'記得：上網要安全、密碼不告訴別人、常常存檔，還有用電腦要記得休息喔！']])}
 
@@ -508,32 +679,32 @@ function ending(){
    道具商店
    ========================================================= */
 function shopScreen(){
- const items=[{e:'🧪',n:'補血藥水',d:'回復 40 HP（放在背包，隨時可用）',p:20,f:()=>{S.potions++}},{e:'🍱',n:'勇者便當',d:'立刻回滿 HP',p:15,f:()=>{if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return false}S.hp=S.maxHp}},{e:'🛡️',n:'防毒盾牌',d:'HP 上限永久 +20',p:80,f:()=>{S.maxHp+=20;S.hp+=20}},{e:'📜',n:'經驗卷軸',d:'獲得 40 經驗值',p:35,f:()=>{gainExp(40)}}];
- main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>🏪 道具商店</h2><div class="stat">🪙 ${S.coins}</div></div>
- <p>🐱 老闆貓：「歡迎光臨！金幣不夠的話，去 🎡 小遊戲廣場賺吧！」</p>
- <div class="shop">${items.map((it,i)=>`<div class="item"><div class="e">${it.e}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn" data-i="${i}" ${S.coins<it.p?'disabled':''}>🪙 ${it.p} 購買</button></div>`).join('')}</div>`;
- main.querySelectorAll('.item .btn').forEach(b=>b.onclick=()=>{const it=items[b.dataset.i];if(S.coins<it.p)return;if(it.f()===false)return;S.coins-=it.p;sfx.good();toast(`買了 ${it.e} ${it.n}！`);save();go(shopScreen)})}
+ const items=[{e:'potion',n:'補血藥水',d:'回復 40 HP（放在背包，隨時可用）',p:20,f:()=>{S.potions++}},{e:'bento',n:'勇者便當',d:'立刻回滿 HP',p:15,f:()=>{if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return false}S.hp=S.maxHp}},{e:'shield',n:'防毒盾牌',d:'HP 上限永久 +20',p:80,f:()=>{S.maxHp+=20;S.hp+=20}},{e:'scroll',n:'經驗卷軸',d:'獲得 40 經驗值',p:35,f:()=>{gainExp(40)}}];
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>${ic('shop')} 道具商店</h2><div class="stat">${COIN} ${S.coins}</div></div>
+ <div class="keeper"><div class="kp">${ch('kitty')}</div><div class="bubble"><b>老闆貓</b>：「歡迎光臨喵！金幣不夠的話，去 ${ic('wheel')} 小遊戲廣場賺吧！」</div></div>
+ <div class="shop">${items.map((it,i)=>`<div class="item"><div class="e">${ch(it.e)}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn" data-i="${i}" ${S.coins<it.p?'disabled':''}>${COIN} ${it.p} 購買</button></div>`).join('')}</div>`;
+ main.querySelectorAll('.item .btn').forEach(b=>b.onclick=()=>{const it=items[b.dataset.i];if(S.coins<it.p)return;if(it.f()===false)return;S.coins-=it.p;sfx.good();toast(`🛍️ 買了 ${it.n}！`);save();go(shopScreen)})}
 
 /* =========================================================
    小遊戲廣場
    ========================================================= */
 function arcadeScreen(){
- const g=[{e:'🗂️',n:'檔案分類大師',d:'看副檔名，把檔案拖曳到正確的資料夾',s:'滑鼠拖曳',f:fileSort},{e:'⌨️',n:'注音鍵盤反應王',d:'看到注音符號，按下鍵盤上對應的鍵',s:'鍵盤位置',f:zhuyinKeys},{e:'🥷',n:'快捷鍵忍者',d:'10 題快捷鍵連續挑戰',s:'快捷鍵',f:ninja},{e:'🃏',n:'電腦零件記憶翻牌',d:'把零件圖示和名稱配對',s:'滑鼠點擊',f:memory}];
- main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>🎡 小遊戲廣場</h2></div><p>每個小遊戲都能賺 🪙 金幣和 ⭐ 經驗，玩越好拿越多！</p>
- <div class="grid">${g.map((x,i)=>`<div class="gcard" data-i="${i}"><div class="e">${x.e}</div><h3>${x.n}</h3><p>${x.d}</p><p>🎯 練習：<b>${x.s}</b></p></div>`).join('')}</div>`;
+ const g=[{e:'folder',n:'檔案分類大師',d:'看副檔名，把檔案拖曳到正確的資料夾',s:'滑鼠拖曳',f:fileSort,c:'#fff3c4'},{e:'kbd',n:'注音鍵盤反應王',d:'看到注音符號，按下鍵盤上對應的鍵',s:'鍵盤位置',f:zhuyinKeys,c:'#d7f0fa'},{e:'ninja',n:'快捷鍵忍者',d:'10 題快捷鍵連續挑戰',s:'快捷鍵',f:ninja,c:'#ffe0e6'},{e:'cards',n:'電腦零件記憶翻牌',d:'把零件圖示和名稱配對',s:'滑鼠點擊',f:memory,c:'#e8dcf7'}];
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>${ic('wheel')} 小遊戲廣場</h2></div><p>每個小遊戲都能賺 ${COIN} 金幣和 ⭐ 經驗，玩越好拿越多！</p>
+ <div class="grid">${g.map((x,i)=>`<div class="gcard" data-i="${i}"><div class="e" style="background:${x.c}">${ch(x.e)}</div><h3>${x.n}</h3><p>${x.d}</p><p>🎯 練習：<b>${x.s}</b></p></div>`).join('')}</div>`;
  main.querySelectorAll('.gcard').forEach(c=>c.onclick=()=>{sfx.click();go(g[c.dataset.i].f)})}
 const GNAME={fileSort:'檔案分類大師',zhuyinKeys:'注音鍵盤反應王',ninja:'快捷鍵忍者',memory:'電腦零件記憶翻牌'};
-function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);save();hud();logRec('🎡 '+(GNAME[again.name]||'小遊戲'),'完成',msg);sfx.win();showModal(`<div class="big">🎊</div><h2>遊戲結束</h2><p>${msg}<br>🪙 +${coins}　⭐ +${exp}</p>`,[{t:'再玩一次',c:'g',f:()=>go(again)},{t:'回廣場',c:'alt',f:()=>go(arcadeScreen)}])}
+function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);save();hud();logRec('🎡 '+(GNAME[again.name]||'小遊戲'),'完成',msg);sfx.win();confetti();showModal(`<div class="big">${ch('trophy')}</div><h2>遊戲結束</h2><p>${msg}<br>${COIN} +${coins}　⭐ +${exp}</p>`,[{t:'再玩一次',c:'g',f:()=>go(again)},{t:'回廣場',c:'alt',f:()=>go(arcadeScreen)}])}
 const back=t=>`<div class="topbar"><button class="btn sm alt" onclick="go(arcadeScreen)">⬅ 廣場</button><h2>${t}</h2><div class="px" id="info"></div></div>`;
 
 /* --- 檔案分類大師 --- */
 function fileSort(){
  const ALL=[['貓咪.jpg','pic'],['風景.png','pic'],['小狗.gif','pic'],['全家福.jpeg','pic'],['兒歌.mp3','mus'],['鋼琴.wav','mus'],['鳥叫聲.mp3','mus'],['校慶.mp4','vid'],['煙火.mov','vid'],['跳舞.mp4','vid'],['作業.docx','doc'],['日記.txt','doc'],['報告.pdf','doc'],['成績.xlsx','doc']];
  const files=shuffle(ALL).slice(0,10);let left=files.length,miss=0;const t0=Date.now();
- main.innerHTML=back('🗂️ 檔案分類大師')+`<p>看檔名後面的 <b>副檔名</b>（點後面的字），把檔案<b>按住拖曳</b>到正確的資料夾！</p><div class="tray" id="tray"></div>
- <div class="folders">${[['pic','🖼️','圖片','.jpg .png .gif'],['mus','🎵','音樂','.mp3 .wav'],['vid','🎬','影片','.mp4 .mov'],['doc','📄','文件','.docx .txt .pdf .xlsx']].map(f=>`<div class="folder" data-k="${f[0]}"><div class="fi">📁${f[1]}</div><div class="fn">${f[2]}</div><div class="cnt">0 個檔案</div></div>`).join('')}</div>`;
+ main.innerHTML=back(`${ic('folder')} 檔案分類大師`)+`<p>看檔名後面的 <b>副檔名</b>（點後面的字），把檔案<b>按住拖曳</b>到正確的資料夾！</p><div class="tray" id="tray"></div>
+ <div class="folders">${[['pic','pic','圖片','.jpg .png .gif'],['mus','mus','音樂','.mp3 .wav'],['vid','vid','影片','.mp4 .mov'],['doc','doc','文件','.docx .txt .pdf .xlsx']].map(f=>`<div class="folder" data-k="${f[0]}"><div class="fi"><svg class="sv" viewBox="0 0 100 100">${CH.folder}<g transform="translate(31 44) scale(.4)">${CH[f[1]]}</g></svg></div><div class="fn">${f[2]}</div><div class="cnt">0 個檔案</div></div>`).join('')}</div>`;
  const tray=$('#tray');const cnt={};
- files.forEach(([nm,k])=>{const el=document.createElement('div');el.className='file';el.innerHTML=`<div class="fe">📄</div><div class="nm">${nm}</div>`;tray.appendChild(el);
+ files.forEach(([nm,k])=>{const el=document.createElement('div');el.className='file';el.innerHTML=`<div class="fe">${ch('paper')}</div><div class="nm">${nm}</div>`;tray.appendChild(el);
   makeDrag(el,target=>{const f=target&&target.closest('.folder');if(!f)return;
    if(f.dataset.k===k){el.remove();left--;cnt[k]=(cnt[k]||0)+1;f.querySelector('.cnt').textContent=cnt[k]+' 個檔案';f.classList.add('flash');setTimeout(()=>f.classList.remove('flash'),250);sfx.good();
     if(!left){const sec=Math.round((Date.now()-t0)/1000);reward(Math.max(8,30-miss*3),15,`用了 ${sec} 秒，放錯 ${miss} 次`,fileSort)}}
@@ -542,7 +713,7 @@ function fileSort(){
 /* --- 注音鍵盤反應王 --- */
 function zhuyinKeys(){
  const pool=Object.keys(ZY).filter(c=>!/[ˊˇˋ˙]/.test(ZY[c]));let time=30,score=0,miss=0,cur,hint=true,started=false;
- main.innerHTML=back('⌨️ 注音鍵盤反應王')+`<div class="center"><p>看到注音符號，就按下鍵盤上對應的鍵（大千式注音鍵盤）。<b>不用切換輸入法</b>，直接按就可以！</p>
+ main.innerHTML=back(`${ic('kbd')} 注音鍵盤反應王`)+`<div class="center"><p>看到注音符號，就按下鍵盤上對應的鍵（大千式注音鍵盤）。<b>不用切換輸入法</b>，直接按就可以！</p>
  <div class="target" id="tg">準備</div><div><label style="font-weight:700"><input type="checkbox" id="hint" checked> 顯示提示（黃色鍵）</label></div>
  <div class="kb" id="kb">${KROWS.map(r=>`<div class="kr">${r.map(c=>`<div class="key" data-c="${c}"><b>${KLAB(c)}</b><span>${ZY[c]}</span></div>`).join('')}</div>`).join('')}</div>
  <div style="margin-top:10px"><button class="btn g" id="go">▶ 開始（30 秒）</button></div></div>`;
@@ -558,18 +729,18 @@ function zhuyinKeys(){
 
 /* --- 快捷鍵忍者 --- */
 function ninja(){let round=0,score=0;
- main.innerHTML=back('🥷 快捷鍵忍者')+`<div id="challenge"></div><div class="cheat">${SHORTCUTS.map(s=>`<span>Ctrl+${s.k}＝${s.n}</span>`).join('')}</div>`;
+ main.innerHTML=back(`${ic('ninja')} 快捷鍵忍者`)+`<div id="challenge"></div><div class="cheat">${SHORTCUTS.map(s=>`<span>Ctrl+${s.k}＝${s.n}</span>`).join('')}</div>`;
  const ch=$('#challenge'),info=$('#info');
  const nx=()=>{round++;info.textContent=`第${round}/10題 ${score}分`;runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,ok=>{if(ok)score++;if(round>=10)reward(score*3,score*2,`10 題答對 ${score} 題`,ninja);else after(nx,200)})};nx()}
 
 /* --- 電腦零件記憶翻牌 --- */
 function memory(){
- const P=[['🖱️','滑鼠'],['⌨️','鍵盤'],['🖥️','螢幕'],['🖨️','印表機'],['🎧','耳機'],['🎤','麥克風']];
+ const P=[['mouse','滑鼠'],['kbd','鍵盤'],['mon','螢幕'],['printer','印表機'],['phones','耳機'],['mic','麥克風']];
  const deck=shuffle(P.flatMap((p,i)=>[{k:i,v:p[0],t:0},{k:i,v:p[1],t:1}]));let open=[],moves=0,got=0,lock=false;
- main.innerHTML=back('🃏 電腦零件記憶翻牌')+`<p class="center">點牌翻開，把 <b>圖示</b> 和 <b>名稱</b> 配成一對！</p><div class="cards">${deck.map((c,i)=>`<div class="mc" data-i="${i}">?</div>`).join('')}</div>`;
+ main.innerHTML=back(`${ic('cards')} 電腦零件記憶翻牌`)+`<p class="center">點牌翻開，把 <b>圖示</b> 和 <b>名稱</b> 配成一對！</p><div class="cards">${deck.map((c,i)=>`<div class="mc" data-i="${i}">?</div>`).join('')}</div>`;
  const info=$('#info');info.textContent='步數 0';
  main.querySelectorAll('.mc').forEach(el=>el.onclick=()=>{const c=deck[el.dataset.i];if(lock||el.classList.contains('up')||el.classList.contains('got'))return;sfx.click();
-  el.classList.add('up');if(c.t)el.classList.add('txt');el.textContent=c.v;open.push(el);
+  el.classList.add('up');if(c.t){el.classList.add('txt');el.textContent=c.v}else el.innerHTML=ch(c.v);open.push(el);
   if(open.length===2){moves++;info.textContent='步數 '+moves;const [a,b]=open.map(x=>deck[x.dataset.i]);
    if(a.k===b.k){open.forEach(x=>{x.classList.add('got')});open=[];got++;sfx.good();if(got===P.length)after(()=>reward(Math.max(8,36-(moves-6)*2),15,`用了 ${moves} 步完成！`,memory),400)}
    else{lock=true;after(()=>{open.forEach(x=>{x.classList.remove('up','txt');x.textContent='?'});open=[];lock=false},800)}}})}
