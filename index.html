@@ -84,6 +84,60 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 .node.done .lbl{background:var(--green)}
 .node .tipx{display:none;position:absolute;left:50%;top:-34px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;white-space:nowrap;z-index:5}
 .node:hover .tipx{display:block}
+/* battle v2 */
+.stage{position:relative;height:310px;border:3px solid var(--ink);border-radius:14px;overflow:hidden}
+.stage::after{content:'';position:absolute;left:0;right:0;bottom:0;height:62px;background:#0000001f;border-top:3px solid #00000022;z-index:0}
+.side{position:absolute;top:10px;width:40%;background:#fffffff0;border:2px solid var(--ink);border-radius:10px;padding:6px 10px;z-index:3;font-size:14px}
+.side.left{left:10px}.side.right{right:10px}
+.side .nm{font-weight:900;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side .lab{font-size:11px;color:#555;margin-top:4px}
+.side .meter{width:100%}
+.meter.mp>i{background:var(--blue)}
+.fighter{position:absolute;bottom:20px;width:150px;height:150px;z-index:2}
+.fighter.hero{left:10%}
+.fighter.enemy{right:10%;width:175px;height:175px;animation:bob 2.6s ease-in-out infinite}
+.hero.lunge .sv{animation:heroLunge .42s}
+@keyframes heroLunge{40%{transform:translateX(70px) scale(1.08)}}
+.hero.hurt .sv{animation:hitfx .36s}
+.hero.charged .sv{filter:drop-shadow(0 0 10px #ffc93c) drop-shadow(0 0 4px #ffc93c)}
+.stage.hit .enemy .sv{animation:hitfx .36s}
+.stage.atk .enemy .sv{animation:enemyLunge .5s}
+@keyframes enemyLunge{40%{transform:translateX(-80px) scale(1.15)}}
+.enemy.rage .sv{filter:drop-shadow(0 0 14px #ef476f) saturate(1.6)}
+.enemy.ko .sv{animation:ko .7s forwards}
+@keyframes ko{to{transform:translateY(30px) rotate(25deg) scale(.6);opacity:0}}
+.stage.quake{animation:shake .3s 2}
+.shieldfx{position:absolute;inset:-12px;border-radius:50%;border:4px solid #4cc9f0;background:#4cc9f02e;box-shadow:0 0 18px #4cc9f0;opacity:0;transition:opacity .3s;pointer-events:none}
+.shieldfx.on{opacity:1}
+.combo{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-weight:900;font-size:30px;color:#ffc93c;text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink);z-index:4;white-space:nowrap}
+.combo.bump{animation:spawn .26s}
+.say{position:absolute;right:12%;top:104px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:4px 12px;font-weight:900;z-index:5;opacity:0;transition:opacity .25s;max-width:60%}
+.say.on{opacity:1}
+.sbtns{position:absolute;right:10px;bottom:8px;display:flex;gap:6px;z-index:4}
+.shot{position:absolute;width:40px;height:40px;z-index:5;pointer-events:none;transition:left .32s ease-in,top .32s ease-in}
+.skills{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.skill{background:#fff}
+.skill small{background:var(--blue);color:#fff;border-radius:6px;padding:0 5px;margin-left:6px;font-size:11px}
+.skill.ready{background:var(--gold)}
+.skill.locked{opacity:.4}
+.opts .btn.gone{visibility:hidden}
+.kh{font-weight:700;color:var(--purple);min-height:22px;font-size:15px}
+.msgcard{max-width:560px;margin:4px auto 16px;text-align:left;background:#f1f3f5;border:3px solid var(--ink);border-radius:14px;overflow:hidden}
+.msgcard .mh{background:var(--ink);color:#fff;padding:6px 12px;font-size:14px}
+.msgcard .mb{padding:14px;font-size:20px;font-weight:700;line-height:1.6}
+.opts .btn.safe{background:#d8f3dc}.opts .btn.danger{background:#ffe0e6}
+.starrow{font-size:44px;letter-spacing:6px;line-height:1}
+.starrow span{color:#dee2e6;display:inline-block;-webkit-text-stroke:2px var(--ink)}
+.starrow span.on{color:var(--gold);animation:spawn .35s both}
+.rstat{font-size:15px;margin-top:6px}
+.newbest{color:var(--red);font-weight:900;margin:4px 0}
+.nst{display:block;font-size:12px;color:#e09f3e;letter-spacing:1px;line-height:1}
+.hhead{display:inline-block;width:30px;height:30px;vertical-align:middle}
+.heroes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.hpick{width:96px;border:3px solid var(--ink);border-radius:12px;background:#fff;cursor:pointer;padding:6px 4px;font:inherit;box-shadow:0 3px 0 var(--ink)}
+.hpick .sv{width:80px;height:80px;margin:0 auto}
+.hpick.sel{background:var(--gold);transform:translateY(-3px)}
+@media (max-width:640px){.fighter{width:96px;height:96px}.fighter.enemy{width:110px;height:110px}.side{width:46%;font-size:12px}.stage{height:270px}.combo{top:96px;font-size:22px}}
 .tpanel{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#e8dcf7;border:3px solid var(--purple);border-radius:12px;padding:10px 14px}
 .hint{margin-top:12px;background:#fff;border:3px dashed var(--ink);border-radius:12px;padding:10px 14px;font-weight:700}
 /* dialog */
@@ -205,9 +259,12 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[
 
 /* ---------- 遊戲資料 ---------- */
 const WORDS={
- easy:[['電腦','ㄉㄧㄢˋ ㄋㄠˇ'],['滑鼠','ㄏㄨㄚˊ ㄕㄨˇ'],['鍵盤','ㄐㄧㄢˋ ㄆㄢˊ'],['螢幕','ㄧㄥˊ ㄇㄨˋ'],['網路','ㄨㄤˇ ㄌㄨˋ'],['開機','ㄎㄞ ㄐㄧ'],['關機','ㄍㄨㄢ ㄐㄧ'],['喇叭','ㄌㄚˇ ㄅㄚ'],['耳機','ㄦˇ ㄐㄧ'],['檔案','ㄉㄤˇ ㄢˋ']],
- mid:[['資料夾','ㄗ ㄌㄧㄠˋ ㄐㄧㄚˊ'],['印表機','ㄧㄣˋ ㄅㄧㄠˇ ㄐㄧ'],['隨身碟','ㄙㄨㄟˊ ㄕㄣ ㄉㄧㄝˊ'],['瀏覽器','ㄌㄧㄡˊ ㄌㄢˇ ㄑㄧˋ'],['密碼','ㄇㄧˋ ㄇㄚˇ'],['病毒','ㄅㄧㄥˋ ㄉㄨˊ'],['下載','ㄒㄧㄚˋ ㄗㄞˇ'],['儲存','ㄔㄨˇ ㄘㄨㄣˊ'],['複製','ㄈㄨˋ ㄓˋ'],['貼上','ㄊㄧㄝ ㄕㄤˋ']],
- hard:[['我會用滑鼠','ㄨㄛˇ ㄏㄨㄟˋ ㄩㄥˋ ㄏㄨㄚˊ ㄕㄨˇ'],['密碼不能告訴別人','ㄇㄧˋ ㄇㄚˇ ㄅㄨˋ ㄋㄥˊ ㄍㄠˋ ㄙㄨˋ ㄅㄧㄝˊ ㄖㄣˊ'],['上網要注意安全','ㄕㄤˋ ㄨㄤˇ ㄧㄠˋ ㄓㄨˋ ㄧˋ ㄢ ㄑㄩㄢˊ'],['記得常常存檔','ㄐㄧˋ ˙ㄉㄜ ㄔㄤˊ ㄔㄤˊ ㄘㄨㄣˊ ㄉㄤˇ'],['電腦王國萬歲','ㄉㄧㄢˋ ㄋㄠˇ ㄨㄤˊ ㄍㄨㄛˊ ㄨㄢˋ ㄙㄨㄟˋ']]
+ easy:[['電腦','ㄉㄧㄢˋ ㄋㄠˇ'],['滑鼠','ㄏㄨㄚˊ ㄕㄨˇ'],['鍵盤','ㄐㄧㄢˋ ㄆㄢˊ'],['螢幕','ㄧㄥˊ ㄇㄨˋ'],['網路','ㄨㄤˇ ㄌㄨˋ'],['開機','ㄎㄞ ㄐㄧ'],['關機','ㄍㄨㄢ ㄐㄧ'],['喇叭','ㄌㄚˇ ㄅㄚ'],['耳機','ㄦˇ ㄐㄧ'],['檔案','ㄉㄤˇ ㄢˋ'],
+  ['上網','ㄕㄤˋ ㄨㄤˇ'],['網址','ㄨㄤˇ ㄓˇ'],['電池','ㄉㄧㄢˋ ㄔˊ'],['充電','ㄔㄨㄥ ㄉㄧㄢˋ'],['桌面','ㄓㄨㄛ ㄇㄧㄢˋ'],['視窗','ㄕˋ ㄔㄨㄤ'],['游標','ㄧㄡˊ ㄅㄧㄠ'],['按鍵','ㄢˋ ㄐㄧㄢˋ'],['平板','ㄆㄧㄥˊ ㄅㄢˇ'],['相機','ㄒㄧㄤˋ ㄐㄧ']],
+ mid:[['資料夾','ㄗ ㄌㄧㄠˋ ㄐㄧㄚˊ'],['印表機','ㄧㄣˋ ㄅㄧㄠˇ ㄐㄧ'],['隨身碟','ㄙㄨㄟˊ ㄕㄣ ㄉㄧㄝˊ'],['瀏覽器','ㄌㄧㄡˊ ㄌㄢˇ ㄑㄧˋ'],['密碼','ㄇㄧˋ ㄇㄚˇ'],['病毒','ㄅㄧㄥˋ ㄉㄨˊ'],['下載','ㄒㄧㄚˋ ㄗㄞˇ'],['儲存','ㄔㄨˇ ㄘㄨㄣˊ'],['複製','ㄈㄨˋ ㄓˋ'],['貼上','ㄊㄧㄝ ㄕㄤˋ'],
+  ['搜尋','ㄙㄡ ㄒㄩㄣˊ'],['刪除','ㄕㄢ ㄔㄨˊ'],['列印','ㄌㄧㄝˋ ㄧㄣˋ'],['帳號','ㄓㄤˋ ㄏㄠˋ'],['登入','ㄉㄥ ㄖㄨˋ'],['更新','ㄍㄥ ㄒㄧㄣ'],['防毒','ㄈㄤˊ ㄉㄨˊ'],['麥克風','ㄇㄞˋ ㄎㄜˋ ㄈㄥ'],['記憶體','ㄐㄧˋ ㄧˋ ㄊㄧˇ'],['應用程式','ㄧㄥˋ ㄩㄥˋ ㄔㄥˊ ㄕˋ']],
+ hard:[['我會用滑鼠','ㄨㄛˇ ㄏㄨㄟˋ ㄩㄥˋ ㄏㄨㄚˊ ㄕㄨˇ'],['密碼不能告訴別人','ㄇㄧˋ ㄇㄚˇ ㄅㄨˋ ㄋㄥˊ ㄍㄠˋ ㄙㄨˋ ㄅㄧㄝˊ ㄖㄣˊ'],['上網要注意安全','ㄕㄤˋ ㄨㄤˇ ㄧㄠˋ ㄓㄨˋ ㄧˋ ㄢ ㄑㄩㄢˊ'],['記得常常存檔','ㄐㄧˋ ˙ㄉㄜ ㄔㄤˊ ㄔㄤˊ ㄘㄨㄣˊ ㄉㄤˇ'],['電腦王國萬歲','ㄉㄧㄢˋ ㄋㄠˇ ㄨㄤˊ ㄍㄨㄛˊ ㄨㄢˋ ㄙㄨㄟˋ'],
+  ['用完電腦要關機','ㄩㄥˋ ㄨㄢˊ ㄉㄧㄢˋ ㄋㄠˇ ㄧㄠˋ ㄍㄨㄢ ㄐㄧ'],['網路資料要查證','ㄨㄤˇ ㄌㄨˋ ㄗ ㄌㄧㄠˋ ㄧㄠˋ ㄔㄚˊ ㄓㄥˋ'],['我是電腦小高手','ㄨㄛˇ ㄕˋ ㄉㄧㄢˋ ㄋㄠˇ ㄒㄧㄠˇ ㄍㄠ ㄕㄡˇ'],['坐姿端正眼睛好','ㄗㄨㄛˋ ㄗ ㄉㄨㄢ ㄓㄥˋ ㄧㄢˇ ㄐㄧㄥ ㄏㄠˇ'],['遇到問題問老師','ㄩˋ ㄉㄠˋ ㄨㄣˋ ㄊㄧˊ ㄨㄣˋ ㄌㄠˇ ㄕ'],['保護個人資料','ㄅㄠˇ ㄏㄨˋ ㄍㄜˋ ㄖㄣˊ ㄗ ㄌㄧㄠˋ']]
 };
 const WDMG={easy:14,mid:18,hard:30};
 const QUIZ=[
@@ -230,9 +287,29 @@ const QUIZ=[
  {q:'按住 Shift 再按英文字母，會打出？',a:['大寫字母','數字','注音','空白'],e:'Shift + 字母 = 大寫字母。'},
  {q:'網址開頭的「https」中的 s 代表什麼？',a:['連線有加密，比較安全','速度很慢','網站很小','要付錢'],e:'s 是 Secure（安全），代表資料傳送有加密。'},
  {q:'在 Windows 裡，切換「中文/英文」輸入常用哪個鍵？',a:['Shift','Delete','Esc','F5'],e:'微軟注音輸入法按一下 Shift 就能切換中英文。'},
- {q:'USB 隨身碟可以用來？',a:['帶著檔案到別台電腦','讓螢幕變大','當滑鼠用','煮飯'],e:'隨身碟小小一支，可以存檔案帶著走。'}
+ {q:'USB 隨身碟可以用來？',a:['帶著檔案到別台電腦','讓螢幕變大','當滑鼠用','煮飯'],e:'隨身碟小小一支，可以存檔案帶著走。'},
+ {q:'想重新整理網頁，可以按哪個鍵？',a:['F5','F1','Esc','Tab'],e:'F5 可以重新整理（重新載入）網頁。'},
+ {q:'「Wi-Fi」是什麼？',a:['不用接網路線的無線網路','一種病毒','一種滑鼠','一個遊戲'],e:'Wi-Fi 讓電腦不用接線也能上網。'},
+ {q:'電子郵件地址裡一定會有哪個符號？',a:['@','#','$','%'],e:'例如 name@example.com，@ 唸作 at。'},
+ {q:'在網路上看到別人的圖片，可以隨便拿來用嗎？',a:['要注意著作權，先確認能不能用','可以隨便用','改個檔名就能用','只要不被發現就好'],e:'作品都有著作權，使用前要確認授權。'},
+ {q:'下面哪一個是「瀏覽器」？',a:['Chrome','Word','小畫家','記事本'],e:'Chrome、Edge、Firefox 都是用來看網頁的瀏覽器。'},
+ {q:'「搜尋引擎」可以幫我們做什麼？',a:['在網路上找資料','打字','畫圖','關機'],e:'Google 等搜尋引擎能幫我們找資料。'},
+ {q:'電腦突然當機，第一步最好怎麼做？',a:['告訴老師，請老師幫忙','用力敲鍵盤','直接拔插頭','一直狂按滑鼠'],e:'遇到問題先請老師或大人處理。'},
+ {q:'打字的基本位置，左手食指要放在哪個鍵？',a:['F','A','J','Q'],e:'F 和 J 上面有小凸點，是兩手食指的位置。'},
+ {q:'哪一個鍵可以刪掉「游標左邊」的字？',a:['Backspace','Delete','Enter','Shift'],e:'Backspace 刪左邊，Delete 刪右邊。'},
+ {q:'打文章時按 Enter 鍵，通常會？',a:['換到下一行','刪除文字','切換中英','關閉視窗'],e:'在文書處理中，Enter 是換行。'},
+ {q:'1 GB 和 1 MB，哪一個比較大？',a:['1 GB','1 MB','一樣大','不能比較'],e:'1 GB 大約等於 1024 MB。'},
+ {q:'設定密碼時，哪個做法比較好？',a:['不同網站用不同密碼','所有網站都用同一個','把密碼貼在螢幕上','告訴好朋友'],e:'密碼要分開設定，也要自己保管好。'},
+ {q:'用完學校的電腦，離開前要做什麼？',a:['登出帳號','什麼都不用做','亂刪桌面檔案','把滑鼠帶回家'],e:'記得登出，別人才不會用你的帳號。'},
+ {q:'「雲端硬碟」是什麼？',a:['把檔案存在網路上的空間','天上的硬碟','一種印表機','一種耳機'],e:'雲端硬碟讓我們在不同電腦都能拿到檔案。'},
+ {q:'在網路上留言，應該怎麼做？',a:['有禮貌，不說傷人的話','可以亂罵人','冒充別人','散播謠言'],e:'網路禮儀很重要，要尊重別人。'},
+ {q:'看到同學在網路上被欺負，應該？',a:['告訴老師或家長','一起嘲笑','轉傳出去','假裝沒看到'],e:'遇到網路霸凌，要勇敢告訴大人。'},
+ {q:'「報告.pptx」是哪一種檔案？',a:['簡報','音樂','圖片','影片'],e:'.pptx 是 PowerPoint 簡報檔。'},
+ {q:'螢幕上會跟著滑鼠移動的小箭頭叫什麼？',a:['游標（指標）','圖示','視窗','捷徑'],e:'移動滑鼠時，螢幕上的游標也會跟著動。'},
+ {q:'USB 接頭通常用來連接什麼？',a:['隨身碟、滑鼠等裝置','電視天線','水龍頭','電燈開關'],e:'很多裝置都用 USB 接到電腦。'},
+ {q:'網路上有人說「不要告訴爸媽」，你應該？',a:['馬上告訴爸媽或老師','聽他的話保密','跟他約見面','把密碼給他'],e:'叫你保密的陌生人很危險，一定要告訴大人。'}
 ];
-const SHORTCUTS=[{k:'C',n:'複製'},{k:'V',n:'貼上'},{k:'X',n:'剪下'},{k:'Z',n:'復原（回到上一步）'},{k:'A',n:'全選'},{k:'S',n:'儲存'}];
+const SHORTCUTS=[{k:'C',n:'複製'},{k:'V',n:'貼上'},{k:'X',n:'剪下'},{k:'Z',n:'復原（回到上一步）'},{k:'A',n:'全選'},{k:'S',n:'儲存'},{k:'Y',n:'重做（取消復原）'},{k:'F',n:'尋找'},{k:'P',n:'列印'}];
 const ZY={Digit1:'ㄅ',KeyQ:'ㄆ',KeyA:'ㄇ',KeyZ:'ㄈ',Digit2:'ㄉ',KeyW:'ㄊ',KeyS:'ㄋ',KeyX:'ㄌ',KeyE:'ㄍ',KeyD:'ㄎ',KeyC:'ㄏ',KeyR:'ㄐ',KeyF:'ㄑ',KeyV:'ㄒ',Digit5:'ㄓ',KeyT:'ㄔ',KeyG:'ㄕ',KeyB:'ㄖ',KeyY:'ㄗ',KeyH:'ㄘ',KeyN:'ㄙ',KeyU:'ㄧ',KeyJ:'ㄨ',KeyM:'ㄩ',Digit8:'ㄚ',KeyI:'ㄛ',KeyK:'ㄜ',Comma:'ㄝ',Digit9:'ㄞ',KeyO:'ㄟ',KeyL:'ㄠ',Period:'ㄡ',Digit0:'ㄢ',KeyP:'ㄣ',Semicolon:'ㄤ',Slash:'ㄥ',Minus:'ㄦ',Digit6:'ˊ',Digit3:'ˇ',Digit4:'ˋ',Digit7:'˙'};
 const KROWS=[['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus'],['KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP'],['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon'],['KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash']];
 const KLAB=c=>({Minus:'-',Semicolon:';',Comma:',',Period:'.',Slash:'/'}[c]||c.replace('Key','').replace('Digit',''));
@@ -244,7 +321,7 @@ const KLAB=c=>({Minus:'-',Semicolon:';',Comma:',',Period:'.',Slash:'/'}[c]||c.re
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyhstVReYzNVx1Rrk-HI6MT3b47DBYc7jfSz98STs18RuCMWX7JtCQbjYzXQfTWJ4S9/exec';
 
 /* ---------- 狀態與存檔 ---------- */
-const FRESH=()=>({name:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},cleared:false,sound:true});
+const FRESH=()=>({name:'',hero:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},badges:{safe:false},stars:{},cleared:false,sound:true});
 let S=FRESH();
 let ACC=null; // 登入的學生帳號 {id,pw,name,cls,seat}；訪客／單機模式為 null
 let TEACHER=false,GOD=false; // 教師模式（全部解鎖、不記錄成績）、無敵
@@ -326,7 +403,7 @@ const put=(n,x,y,s,cls='bob',d=0)=>`<g class="${cls}" style="animation-delay:${d
 
 /* ---------- 場景插畫 ---------- */
 function scene(kind){
- const sky={kingdom:['#1d3557','#2a9d8f'],forest:['#a8dadc','#e9f5db'],village:['#ff9f80','#ffe5b4'],castle:['#240046','#9d79bc'],volcano:['#1a0306','#9d0208']}[kind];
+ const sky={harbor:['#90e0ef','#e0fbfc'],kingdom:['#1d3557','#2a9d8f'],forest:['#a8dadc','#e9f5db'],village:['#ff9f80','#ffe5b4'],castle:['#240046','#9d79bc'],volcano:['#1a0306','#9d0208']}[kind];
  const stars=n=>[...Array(n)].map((_,i)=>`<circle cx="${(i*173)%800}" cy="${(i*67)%200+10}" r="${i%3?1.5:2.5}" fill="#fff" opacity=".8"/>`).join('');
  const owl=put('owl',50,140,210,'bob');let art='';
  if(kind==='kingdom')art=`${stars(24)}<g opacity=".9"><ellipse cx="620" cy="70" rx="170" ry="45" fill="#3d0c11" opacity=".55"/><ellipse cx="520" cy="90" rx="110" ry="30" fill="#3d0c11" opacity=".45"/></g>${put('boss',600,20,120,'float')}${put('boss',420,70,46,'float',.6)}${put('boss',730,140,40,'float',1.1)}
@@ -334,18 +411,20 @@ function scene(kind){
  if(kind==='forest')art=`<circle cx="700" cy="70" r="40" fill="#ffd166"/>${cloud(200,70,1)}${cloud(520,50,.8)}<path d="M0 260Q200 190 400 250T800 230V540H0Z" fill="#95d5b2"/>${[60,150,250,560,650,760].map((x,i)=>pine(x,270+(i%2)*10,1.1,i%2?'#2d6a4f':'#40916c')).join('')}<path d="M0 320Q200 300 400 330T800 315V540H0Z" fill="#52b788"/>${put('beetle',470,100,230)}${put('cat',340,270,72,'bob',.3)}${put('lady',710,262,72,'bob',.7)}${owl}`;
  if(kind==='village')art=`<circle cx="640" cy="250" r="80" fill="#ffd166" opacity=".9"/><path d="M0 280Q200 230 400 270T800 250V540H0Z" fill="#e9c46a"/>${house(330,330,1.3,'#e76f51')}${house(730,325,1.1,'#118ab2')}${house(600,335,.8,'#9b5de5')}<path d="M0 330Q200 318 400 336T800 326V540H0Z" fill="#b5c99a"/>${put('ghost',460,60,240,'float')}<g class="float" style="animation-delay:.4s" font-size="40" font-weight="900"><text x="330" y="120" fill="#9b5de5">ㄅ</text><text x="720" y="110" fill="#ef476f">ㄆ?</text><text x="400" y="230" fill="#118ab2">ㄇ</text></g>${owl}`;
  if(kind==='castle')art=`${stars(40)}<circle cx="120" cy="80" r="34" fill="#fff3b0"/><circle cx="134" cy="72" r="30" fill="#240046" opacity=".35"/>${castle(590,340,1.7,'#adb5bd','#9b5de5')}<path d="M0 330Q200 318 400 340T800 330V540H0Z" fill="#4a4e69"/>${put('robot',440,110,230)}${owl}`;
+ if(kind==='harbor')art=`${cloud(150,70,1)}${cloud(520,45,.8)}<circle cx="720" cy="70" r="34" fill="#ffd166"/><rect y="240" width="800" height="300" fill="#48cae4"/><g class="float"><path d="M0 252Q50 242 100 252T200 252T300 252T400 252T500 252T600 252T700 252T800 252" fill="none" stroke="#caf0f8" stroke-width="5" stroke-linecap="round"/></g><path d="M0 330Q200 312 400 330T800 322V540H0Z" fill="#e9c46a"/>${put('lighthouse',600,70,240,'')}${put('pirate',400,90,230)}${owl}`;
  if(kind==='volcano')art=`${[...Array(16)].map((_,i)=>`<circle class="float" style="animation-delay:${(i%5)*.3}s" cx="${(i*97)%800}" cy="${(i*41)%300+20}" r="${2+i%3}" fill="#f77f00" opacity=".8"/>`).join('')}<circle cx="600" cy="40" r="40" fill="#495057" opacity=".7"/><circle cx="650" cy="20" r="34" fill="#6c757d" opacity=".6"/><path d="M340 340L560 90H660L800 280V340Z" fill="#4e342e" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M560 90H660L640 120L615 104L598 136L580 112Z" fill="#ef476f" stroke="${K}" stroke-width="3" stroke-linejoin="round"/><path d="M598 136Q590 210 560 280M640 120Q660 200 700 250" fill="none" stroke="#f77f00" stroke-width="10" stroke-linecap="round"/><path d="M0 320Q200 300 400 330T800 320V540H0Z" fill="#3d0c11"/>${put('boss',430,40,280,'float')}${owl}`;
  return `<div class="scene"><svg viewBox="0 0 800 540" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs><rect width="800" height="540" fill="url(#skyg)"/>${art}</svg></div>`}
 
 /* ---------- 世界地圖底圖 ---------- */
 function mapBg(){
- const trees=[[60,250,.8],[250,470,.9],[300,110,.7],[560,80,.75],[610,470,.9],[790,480,.8],[960,420,.9],[540,350,.7],[330,330,.75],[90,480,.85],[920,290,.7],[240,30,.6],[690,190,.7],[20,140,.7],[800,410,.6]].map(([x,y,s],i)=>pine(x,y,s,i%2?'#2d6a4f':'#40916c')).join('');
+ const trees=[[60,250,.8],[250,470,.9],[300,110,.7],[560,80,.75],[610,470,.9],[540,350,.7],[330,330,.75],[90,480,.85],[940,280,.7],[240,30,.6],[690,190,.7],[20,140,.7],[740,470,.6]].map(([x,y,s],i)=>pine(x,y,s,i%2?'#2d6a4f':'#40916c')).join('');
  const fl=[...Array(36)].map((_,i)=>`<circle cx="${(i*137)%1000}" cy="${(i*89+40)%520}" r="4" fill="${['#ffafcc','#ffc93c','#fff','#cdb4db'][i%4]}" stroke="${K}" stroke-width="1.5"/>`).join('');
  const rv='M-20 300C150 250 300 330 480 270S760 190 1020 230';
  return `<svg class="mapbg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid slice"><rect width="1000" height="520" fill="#95d5b2"/>
  <ellipse cx="200" cy="380" rx="230" ry="130" fill="#74c69d"/><ellipse cx="450" cy="465" rx="210" ry="70" fill="#d8f3dc"/><ellipse cx="130" cy="110" rx="150" ry="85" fill="#e9edc9"/><ellipse cx="690" cy="350" rx="170" ry="90" fill="#cdb4db" opacity=".6"/>
  <ellipse cx="880" cy="100" rx="200" ry="135" fill="#7f4f24" opacity=".55"/><ellipse cx="880" cy="100" rx="125" ry="82" fill="#6d2e2e" opacity=".6"/><circle cx="790" cy="190" r="10" fill="#6c757d" stroke="${K}" stroke-width="2"/><circle cx="960" cy="200" r="13" fill="#6c757d" stroke="${K}" stroke-width="2"/>
  <path d="${rv}" fill="none" stroke="#0096c7" stroke-width="56" stroke-linecap="round"/><path d="${rv}" fill="none" stroke="#48cae4" stroke-width="44" stroke-linecap="round"/><path d="${rv}" fill="none" stroke="#caf0f8" stroke-width="5" stroke-dasharray="18 34" stroke-linecap="round" opacity=".9"/>
+ <ellipse cx="1010" cy="480" rx="210" ry="125" fill="#e9c46a"/><ellipse cx="1030" cy="500" rx="190" ry="110" fill="#0096c7"/><ellipse cx="1030" cy="500" rx="178" ry="100" fill="#48cae4"/><path d="M880 470q12 -8 24 0M930 440q12 -8 24 0M900 505q12 -8 24 0" fill="none" stroke="#caf0f8" stroke-width="4" stroke-linecap="round"/>
  ${fl}${trees}<g class="drift">${cloud(100,60,1)}${cloud(620,30,.8)}</g><g class="drift" style="animation-duration:90s;animation-delay:-40s">${cloud(300,200,.7)}</g></svg>`}
 const arenaBg=`<svg class="arenabg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">${[[40,70,1.1],[130,45,.9],[700,70,1.1],[780,40,.9],[60,400,1],[740,410,1]].map(([x,y,s],i)=>pine(x,y,s,i%2?'#2d6a4f':'#40916c')).join('')}${[...Array(20)].map((_,i)=>`<circle cx="${(i*157)%800}" cy="${(i*71+30)%400}" r="4" fill="${['#ffafcc','#ffc93c','#fff'][i%3]}" stroke="${K}" stroke-width="1.5"/>`).join('')}</svg>`;
 
@@ -383,6 +462,19 @@ Object.assign(CH,{
  phones:`<path d="M18 62V50A32 32 0 0 1 82 50V62" fill="none" stroke="${K}" stroke-width="7" stroke-linecap="round"/><rect x="9" y="54" width="22" height="34" rx="9" fill="#ef476f" ${SK}/><rect x="69" y="54" width="22" height="34" rx="9" fill="#ef476f" ${SK}/>`,
  mic:`<rect x="36" y="6" width="28" height="50" rx="14" fill="#adb5bd" ${SK}/><path d="M40 20H60M40 30H60M40 40H60" stroke="${K}" stroke-width="2"/><path d="M26 44Q26 70 50 70Q74 70 74 44" fill="none" ${SK}/><path d="M50 70V86M34 90H66" ${SK}/>`
 });
+/* --- 勇者造型（共用身體模板） --- */
+const heroSvg=o=>`${o.back||''}<path d="M32 66L20 96H80L68 66Z" fill="${o.cape}" ${SK}/><rect x="38" y="82" width="10" height="14" rx="4" fill="#3d405b" ${SK2}/><rect x="52" y="82" width="10" height="14" rx="4" fill="#3d405b" ${SK2}/><path d="M31 88Q31 62 50 62Q69 62 69 88Z" fill="${o.shirt}" ${SK}/>${o.emblem||''}<path d="M33 72L24 82M67 72L76 82" ${SK}/><circle cx="23" cy="83" r="5" fill="${o.skin}" ${SK2}/><circle cx="77" cy="83" r="5" fill="${o.skin}" ${SK2}/>${o.head||`<circle cx="50" cy="38" r="24" fill="${o.skin}" ${SK}/>`}${o.hair||''}${o.face||`<g class="eye"><ellipse cx="42" cy="41" rx="3.5" ry="4.5" fill="${K}"/><ellipse cx="58" cy="41" rx="3.5" ry="4.5" fill="${K}"/><circle cx="43" cy="39.5" r="1.3" fill="#fff"/><circle cx="59" cy="39.5" r="1.3" fill="#fff"/></g><ellipse cx="35" cy="49" rx="4" ry="2.5" fill="#ffafcc"/><ellipse cx="65" cy="49" rx="4" ry="2.5" fill="#ffafcc"/><path d="M45 50Q50 55 55 50" fill="none" ${SK2}/>`}${o.acc||''}`;
+const HEROES=[{id:'boy',n:'勇者'},{id:'girl',n:'魔法師'},{id:'sci',n:'發明家'},{id:'robo',n:'機器人'}];
+Object.assign(CH,{
+ hero_boy:heroSvg({skin:'#ffd6a5',shirt:'#118ab2',cape:'#ef476f',emblem:`<polygon points="${starPts(50,75,7)}" fill="#ffc93c" ${SK2}/>`,hair:`<path d="M26 38Q24 12 50 12Q76 12 74 38L68 27L62 33L56 22L50 31L44 22L38 33L32 27Z" fill="#5e3023" ${SK}/>`}),
+ hero_girl:heroSvg({skin:'#ffd6a5',shirt:'#9b5de5',cape:'#ffc93c',back:`<circle cx="24" cy="44" r="10" fill="#9c6644" ${SK}/><circle cx="76" cy="44" r="10" fill="#9c6644" ${SK}/>`,emblem:`<path d="M50 81l-6-6a4 4 0 0 1 6-5a4 4 0 0 1 6 5z" fill="#ffafcc" ${SK2}/>`,hair:`<path d="M26 40Q24 12 50 12Q76 12 74 40Q66 24 50 26Q34 24 26 40Z" fill="#9c6644" ${SK}/>`,acc:`<polygon points="${starPts(68,19,7)}" fill="#ffc93c" ${SK2}/>`}),
+ hero_sci:heroSvg({skin:'#c68b59',shirt:'#06d6a0',cape:'#118ab2',emblem:`<circle cx="50" cy="75" r="3" fill="${K}"/><ellipse cx="50" cy="75" rx="9" ry="4" fill="none" stroke="${K}" stroke-width="1.8"/><ellipse cx="50" cy="75" rx="9" ry="4" fill="none" stroke="${K}" stroke-width="1.8" transform="rotate(60 50 75)"/>`,hair:`<path d="M27 36Q28 12 50 12Q72 12 73 36Q62 22 50 24Q38 22 27 36Z" fill="${K}" ${SK}/>`,acc:`<rect x="25" y="25" width="50" height="6" fill="#6c757d" ${SK2}/><circle cx="40" cy="28" r="7" fill="#caf0f8" ${SK2}/><circle cx="60" cy="28" r="7" fill="#caf0f8" ${SK2}/>`}),
+ hero_robo:heroSvg({skin:'#adb5bd',shirt:'#6c757d',cape:'#9b5de5',emblem:`<rect x="44" y="70" width="12" height="10" rx="2" fill="#4cc9f0" ${SK2}/>`,head:`<path d="M50 14V6" ${SK}/><circle cx="50" cy="5" r="4" fill="#ffc93c" ${SK2}/><rect x="26" y="14" width="48" height="46" rx="12" fill="#adb5bd" ${SK}/>`,face:`<rect x="31" y="27" width="38" height="17" rx="8" fill="${K}"/><g class="eye"><circle cx="42" cy="35.5" r="3.8" fill="#4cc9f0"/><circle cx="58" cy="35.5" r="3.8" fill="#4cc9f0"/></g><path d="M43 51h14" ${SK2}/><ellipse cx="33" cy="50" rx="3.5" ry="2.2" fill="#ffafcc"/><ellipse cx="67" cy="50" rx="3.5" ry="2.2" fill="#ffafcc"/>`}),
+ pirate:`<path d="M84 66L94 10" stroke="#9c6644" stroke-width="4" stroke-linecap="round"/><path d="M94 10Q99 28 91 44" fill="none" stroke="${K}" stroke-width="1.5"/><rect x="82" y="44" width="16" height="11" rx="2" fill="#fff" ${SK2}/><path d="M82 45L90 51L98 45" fill="none" ${SK2}/><path d="M24 96Q24 64 50 64Q76 64 76 96Z" fill="#c1121f" ${SK}/><path d="M50 66V96" ${SK2}/><circle cx="45" cy="77" r="2.5" fill="#ffc93c"/><circle cx="45" cy="87" r="2.5" fill="#ffc93c"/><path d="M74 76L86 66" ${SK}/><circle cx="50" cy="44" r="21" fill="#ffd6a5" ${SK}/><path d="M30 52Q50 76 70 52Q66 63 50 65Q34 63 30 52Z" fill="#6f1d1b" ${SK2}/><g class="eye"><circle cx="42" cy="42" r="3.5" fill="${K}"/><circle cx="43" cy="41" r="1.2" fill="#fff"/></g><circle cx="58" cy="42" r="6" fill="${K}"/><path d="M31 35L70 49" stroke="${K}" stroke-width="2.5"/><path d="M36 37L46 40" ${SK2}/><path d="M43 55Q50 51 57 55" fill="none" ${SK2}/><path d="M20 33Q50 0 80 33Q50 25 20 33Z" fill="${K}" ${SK}/><path d="M25 30Q50 21 75 30" stroke="#ffc93c" stroke-width="3" fill="none"/><text x="50" y="25" font-size="13" font-weight="900" text-anchor="middle" fill="#fff">@</text>`,
+ lighthouse:`<path d="M8 93Q29 86 50 93T92 93" fill="none" stroke="#48cae4" stroke-width="5" stroke-linecap="round"/><path d="M38 86L42 34H58L62 86Z" fill="#fff"/><path d="M39.6 70H60.4L61.2 80H38.8ZM40.9 48H59.1L59.8 58H40.2Z" fill="#ef476f"/><path d="M38 86L42 34H58L62 86Z" fill="none" ${SK}/><path d="M60 26L86 17M60 31L86 39M40 26L14 17M40 31L14 39" stroke="#ffd166" stroke-width="3.5" stroke-linecap="round"/><rect x="40" y="22" width="20" height="12" fill="#ffd166" ${SK2}/><path d="M37 22L50 9L63 22Z" fill="#ef476f" ${SK2}/><rect x="46" y="74" width="8" height="12" rx="3" fill="${K}"/>`,
+ star:`<polygon points="${starPts(50,50,44)}" fill="#ffc93c" ${SK}/>`,
+ orb:`<circle cx="50" cy="50" r="30" fill="#ef476f" ${SK}/><circle cx="40" cy="40" r="9" fill="#fff" opacity=".6"/>`
+});
 const BUGART={click:ch('cat')+'<span class="tag">點一下</span>',dbl:ch('lady')+'<span class="tag">點兩下</span>',right:ch('alien')+'<span class="tag">右鍵</span>',gem:ch('gem')+'<span class="tag">拖曳</span>'};
 
 /* ---------- HUD / 角色成長 ---------- */
@@ -390,7 +482,7 @@ const need=()=>S.lv*50;
 const atkBonus=()=>(S.lv-1)*2;
 function hud(){const h=$('#hud');if(!S.name){h.innerHTML='';return}
  const c=S.crystals;
- h.innerHTML=`<div class="stat">${TEACHER?'🎓':'🧒'} ${esc(S.name)} <span class="px">Lv${S.lv}</span></div>${ACC?'<div class="stat" id="cloud"></div>':''}
+ h.innerHTML=`<div class="stat">${TEACHER?'🎓':`<span class="hhead">${ch('hero_'+(S.hero||'boy'))}</span>`} ${esc(S.name)} <span class="px">Lv${S.lv}</span></div>${ACC?'<div class="stat" id="cloud"></div>':''}
  <div class="stat">❤️ <div class="meter"><i style="width:${S.hp/S.maxHp*100}%"></i></div><span class="px">${S.hp}/${S.maxHp}</span></div>
  <div class="stat">⭐ <div class="meter exp"><i style="width:${S.exp/need()*100}%"></i></div></div>
  <div class="stat">${COIN} <span class="px">${S.coins}</span></div>
@@ -398,6 +490,11 @@ function hud(){const h=$('#hud');if(!S.name){h.innerHTML='';return}
  <div class="stat" title="收集三顆水晶打倒魔王！">水晶 ${['mouse','zhuyin','know'].map(k=>`<svg class="hc" viewBox="0 0 100 100">${gemSvg(c[k]?CRY[k]:'#dee2e6')}</svg>`).join('')}</div>
  <button class="btn sm alt" id="sndbtn" title="音效開關">${S.sound?'🔊':'🔇'}</button>`;
  $('#potbtn').onclick=usePotion;$('#sndbtn').onclick=()=>{S.sound=!S.sound;save();hud()};setCloud(syncState)}
+function heroPick(cb){let sel=S.hero||'boy';const ov=document.createElement('div');ov.className='ov';
+ ov.innerHTML=`<div class="modal"><h2>選擇你的勇者造型</h2><p>戰鬥時會由這位勇者幫你出招！</p><div class="heroes">${HEROES.map(h=>`<button class="hpick ${h.id===sel?'sel':''}" data-h="${h.id}">${ch('hero_'+h.id)}<b>${h.n}</b></button>`).join('')}</div><div class="row"><button class="btn g" id="hok">✔ 就是它了！</button></div></div>`;
+ document.body.appendChild(ov);
+ ov.querySelectorAll('.hpick').forEach(b=>b.onclick=()=>{sel=b.dataset.h;sfx.click();ov.querySelectorAll('.hpick').forEach(x=>x.classList.toggle('sel',x===b))});
+ ov.querySelector('#hok').onclick=()=>{S.hero=sel;save();sfx.good();ov.remove();hud();cb&&cb()}}
 function usePotion(){if(S.potions<=0){toast('沒有藥水了，去商店買吧！');return}if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return}S.potions--;S.hp=Math.min(S.maxHp,S.hp+40);sfx.good();toast('🧪 回復 40 HP！');save();hud()}
 function gainExp(n){S.exp+=n;while(S.exp>=need()){S.exp-=need();S.lv++;S.maxHp+=10;S.hp=S.maxHp;sfx.up();toast(`🎉 升級！現在是 Lv${S.lv}，HP 上限 +10`,2400)}save();hud()}
 function damage(n){if(S.hp<=0||(TEACHER&&GOD))return;S.hp=Math.max(0,S.hp-n);main.classList.remove('hurt');void main.offsetWidth;main.classList.add('hurt');hud();if(S.hp<=0)defeat()}
@@ -488,7 +585,7 @@ function teacherPanel(){
 function bindTeacherPanel(){main.querySelectorAll('.tpanel [data-t]').forEach(b=>b.onclick=()=>{sfx.click();const t=b.dataset.t,c=S.crystals;
  if(t==='hp'){S.hp=S.maxHp;toast('HP 已補滿')}
  if(t==='god'){GOD=!GOD;toast(GOD?'無敵模式開啟：不會扣 HP':'無敵模式關閉')}
- if(t==='cry'){const v=!(c.mouse&&c.zhuyin&&c.know);c.mouse=c.zhuyin=c.know=v;toast(v?'三顆水晶已集滿':'水晶已清除')}
+ if(t==='cry'){const v=!(c.mouse&&c.zhuyin&&c.know);c.mouse=c.zhuyin=c.know=v;S.badges.safe=v;toast(v?'三顆水晶已集滿、學會防火牆':'水晶已清除')}
  if(t==='lv'){gainExp(need()-S.exp)}
  if(t==='end'){S.cleared=true;go(ending);return}
  if(t==='reset'){S=Object.assign(FRESH(),{name:'老師',coins:999,potions:9});toast('進度已重設')}
@@ -512,6 +609,7 @@ function titleLocal(){
  if(old)$('#cont').onclick=()=>{sfx.click();S=Object.assign(FRESH(),old);go(mapScreen)}}
 
 function introStory(){
+ if(!S.hero)return heroPick(()=>go(introStory));
  main.innerHTML=scene('kingdom');
  dialog([[OWL,OWLN,'{name}，歡迎來到「電腦王國」！'],[OWL,OWLN,`可怕的 <b>Bug魔王</b> ${ic('boss')} 把病毒散布到王國各地，電腦都當機了！`],[OWL,OWLN,`要打倒牠，你需要收集三顆神奇水晶：<br>${gi(CRY.mouse)} 滑鼠水晶、${gi(CRY.zhuyin)} 注音水晶、${gi(CRY.know)} 知識水晶。`],[OWL,OWLN,`先到地圖上的 <b>${ic('forest')} 滑鼠森林</b> 練習滑鼠吧！把滑鼠移到地點上，會出現說明喔。`]],()=>go(mapScreen))}
 
@@ -524,22 +622,27 @@ const NODES=[
  {id:'village',name:'注音村',art:'village',x:43,y:36,d:'用注音輸入法打字攻擊！',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 🟢 滑鼠水晶才能進入注音村！',done:()=>S.crystals.zhuyin,go:()=>go(villageIntro)},
  {id:'castle',name:'知識城堡',art:'castle',x:68,y:66,d:'電腦知識問答＋快捷鍵',lock:()=>!S.crystals.zhuyin,lockMsg:'先拿到 🔵 注音水晶才能進入知識城堡！',done:()=>S.crystals.know,go:()=>go(castleIntro)},
  {id:'boss',name:'Bug魔王城',art:'volcano',x:87,y:22,d:'最終決戰！',lock:()=>!(S.crystals.mouse&&S.crystals.zhuyin&&S.crystals.know),lockMsg:'要集滿三顆水晶，魔王城的大門才會打開！',done:()=>S.cleared,go:()=>go(bossIntro)},
+ {id:'harbor',name:'網路安全港',art:'lighthouse',x:88,y:70,d:'判斷安全或危險，學會「防火牆」技能',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 滑鼠水晶 才能進入網路安全港！',done:()=>S.badges.safe,go:()=>go(harborIntro)},
  {id:'arcade',name:'小遊戲廣場',art:'wheel',x:45,y:85,d:'玩小遊戲賺金幣和經驗',go:()=>go(arcadeScreen)}
 ];
 function mapScreen(){
  const P=id=>NODES.find(n=>n.id===id);const pts=['forest','village','castle','boss'].map(id=>`${P(id).x},${P(id).y}`).join(' ');
- main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC||TEACHER?'🚪 登出':'🏠 標題'}</button></div>
+ main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="look">👕 換造型</button><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC||TEACHER?'🚪 登出':'🏠 標題'}</button></div>
  ${(()=>{const road=(p,w)=>`<polyline points="${p}" fill="none" stroke="#bc8a5f" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#f1dca7" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 10" vector-effect="non-scaling-stroke"/>`;const xy=id=>`${P(id).x},${P(id).y}`;
-  return `<div class="map">${mapBg()}<svg viewBox="0 0 100 100" preserveAspectRatio="none">${road(`${xy('forest')} ${xy('arcade')}`,9)}${road(`${xy('forest')} ${xy('shop')}`,9)}${road(pts,13)}</svg>`})()}
- ${NODES.map(n=>{const lk=!TEACHER&&n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${ch(n.art)}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}</span></button>`}).join('')}
+  return `<div class="map">${mapBg()}<svg viewBox="0 0 100 100" preserveAspectRatio="none">${road(`${xy('forest')} ${xy('arcade')}`,9)}${road(`${xy('forest')} ${xy('shop')}`,9)}${road(`${xy('castle')} ${xy('harbor')}`,9)}${road(pts,13)}</svg>`})()}
+ ${NODES.map(n=>{const lk=!TEACHER&&n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${ch(n.art)}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}${S.stars[STARKEY[n.id]]?`<span class="nst">${starStr(S.stars[STARKEY[n.id]])}</span>`:''}</span></button>`}).join('')}
  </div>${TEACHER?teacherPanel():`<div class="hint">${OWL} ${nextHint()}</div>`}`;
  if(TEACHER)bindTeacherPanel();
+ $('#look').onclick=()=>{sfx.click();heroPick(()=>go(mapScreen))};
+ if(!S.hero)heroPick(()=>go(mapScreen));
  main.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const n=P(b.dataset.id);sfx.click();if(!TEACHER&&n.lock&&n.lock()){toast(n.lockMsg);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);return}n.go()});
  $('#help').onclick=helpModal;$('#ttl').onclick=()=>{if(ACC||TEACHER)logout();else{S=FRESH();go(titleScreen)}};save()}
+const STARKEY={forest:'mouse',village:'zhuyin',castle:'know',harbor:'harbor',boss:'boss'};
+const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 function nextHint(){const c=S.crystals;
  if(S.cleared)return '你已經是電腦王國的英雄了！可以繼續玩小遊戲挑戰高分喔。';
  if(!c.mouse)return '下一步：到 🌲 <b>滑鼠森林</b> 收集滑鼠水晶！';
- if(!c.zhuyin)return '下一步：到 🏘️ <b>注音村</b> 用打字打敗錯字幽靈！記得切換到注音輸入法。';
+ if(!c.zhuyin)return '下一步：到 🏘️ <b>注音村</b> 用打字打敗錯字幽靈！記得切換到注音輸入法。'+(S.badges.safe?'':'<br>🌟 支線：到 ⚓ <b>網路安全港</b> 可以學會「🛡️ 防火牆」技能！');
  if(!c.know)return '下一步：到 🏰 <b>知識城堡</b> 回答電腦知識問題！';
  return '三顆水晶到齊了！準備好藥水，前往 🌋 <b>Bug魔王城</b> 最終決戰！'}
 function helpModal(){showModal(`<h2>📖 操作說明</h2><p style="text-align:left">🖱️ <b>左鍵點一下</b>：選擇、按按鈕<br>🖱️ <b>左鍵點兩下（雙擊）</b>：打開東西<br>🖱️ <b>右鍵</b>：叫出選單（遊戲中用來打 👾）<br>✊ <b>拖曳</b>：按住左鍵不放、移動、再放開<br>⌨️ <b>切換中英文</b>：Shift 或 Ctrl+空白鍵<br>⌨️ <b>選字</b>：打完注音後按空白鍵或數字選字，Enter 確定<br>🧪 HP 不夠時，點上方的藥水補血</p>`,[{t:'我知道了！'}])}
@@ -551,16 +654,17 @@ function forestIntro(){
  main.innerHTML=scene('forest');
  dialog([[OWL,OWLN,`這裡是滑鼠森林，<b>蟲蟲大王</b> ${ic('beetle')} 帶著一群小蟲在搗蛋！`],[OWL,OWLN,`${ic('cat')} 毛毛蟲用<b>左鍵點一下</b><br>${ic('lady')} 瓢蟲用<b>左鍵快速點兩下</b><br>${ic('alien')} 外星蟲要按<b>右鍵</b>！`],[OWL,OWLN,`看到 ${ic('gem')} 寶石時，<b>按住左鍵拖曳</b>到右下角的 ${ic('bag')} 包包，傷害最高！`],[OWL,OWLN,'60 秒內把蟲蟲大王的 HP 打到 0 就贏了，點錯會扣 HP 喔。出發！']],forestBattle)}
 function forestBattle(){
- let bhp=100,time=60,alive=0,over=false;where='滑鼠森林';
+ let bhp=100,time=60,alive=0,over=false,wrongs=0;where='滑鼠森林';
+ const fStars=()=>({stars:1+(time>=25?1:0)+(wrongs<=1?1:0),miss:wrongs});
  main.innerHTML=`<div class="foe" id="foe" style="background:linear-gradient(90deg,#d8f3dc,#95d5b2)"><div class="m">${ch('beetle')}</div><div class="info"><b>蟲蟲大王</b> <span class="px" id="bhpt">100/100</span><div class="meter foehp"><i id="bhp" style="width:100%"></i></div></div><div class="center"><div class="px">TIME</div><div class="px" id="tm" style="font-size:22px;margin-top:6px">60</div></div>${TEACHER?teacherWinBtn:''}</div>
  <div class="arena" id="arena">${arenaBg}<div class="bag" id="bag">${ch('bag')}</div></div>
  <div class="legend"><span>${ic('cat')} 點一下</span><span>${ic('lady')} 點兩下</span><span>${ic('alien')} 右鍵</span><span>${ic('gem')} 拖到 ${ic('bag')}</span></div>`;
  const ar=$('#arena');ar.oncontextmenu=e=>e.preventDefault();
- if(TEACHER)$('#twin').onclick=()=>{if(over)return;over=true;clearTimers();bhp=0;$('#bhp').style.width='0%';$('#bhpt').textContent='0/100';fx($('#foe'),'hit',360);after(()=>winArea('mouse'),400)};
+ if(TEACHER)$('#twin').onclick=()=>{if(over)return;over=true;clearTimers();bhp=0;$('#bhp').style.width='0%';$('#bhpt').textContent='0/100';fx($('#foe'),'hit',360);after(()=>winArea('mouse',{stars:3,miss:0}),400)};
  const hitBoss=(el,d)=>{if(over)return;const r=el.getBoundingClientRect(),a=ar.getBoundingClientRect();pop(ar,r.left-a.left+20,r.top-a.top,'-'+d);burst(ar,r.left-a.left+30,r.top-a.top+30,8);el.remove();alive--;sfx.hit();bhp=Math.max(0,bhp-d);
   $('#bhp').style.width=bhp+'%';$('#bhpt').textContent=bhp+'/100';const f=$('#foe');fx(f,'hit',360);burst(f,76,66,6);
-  if(bhp<=0){over=true;clearTimers();after(()=>winArea('mouse'),400)}};
- const wrong=(el,msg)=>{if(over)return;sfx.bad();toast(msg);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);damage(3)};
+  if(bhp<=0){over=true;clearTimers();const r=fStars();after(()=>winArea('mouse',r),400)}};
+ const wrong=(el,msg)=>{if(over)return;wrongs++;sfx.bad();toast(msg);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);damage(3)};
  const spawn=()=>{if(over||alive>=6)return;const w=ar.clientWidth,h=ar.clientHeight;let x,y;do{x=rnd(w-60);y=rnd(h-60)}while(x>w-140&&y>h-140);
   const r=Math.random(),t=r<.4?'click':r<.65?'dbl':r<.9?'right':'gem';
   const el=document.createElement('div');el.className='bug'+(t==='gem'?' gem':'');el.innerHTML=BUGART[t];el.style.left=x+'px';el.style.top=y+'px';ar.appendChild(el);alive++;
@@ -575,47 +679,95 @@ function forestBattle(){
 /* =========================================================
    通用戰鬥框架
    ========================================================= */
+/* =========================================================
+   戰鬥系統 v2：勇者 vs 敵人、連擊、會心一擊、能量技能、魔王狂暴、星級評價
+   ========================================================= */
+const SKILLS=[
+ {id:'hint',n:'提示',ic:'💡',cost:30,d:'刪掉錯誤選項、顯示按鍵位置等提示',ok:()=>true,lockMsg:''},
+ {id:'shield',n:'防火牆',ic:'🛡️',cost:40,d:'擋下下一次受到的傷害',ok:()=>S.badges.safe||TEACHER,lockMsg:'完成「⚓ 網路安全港」才能學會防火牆！'},
+ {id:'power',n:'超級攻擊',ic:'⚡',cost:60,d:'下一次答對造成 2 倍傷害',ok:()=>S.lv>=3||TEACHER,lockMsg:'升到 Lv3 才能學會超級攻擊！'}
+];
 function battle(cfg){
- let mhp=cfg.hp,atk=0;const my=gen;where=cfg.area||cfg.name;
- main.innerHTML=`<div class="foe" id="foe" style="background:${cfg.bg||'#fff'}"><div class="m">${ch(cfg.art)}</div><div class="info"><b>${cfg.name}</b> <span class="px" id="mhpt">${mhp}/${cfg.hp}</span><div class="meter foehp"><i id="mhp" style="width:100%"></i></div>
- ${cfg.atkEvery?`<div style="font-size:12px;margin-top:6px;color:#666">敵人蓄力中…（滿了會攻擊你 ${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div>`:''}</div>
- <div style="display:flex;flex-direction:column;gap:6px">${TEACHER?teacherWinBtn:''}<button class="btn sm alt" id="flee">🏃 逃跑</button></div></div><div id="challenge"></div>`;
+ let mhp=cfg.hp,atk=0,mp=0,combo=0,maxCombo=0,miss=0,shield=false,power=false,rage=false,won=false,atkEvery=cfg.atkEvery;
+ const my=gen;where=cfg.area||cfg.name;
+ main.innerHTML=`<div class="stage" id="foe" style="background:${cfg.bg||'#fff'}">
+  <div class="side left"><div class="nm">${esc(S.name)} <span class="px">Lv${S.lv}</span></div><div class="meter"><i id="php" style="width:${S.hp/S.maxHp*100}%"></i></div><div class="lab">能量 <span id="mpt">0</span>/100</div><div class="meter mp"><i id="pmp" style="width:0"></i></div></div>
+  <div class="side right"><div class="nm">${cfg.name} <span class="px" id="mhpt">${mhp}/${cfg.hp}</span></div><div class="meter foehp"><i id="mhp" style="width:100%"></i></div><div class="lab">攻擊蓄力（${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div></div>
+  <div class="fighter hero" id="hero">${ch('hero_'+(S.hero||'boy'))}<div class="shieldfx" id="shieldfx"></div></div>
+  <div class="fighter enemy" id="enemy">${ch(cfg.art)}</div>
+  <div class="combo" id="combo"></div><div class="say" id="say"></div>
+  <div class="sbtns">${TEACHER?teacherWinBtn:''}<button class="btn sm alt" id="flee">🏃 逃跑</button></div>
+ </div>
+ <div class="skills">${SKILLS.map(s=>`<button class="btn sm skill" data-s="${s.id}" title="${s.d}">${s.ic} ${s.n}<small>${s.cost}</small></button>`).join('')}</div>
+ <div id="challenge"></div>`;
+ const st=$('#foe'),hero=$('#hero'),enemy=$('#enemy'),chal=$('#challenge');
+ const rel=el=>{const a=st.getBoundingClientRect(),r=el.getBoundingClientRect();return {x:r.left-a.left+r.width/2,y:r.top-a.top+r.height/2}};
+ const shoot=(from,to,art,cb)=>{const s=document.createElement('div');s.className='shot';s.innerHTML=ch(art);const p=rel(from),q=rel(to);s.style.left=p.x-20+'px';s.style.top=p.y-20+'px';st.appendChild(s);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{s.style.left=q.x-20+'px';s.style.top=q.y-20+'px'}));after(()=>{s.remove();cb()},340)};
+ const say=(t,ms=2200)=>{const b=$('#say');b.textContent=t;b.classList.add('on');setTimeout(()=>b.classList.remove('on'),ms)};
+ const updHero=()=>{const e=$('#php');if(e)e.style.width=S.hp/S.maxHp*100+'%'};
+ const updMP=()=>{$('#pmp').style.width=mp+'%';$('#mpt').textContent=mp;main.querySelectorAll('.skill').forEach(b=>{const s=SKILLS.find(x=>x.id===b.dataset.s);b.classList.toggle('locked',!s.ok());b.classList.toggle('ready',s.ok()&&mp>=s.cost)})};
+ const showCombo=()=>{const c=$('#combo');if(combo>=2){c.textContent=`${combo} 連擊！`+(combo>=5?'🔥':'');fx(c,'bump',260)}else c.textContent=''};
+ const hurt=n=>{if(won)return;if(shield){shield=false;$('#shieldfx').classList.remove('on');const p=rel(hero);pop(st,p.x,p.y-80,'防火牆擋下！','#118ab2');sfx.good();return}
+  fx(hero,'hurt',360);damage(n);updHero()};
+ const finish=()=>{const stars=1+(S.hp/S.maxHp>=.5?1:0)+(miss===0||maxCombo>=5?1:0);cfg.onWin({stars,maxCombo,miss})};
+ const checkRage=()=>{if(cfg.rage&&!rage&&mhp>0&&mhp<=cfg.hp/2){rage=true;atkEvery=Math.round(atkEvery*.6);enemy.classList.add('rage');fx(st,'quake',600);sfx.bad();say(cfg.rage,2600)}};
  $('#flee').onclick=()=>go(mapScreen);
- if(TEACHER)$('#twin').onclick=()=>{if(mhp<=0)return;mhp=0;$('#mhp').style.width='0%';$('#mhpt').textContent='0/'+cfg.hp;keyHandler=null;clearTimers();$('#challenge').innerHTML='';fx($('#foe'),'hit',360);after(cfg.onWin,400)};
- const chal=$('#challenge'),foe=$('#foe');
- if(cfg.atkEvery)every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/cfg.atkEvery*100)+'%';if(atk>=cfg.atkEvery){atk=0;fx(foe,'atk',500);sfx.bad();toast(`${cfg.name} 攻擊！-${cfg.atkDmg} HP`);damage(cfg.atkDmg)}},100);
- const next=()=>{keyHandler=null;cfg.next(chal,(ok,dmg)=>{if(my!==gen)return;keyHandler=null;
-  if(ok){dmg+=atkBonus();mhp=Math.max(0,mhp-dmg);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;fx(foe,'hit',360);burst(foe,76,66,12);sfx.good();pop(foe,90,10,'-'+dmg);
-   if(mhp<=0){clearTimers();after(cfg.onWin,500);return}}
-  else{damage(cfg.missDmg);if(S.hp<=0)return}
-  after(next,cfg.gap||700)})};
- next()}
+ if(TEACHER)$('#twin').onclick=()=>{if(won)return;won=true;mhp=0;$('#mhp').style.width='0%';$('#mhpt').textContent='0/'+cfg.hp;keyHandler=null;clearTimers();chal.innerHTML='';fx(st,'hit',360);after(()=>cfg.onWin({stars:3,maxCombo,miss}),400)};
+ main.querySelectorAll('.skill').forEach(b=>b.onclick=()=>{const s=SKILLS.find(x=>x.id===b.dataset.s);if(won)return;
+  if(!s.ok()){toast(s.lockMsg,2200);return}
+  if(mp<s.cost){toast(`能量不夠！需要 ${s.cost}，答對題目可以累積能量`,2200);return}
+  if(s.id==='hint'){if(!chal.hint){toast('這一題已經用過提示了');return}chal.hint();chal.hint=null}
+  if(s.id==='shield'){if(shield){toast('防火牆已經開啟了');return}shield=true;$('#shieldfx').classList.add('on')}
+  if(s.id==='power'){if(power){toast('超級攻擊已經準備好了');return}power=true;hero.classList.add('charged')}
+  mp-=s.cost;updMP();sfx.up();say(`${s.ic} ${s.n}！`,1200);
+  const inp=chal.querySelector('input');if(inp)inp.focus();else if(document.activeElement)document.activeElement.blur()});
+ every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/atkEvery*100)+'%';updHero();
+  if(atk>=atkEvery){atk=0;fx(st,'atk',500);sfx.bad();shoot(enemy,hero,'orb',()=>hurt(cfg.atkDmg))}},100);
+ const onAnswer=(ok,dmg,fast)=>{if(my!==gen||won)return;keyHandler=null;
+  if(ok){combo++;maxCombo=Math.max(maxCombo,combo);
+   const mult=1+Math.min(combo-1,4)*.1,d=Math.round((dmg+atkBonus())*mult*(fast?1.3:1)*(power?2:1));
+   const tag=(power?'超級攻擊！':'')+(fast?'會心一擊！':'');power=false;hero.classList.remove('charged');
+   mp=Math.min(100,mp+(fast?35:25));updMP();showCombo();fx(hero,'lunge',420);sfx.good();
+   shoot(hero,enemy,'star',()=>{mhp=Math.max(0,mhp-d);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;
+    fx(st,'hit',360);const q=rel(enemy);burst(st,q.x,q.y,fast?18:10);pop(st,q.x,q.y-90,'-'+d,fast||tag?'#ffc93c':null);if(tag)pop(st,q.x,q.y-120,tag,'#ef476f');
+    if(fast)sfx.hit();checkRage();
+    if(mhp<=0){won=true;clearTimers();keyHandler=null;enemy.classList.add('ko');after(finish,700);return}
+    after(next,cfg.gap||700)})}
+  else{combo=0;miss++;showCombo();hurt(cfg.missDmg);if(S.hp<=0)return;after(next,cfg.gap||700)}};
+ const next=()=>{if(won)return;keyHandler=null;chal.hint=null;cfg.next(chal,onAnswer)};
+ updMP();next()}
 
 /* ---------- 各種挑戰 ---------- */
 let lastWord='';
 function pickWord(level){let w;do{w=WORDS[level][rnd(WORDS[level].length)]}while(w[0]===lastWord&&WORDS[level].length>1);lastWord=w[0];return {w:w[0],z:w[1],d:WDMG[level]}}
-function runTyping(w,ch,done){let fin=false,comp=false;
- ch.innerHTML=`<div style="font-weight:700;color:#666">⌨️ 用注音輸入法打出這個${w.w.length>3?'句子':'詞'}：</div><div class="zy">${w.z}</div><div class="word">${w.w}</div>
+const ZYK=Object.fromEntries(Object.entries(ZY).map(([c,z])=>[z,KLAB(c)]));
+const zyKeys=z=>z.split(' ').map(sy=>sy.startsWith('˙')?sy.slice(1)+'˙':sy).map(sy=>[...sy].map(c=>ZYK[c]||c).join(' ')+(/[ˊˇˋ˙]/.test(sy)?'':' 空白')).join('　｜　');
+function runTyping(w,ch,done){let fin=false,comp=false;const t0=Date.now(),par=2500+w.w.length*1400;
+ ch.innerHTML=`<div style="font-weight:700;color:#666">⌨️ 用注音輸入法打出這個${w.w.length>3?'句子':'詞'}：</div><div class="zy">${w.z}</div><div class="kh" id="kh"></div><div class="word">${w.w}</div>
  <input class="tin" id="ti" autocomplete="off" placeholder="在這裡打字…"><div style="margin-top:12px"><button class="btn sm alt" id="skip">跳過（會被打）</button></div>
  <div class="tip">打對會自動攻擊！選字：按空白鍵或數字鍵　｜　切換中英：Shift</div>`;
  const inp=ch.querySelector('#ti');setTimeout(()=>inp.focus(),30);
  const norm=s=>s.replace(/[\s，,。.！!]/g,'');
  const check=enter=>{if(fin)return;const v=norm(inp.value);
-  if(v===w.w){fin=true;inp.classList.add('ok');inp.blur();done(true,w.d)}
+  if(v===w.w){fin=true;inp.classList.add('ok');inp.blur();done(true,w.d,Date.now()-t0<par)}
   else if(enter&&v.length){sfx.bad();toast('有字打錯囉，再檢查一下！');inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);damage(3)}};
  inp.addEventListener('compositionstart',()=>comp=true);
  inp.addEventListener('compositionend',()=>{comp=false;setTimeout(()=>check(false),0)});
  inp.addEventListener('input',()=>{if(!comp)check(false)});
  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&!comp)check(true)});
+ ch.hint=()=>{ch.querySelector('#kh').textContent='💡 鍵盤位置：'+zyKeys(w.z);inp.focus()};
  ch.querySelector('#skip').onclick=()=>{if(fin)return;fin=true;done(false)}}
 let quizBag=[];
 function pickQuiz(){if(!quizBag.length)quizBag=shuffle(QUIZ);return quizBag.pop()}
-function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a);
+function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a),t0=Date.now();
  ch.innerHTML=`<div style="font-weight:700;color:#666">❓ 電腦知識問答</div><div class="q">${q.q}</div><div class="opts">${opts.map((o,i)=>`<button class="btn" data-i="${i}">${o}</button>`).join('')}</div><div class="expl" id="ex"></div>`;
- ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=opts[b.dataset.i]===q.a[0];
+ ch.hint=()=>{shuffle([...ch.querySelectorAll('.opts .btn')].filter(x=>opts[x.dataset.i]!==q.a[0])).slice(0,2).forEach(x=>{x.classList.add('gone');x.disabled=true})};
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000;
   ch.querySelectorAll('.opts .btn').forEach(x=>{if(opts[x.dataset.i]===q.a[0])x.classList.add('right')});if(!ok)b.classList.add('wrong');
-  ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg),1600)})}
-function runShortcut(s,ch,done,dmg=25){let fin=false;const end=ok=>{if(fin)return;fin=true;keyHandler=null;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg),900)};
+  ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg,fast),1600)})}
+function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;keyHandler=null;const fast=Date.now()-t0<3500;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
+ ch.hint=()=>{if(!fin)ch.querySelector('#hk').textContent=s.k};
  const mac=/Mac/.test(navigator.platform);
  ch.innerHTML=`<div style="font-weight:700;color:#666">⚡ 快捷鍵挑戰（真的按按看！）</div><div class="q" style="font-size:30px">請按下「${s.n}」的快捷鍵</div>
  <div style="font-size:40px;margin:10px"><span class="keycap">${mac?'⌘ / Ctrl':'Ctrl'}</span> + <span class="keycap" id="hk">？</span></div>
@@ -623,10 +775,11 @@ function runShortcut(s,ch,done,dmg=25){let fin=false;const end=ok=>{if(fin)retur
  after(()=>{if(!fin)ch.querySelector('#hk').textContent=s.k},5000);after(()=>end(false),10000);
  if(document.activeElement)document.activeElement.blur();
  keyHandler=e=>{if(!(e.ctrlKey||e.metaKey))return;if(!e.code.startsWith('Key'))return;e.preventDefault();end(e.code==='Key'+s.k)}}
-function runClick(ch,done,dmg=25){let fin=false,left=5;
+function runClick(ch,done,dmg=25){let fin=false,left=5;const t0=Date.now();
  ch.innerHTML=`<div style="font-weight:700;color:#666">🖱️ 7 秒內清光所有蟲蟲！ ${ic('cat')}點一下　${ic('lady')}點兩下　${ic('alien')}右鍵</div><div class="mini-arena" id="ma">${arenaBg}</div>`;
  const ma=ch.querySelector('#ma');ma.oncontextmenu=e=>e.preventDefault();
- const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;done(true,dmg)}};
+ const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;done(true,dmg,Date.now()-t0<4500)}};
+ ch.hint=()=>{[...ma.querySelectorAll('.bug')].slice(0,2).forEach(kill)};
  for(let i=0;i<5;i++){const t=['click','dbl','right'][rnd(3)],el=document.createElement('div');el.className='bug';el.innerHTML=BUGART[t];
   el.style.left=3+rnd(80)+'%';el.style.top=10+rnd(70)+'%';ma.appendChild(el);
   if(t==='click')el.onclick=()=>kill(el);if(t==='dbl')el.ondblclick=()=>kill(el);if(t==='right')el.oncontextmenu=e=>{e.preventDefault();kill(el)}}
@@ -638,19 +791,57 @@ function runClick(ch,done,dmg=25){let fin=false,left=5;
 function villageIntro(){
  main.innerHTML=scene('village');
  dialog([[OWL,OWLN,`注音村被 <b>錯字幽靈</b> ${ic('ghost')} 佔領了，村民打的字全都變成亂碼！`],[OWL,OWLN,'畫面上會出現詞語和注音，請用<b>注音輸入法</b>打出來。打對就會自動攻擊！'],[OWL,OWLN,'小提醒：按 <span class="keycap">Shift</span> 切換中英文；打完一個字的注音後按 <span class="keycap">空白鍵</span> 選字。'],[OWL,OWLN,'幽靈蓄力滿了會攻擊你，動作要快！越後面詞越難喔！']],()=>{
-  const cfg={name:'錯字幽靈',area:'注音村',art:'ghost',bg:'linear-gradient(90deg,#ffe5b4,#f4a261)',hp:110,atkEvery:20000,atkDmg:10,missDmg:6,
+  const cfg={name:'錯字幽靈',area:'注音村',art:'ghost',bg:'linear-gradient(90deg,#ffe5b4,#f4a261)',hp:140,atkEvery:20000,atkDmg:10,missDmg:6,
    next:(ch,done)=>{const r=(main.querySelector('#mhp')?.style.width||'100%');const p=parseFloat(r);runTyping(pickWord(p>66?'easy':p>33?'mid':'hard'),ch,done)},
-   onWin:()=>winArea('zhuyin')};battle(cfg)})}
+   onWin:r=>winArea('zhuyin',r)};battle(cfg)})}
 
 /* =========================================================
    第三關：知識城堡
    ========================================================= */
 function castleIntro(){
  main.innerHTML=scene('castle');
- dialog([[OWL,OWLN,`知識城堡的守衛是 <b>亂碼機器人</b> ${ic('robot')}，牠只怕「正確的電腦知識」！`],[OWL,OWLN,'用滑鼠點選正確答案攻擊牠。有時候會出現 <b>快捷鍵挑戰</b>，要真的按下鍵盤喔！'],[OWL,OWLN,'快捷鍵小抄：Ctrl+C 複製、Ctrl+V 貼上、Ctrl+X 剪下、Ctrl+Z 復原、Ctrl+A 全選、Ctrl+S 儲存。']],()=>{
-  let n=0;battle({name:'亂碼機器人',area:'知識城堡',art:'robot',bg:'linear-gradient(90deg,#e0d4f0,#9d79bc)',hp:130,atkEvery:25000,atkDmg:10,missDmg:10,
+ dialog([[OWL,OWLN,`知識城堡的守衛是 <b>亂碼機器人</b> ${ic('robot')}，牠只怕「正確的電腦知識」！`],[OWL,OWLN,'用滑鼠點選正確答案攻擊牠。有時候會出現 <b>快捷鍵挑戰</b>，要真的按下鍵盤喔！'],[OWL,OWLN,'快捷鍵小抄：Ctrl+C 複製、Ctrl+V 貼上、Ctrl+X 剪下、Ctrl+Z 復原、Ctrl+Y 重做、Ctrl+A 全選、Ctrl+S 儲存、Ctrl+F 尋找、Ctrl+P 列印。']],()=>{
+  let n=0;battle({name:'亂碼機器人',area:'知識城堡',art:'robot',bg:'linear-gradient(90deg,#e0d4f0,#9d79bc)',hp:170,atkEvery:25000,atkDmg:10,missDmg:10,
    next:(ch,done)=>{n++;if(n%3===0)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runQuiz(pickQuiz(),ch,done)},
-   onWin:()=>winArea('know')})})}
+   onWin:r=>winArea('know',r)})})}
+
+/* =========================================================
+   支線關卡：網路安全港（判斷安全／危險）
+   ========================================================= */
+const SAFETY=[
+ {t:'簡訊',from:'不認識的號碼',m:'恭喜你中獎了！點這個連結，輸入帳號和密碼，就能免費領 iPad！',safe:false,clue:'有人跟你要密碼喔…',e:'又說中獎又要密碼，這是典型的詐騙！'},
+ {t:'網頁',from:'學校網站',m:'班級公告：明天美勞課記得帶彩色筆和剪刀。',safe:true,clue:'這是學校官方網站的公告。',e:'學校官方網站的公告是可以信任的。'},
+ {t:'聊天',from:'網友「小天使」',m:'你好可愛喔！你住在哪裡？讀哪間學校？我們約出來見面好不好？',safe:false,clue:'不認識的人在問你的個人資料。',e:'不要告訴陌生人住址和學校，更不能私下見面！'},
+ {t:'跳出視窗',from:'不明網頁',m:'⚠️ 警告！你的電腦中毒了！立刻下載「超級清毒.exe」才能救回檔案！',safe:false,clue:'這個視窗想嚇你、叫你下載東西。',e:'嚇人的跳出視窗常是騙你下載病毒，關掉它並告訴老師。'},
+ {t:'網頁',from:'教育部網站 https://www.edu.tw',m:'提供學習資源與防疫資訊。',safe:true,clue:'網址是官方的，而且有 https。',e:'政府機關的官方網站，網址正確又有加密。'},
+ {t:'聊天',from:'同學小美',m:'給你一個「免費遊戲點數產生器.exe」，打開就有無限點數！',safe:false,clue:'.exe 是會執行的程式檔…',e:'來路不明的 .exe 程式可能是病毒，就算是朋友傳的也不要開。'},
+ {t:'電子郵件',from:'「系統管理員」',m:'你的帳號 10 分鐘後會被刪除！請馬上回信告訴我們你的密碼。',safe:false,clue:'真的管理員不會跟你要密碼。',e:'任何人跟你要密碼都要提高警覺，這是釣魚信件。'},
+ {t:'簡訊',from:'爸爸',m:'今天放學我會在校門口接你，記得帶外套。',safe:true,clue:'這是你認識的家人。',e:'認識的家人傳來的日常訊息是安全的。'},
+ {t:'網頁',from:'遊戲網站',m:'要玩這個遊戲，請先輸入你的身分證字號、家裡地址和爸媽的信用卡號碼。',safe:false,clue:'遊戲需要這些資料嗎？',e:'玩遊戲不需要身分證和信用卡，這是在騙個人資料！'},
+ {t:'電腦通知',from:'Windows 更新',m:'有新的安全性更新可以安裝。（老師說學校電腦可以更新）',safe:true,clue:'是電腦內建的更新，而且老師同意了。',e:'系統安全更新能修補漏洞，經過老師同意就可以更新。'},
+ {t:'聊天',from:'不認識的人',m:'哈哈，快點這個連結看你的醜照！ bit.ly/xxxx',safe:false,clue:'陌生人＋奇怪的短網址。',e:'用好奇心騙你點連結是常見手法，千萬不要點！'},
+ {t:'網頁',from:'電腦王國大冒險',m:'請輸入老師給你的帳號和密碼登入。',safe:true,clue:'這是老師在課堂上給你用的網站。',e:'老師提供的學習網站，用老師給的帳號登入是安全的。'},
+ {t:'網頁',from:'購物網站',m:'限時特價！全新平板只要 99 元！請先匯款到這個帳戶。',safe:false,clue:'價格便宜得太誇張了…',e:'太便宜、要先匯款的通常是詐騙網站。'},
+ {t:'遊戲',from:'遊戲裡的玩家',m:'把你的帳號密碼借我，我幫你練到最高等級！',safe:false,clue:'借帳號密碼給別人安全嗎？',e:'帳號密碼不能借給任何人，可能會被盜用。'},
+ {t:'網頁',from:'市立圖書館網站',m:'搜尋書籍：「恐龍百科」，館藏 3 本，可借閱。',safe:true,clue:'這是圖書館的查詢服務。',e:'用圖書館網站查書是安全又好用的。'},
+ {t:'聊天',from:'剛加好友的陌生人',m:'我們當好朋友吧！傳一張你的照片給我好嗎？不要告訴爸媽喔。',safe:false,clue:'「不要告訴爸媽」是危險訊號！',e:'叫你保密、要你照片的陌生人很危險，一定要告訴大人。'}
+];
+const MSGIC={'簡訊':'📱','網頁':'🌐','聊天':'💬','跳出視窗':'❗','電子郵件':'✉️','電腦通知':'🔔','遊戲':'🎮'};
+let safeBag=[];
+function pickSafety(){if(!safeBag.length)safeBag=shuffle(SAFETY);return safeBag.pop()}
+function runSafety(it,ch,done,dmg=22){let fin=false;const t0=Date.now();
+ ch.innerHTML=`<div style="font-weight:700;color:#666">🛟 網路安全判斷：這個情況「安全」還是「危險」？</div>
+ <div class="msgcard"><div class="mh">${MSGIC[it.t]||'💬'} ${it.t}｜來自：<b>${esc(it.from)}</b></div><div class="mb">${esc(it.m)}</div></div>
+ <div class="opts"><button class="btn safe" data-v="1">🛡️ 安全</button><button class="btn danger" data-v="0">⚠️ 危險</button></div><div class="expl" id="ex"></div>`;
+ ch.hint=()=>{ch.querySelector('#ex').textContent='💡 提示：'+it.clue};
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=(b.dataset.v==='1')===it.safe,fast=Date.now()-t0<5000;
+  ch.querySelectorAll('.opts .btn').forEach(x=>{if((x.dataset.v==='1')===it.safe)x.classList.add('right')});if(!ok)b.classList.add('wrong');
+  ch.querySelector('#ex').textContent=(ok?'⭕ 判斷正確！':'❌ 判斷錯了！')+it.e;after(()=>done(ok,dmg,fast),2000)})}
+function harborIntro(){
+ main.innerHTML=scene('harbor');
+ dialog([[OWL,OWLN,`這裡是網路安全港，<b>釣魚海盜</b> ${ic('pirate')} 正在用假訊息釣大家上鉤！`],[OWL,OWLN,'畫面會出現各種訊息和網頁，請判斷它是 <b>🛡️ 安全</b> 還是 <b>⚠️ 危險</b>。'],[OWL,OWLN,'小撇步：跟你要<b>密碼、個人資料</b>，或是叫你<b>點連結、下載程式</b>、<b>不要告訴大人</b>的，通常都很危險！'],[OWL,OWLN,'打贏海盜，就能學會保護自己的技能「🛡️ 防火牆」喔！']],()=>{
+  battle({name:'釣魚海盜',area:'網路安全港',art:'pirate',bg:'linear-gradient(#caf0f8,#48cae4)',hp:150,atkEvery:22000,atkDmg:10,missDmg:8,
+   next:(c,done)=>runSafety(pickSafety(),c,done),onWin:winHarbor})})}
 
 /* =========================================================
    最終關：Bug魔王
@@ -658,14 +849,22 @@ function castleIntro(){
 function bossIntro(){
  main.innerHTML=scene('volcano');
  dialog([[BOSS,'Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],[BOSS,'Bug魔王','來吧！讓我的病毒吞掉你的檔案！']],()=>{
-  battle({name:'Bug魔王',area:'Bug魔王城',art:'boss',bg:'linear-gradient(90deg,#3d0c11,#9d0208)',hp:220,atkEvery:16000,atkDmg:12,missDmg:12,
+  battle({name:'Bug魔王',area:'Bug魔王城',art:'boss',bg:'linear-gradient(90deg,#3d0c11,#9d0208)',rage:'可惡！我生氣了！病毒全開！',hp:300,atkEvery:16000,atkDmg:12,missDmg:12,
    next:(ch,done)=>{const r=rnd(4);if(r===0)runTyping(pickWord(Math.random()<.5?'mid':'hard'),ch,done);else if(r===1)runQuiz(pickQuiz(),ch,done,22);else if(r===2)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runClick(ch,done)},
-   onWin:()=>{sfx.win();const first=!S.cleared;S.cleared=true;gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP`);confetti();go(ending)}})})}
+   onWin:r=>{sfx.win();const first=!S.cleared;S.cleared=true;recordStars('boss',r.stars||1);gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',`${r.stars||1}星，`+(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP，最高 ${r.maxCombo||0} 連擊`);confetti();go(ending)}})})}
 
-function winArea(key){sfx.win();const first=!S.crystals[key];S.crystals[key]=true;gainExp(first?60:25);S.coins+=first?40:15;save();hud();
- logRec({mouse:'滑鼠森林',zhuyin:'注音村',know:'知識城堡'}[key],'過關',(first?'獲得水晶':'再次挑戰')+`，剩 ${S.hp} HP`);
+function starRow(n){return `<div class="starrow">${[0,1,2].map(i=>`<span class="${i<n?'on':''}" style="animation-delay:${.2+i*.25}s">★</span>`).join('')}</div>`}
+function resStats(res){return `<div class="rstat">${res.maxCombo!=null?`最高連擊 <b>${res.maxCombo}</b>`:''}${res.miss!=null?`　失誤 <b>${res.miss}</b>`:''}　剩餘 HP <b>${S.hp}</b></div><div class="tip" style="margin:4px 0 0">★ 過關　★ 剩 50% 以上 HP　★ 零失誤或 5 連擊</div>`}
+function recordStars(key,n){const best=S.stars[key]||0;S.stars[key]=Math.max(best,n);return n>best&&best>0}
+function winArea(key,res={}){sfx.win();const first=!S.crystals[key],stn=res.stars||1;S.crystals[key]=true;const nb=recordStars(key,stn);
+ const bonus=(stn-1)*10;gainExp((first?60:25)+bonus);S.coins+=(first?40:15)+bonus;save();hud();
+ logRec({mouse:'滑鼠森林',zhuyin:'注音村',know:'知識城堡'}[key],'過關',`${stn}星，`+(first?'獲得水晶':'再次挑戰')+`，剩 ${S.hp} HP`+(res.maxCombo!=null?`，最高 ${res.maxCombo} 連擊`:''));
  const nm={mouse:'滑鼠水晶',zhuyin:'注音水晶',know:'知識水晶'}[key];confetti();
- showModal(`<div class="big"><svg class="sv" viewBox="0 0 100 100">${gemSvg(CRY[key])}</svg></div><h2>勝利！</h2><p>${first?`獲得 <b>${nm}</b>！<br>`:''}經驗 +${first?60:25}　金幣 +${first?40:15}</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
+ showModal(`<div class="big"><svg class="sv" viewBox="0 0 100 100">${gemSvg(CRY[key])}</svg></div><h2>勝利！</h2>${starRow(stn)}${nb?'<p class="newbest">🎉 新紀錄！</p>':''}<p>${first?`獲得 <b>${nm}</b>！<br>`:''}經驗 +${(first?60:25)+bonus}　金幣 +${(first?40:15)+bonus}</p>${resStats(res)}`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
+function winHarbor(res={}){sfx.win();const first=!S.badges.safe,stn=res.stars||1;S.badges.safe=true;const nb=recordStars('harbor',stn);
+ const bonus=(stn-1)*10;gainExp((first?50:20)+bonus);S.coins+=(first?40:15)+bonus;save();hud();
+ logRec('網路安全港','過關',`${stn}星，`+(first?'學會防火牆':'再次挑戰')+`，剩 ${S.hp} HP，最高 ${res.maxCombo||0} 連擊`);confetti();
+ showModal(`<div class="big">${ch('shield')}</div><h2>勝利！</h2>${starRow(stn)}${nb?'<p class="newbest">🎉 新紀錄！</p>':''}<p>${first?'學會新技能：<b>🛡️ 防火牆</b>！<br>戰鬥中可以擋下一次傷害。<br>':''}經驗 +${(first?50:20)+bonus}　金幣 +${(first?40:15)+bonus}</p>${resStats(res)}`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
 
 function ending(){
  const d=new Date();
@@ -744,6 +943,11 @@ function memory(){
   if(open.length===2){moves++;info.textContent='步數 '+moves;const [a,b]=open.map(x=>deck[x.dataset.i]);
    if(a.k===b.k){open.forEach(x=>{x.classList.add('got')});open=[];got++;sfx.good();if(got===P.length)after(()=>reward(Math.max(8,36-(moves-6)*2),15,`用了 ${moves} 步完成！`,memory),400)}
    else{lock=true;after(()=>{open.forEach(x=>{x.classList.remove('up','txt');x.textContent='?'});open=[];lock=false},800)}}})}
+
+/* ---------- 休息提醒：連續玩 30 分鐘，貓頭鷹老師提醒休息 ---------- */
+let playSec=0;
+setInterval(()=>{if(document.visibilityState==='visible'&&S.name)playSec+=15;
+ if(playSec>=1800){playSec=0;showModal(`<div class="big">${OWL}</div><h2>休息一下吧！</h2><p>你已經連續玩 30 分鐘囉！<br>看看窗外遠方 20 秒、伸伸懶腰，<br>讓眼睛休息一下再回來～</p>`,[{t:'好，我休息一下',c:'g'}])}},15000);
 
 /* ---------- 啟動 ---------- */
 go(titleScreen);
