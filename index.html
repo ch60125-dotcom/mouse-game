@@ -346,7 +346,8 @@ let gen=0,timers=[],keyHandler=null;
 function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]}
 function after(f,ms){const g=gen;const t=setTimeout(()=>{if(g===gen)f()},ms);timers.push(t);return t}
 function every(f,ms){const g=gen;const t=setInterval(()=>{if(g===gen)f()},ms);timers.push(t);return t}
-function go(fn){gen++;clearTimers();keyHandler=null;main.innerHTML='';main.className='';fn();hud();window.scrollTo({top:0})}
+let busy=false; // 戰鬥或計時小遊戲進行中（休息提醒會等到結束才跳出）
+function go(fn){gen++;clearTimers();keyHandler=null;busy=false;main.innerHTML='';main.className='';fn();hud();window.scrollTo({top:0})}
 document.addEventListener('keydown',e=>{if(keyHandler)keyHandler(e)});
 
 /* ---------- 音效 ---------- */
@@ -508,9 +509,11 @@ function makeDrag(el,onDrop){
   el.dataset.drag='1';el.classList.add('dragging');
   Object.assign(el.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',zIndex:999,pointerEvents:'none',margin:0});
   const mv=ev=>{el.style.left=ev.clientX-ox+'px';el.style.top=ev.clientY-oy+'px'};
-  const up=ev=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);
-   const t=document.elementFromPoint(ev.clientX,ev.clientY);el.style.cssText=orig;el.classList.remove('dragging');delete el.dataset.drag;onDrop(t,el)};
-  window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up)})}
+  // 放開滑鼠＝正常放下；pointercancel／視窗失焦＝拖曳被中斷，物品放回原位
+  const end=(ev,cancel)=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cc);window.removeEventListener('blur',cc);
+   const t=cancel?null:document.elementFromPoint(ev.clientX,ev.clientY);el.style.cssText=orig;el.classList.remove('dragging');delete el.dataset.drag;onDrop(t,el)};
+  const up=ev=>end(ev,false),cc=ev=>end(ev,true);
+  window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',cc);window.addEventListener('blur',cc)})}
 
 /* =========================================================
    標題畫面
@@ -604,7 +607,10 @@ function titleLocal(){
  ${old?`<button class="btn alt" id="cont">📂 繼續冒險（${esc(old.name)} Lv${old.lv}）</button>`:''}</div></div>`;
  const nm=$('#nm');setTimeout(()=>nm.focus(),100);
  $('#start').onclick=()=>{const v=nm.value.trim();if(!v){nm.classList.add('shake');setTimeout(()=>nm.classList.remove('shake'),400);toast('先打上你的名字喔！');return}
-  sfx.click();S=FRESH();S.name=v;save();go(introStory)};
+  const begin=()=>{S=FRESH();S.name=v;save();go(introStory)};
+  sfx.click();if(!old)return begin();
+  showModal(`<div class="big">⚠️</div><h2>要開始新的冒險嗎？</h2><p>這台電腦已經有 <b>${esc(old.name)}</b>（Lv${old.lv}）的冒險進度。<br>開始新冒險會<b>蓋掉舊的進度</b>，而且無法復原喔！</p>`,
+   [{t:'📂 繼續舊的冒險',c:'g',f:()=>{S=Object.assign(FRESH(),old);go(mapScreen)}},{t:'⚔️ 確定重新開始',c:'alt',f:begin}])};
  nm.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)$('#start').click()});
  if(old)$('#cont').onclick=()=>{sfx.click();S=Object.assign(FRESH(),old);go(mapScreen)}}
 
@@ -654,7 +660,7 @@ function forestIntro(){
  main.innerHTML=scene('forest');
  dialog([[OWL,OWLN,`這裡是滑鼠森林，<b>蟲蟲大王</b> ${ic('beetle')} 帶著一群小蟲在搗蛋！`],[OWL,OWLN,`${ic('cat')} 毛毛蟲用<b>左鍵點一下</b><br>${ic('lady')} 瓢蟲用<b>左鍵快速點兩下</b><br>${ic('alien')} 外星蟲要按<b>右鍵</b>！`],[OWL,OWLN,`看到 ${ic('gem')} 寶石時，<b>按住左鍵拖曳</b>到右下角的 ${ic('bag')} 包包，傷害最高！`],[OWL,OWLN,'60 秒內把蟲蟲大王的 HP 打到 0 就贏了，點錯會扣 HP 喔。出發！']],forestBattle)}
 function forestBattle(){
- let bhp=100,time=60,alive=0,over=false,wrongs=0;where='滑鼠森林';
+ let bhp=100,time=60,alive=0,over=false,wrongs=0;where='滑鼠森林';busy=true;
  const fStars=()=>({stars:1+(time>=25?1:0)+(wrongs<=1?1:0),miss:wrongs});
  main.innerHTML=`<div class="foe" id="foe" style="background:linear-gradient(90deg,#d8f3dc,#95d5b2)"><div class="m">${ch('beetle')}</div><div class="info"><b>蟲蟲大王</b> <span class="px" id="bhpt">100/100</span><div class="meter foehp"><i id="bhp" style="width:100%"></i></div></div><div class="center"><div class="px">TIME</div><div class="px" id="tm" style="font-size:22px;margin-top:6px">60</div></div>${TEACHER?teacherWinBtn:''}</div>
  <div class="arena" id="arena">${arenaBg}<div class="bag" id="bag">${ch('bag')}</div></div>
@@ -689,7 +695,7 @@ const SKILLS=[
 ];
 function battle(cfg){
  let mhp=cfg.hp,atk=0,mp=0,combo=0,maxCombo=0,miss=0,shield=false,power=false,rage=false,won=false,atkEvery=cfg.atkEvery;
- const my=gen;where=cfg.area||cfg.name;
+ const my=gen;where=cfg.area||cfg.name;busy=true;
  main.innerHTML=`<div class="stage" id="foe" style="background:${cfg.bg||'#fff'}">
   <div class="side left"><div class="nm">${esc(S.name)} <span class="px">Lv${S.lv}</span></div><div class="meter"><i id="php" style="width:${S.hp/S.maxHp*100}%"></i></div><div class="lab">能量 <span id="mpt">0</span>/100</div><div class="meter mp"><i id="pmp" style="width:0"></i></div></div>
   <div class="side right"><div class="nm">${cfg.name} <span class="px" id="mhpt">${mhp}/${cfg.hp}</span></div><div class="meter foehp"><i id="mhp" style="width:100%"></i></div><div class="lab">攻擊蓄力（${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div></div>
@@ -717,7 +723,7 @@ function battle(cfg){
  main.querySelectorAll('.skill').forEach(b=>b.onclick=()=>{const s=SKILLS.find(x=>x.id===b.dataset.s);if(won)return;
   if(!s.ok()){toast(s.lockMsg,2200);return}
   if(mp<s.cost){toast(`能量不夠！需要 ${s.cost}，答對題目可以累積能量`,2200);return}
-  if(s.id==='hint'){if(!chal.hint){toast('這一題已經用過提示了');return}chal.hint();chal.hint=null}
+  if(s.id==='hint'){if(!chal.hint){toast('現在不能使用提示（這題已經作答或用過提示了）',2200);return}chal.hint();chal.hint=null}
   if(s.id==='shield'){if(shield){toast('防火牆已經開啟了');return}shield=true;$('#shieldfx').classList.add('on')}
   if(s.id==='power'){if(power){toast('超級攻擊已經準備好了');return}power=true;hero.classList.add('charged')}
   mp-=s.cost;updMP();sfx.up();say(`${s.ic} ${s.n}！`,1200);
@@ -735,6 +741,7 @@ function battle(cfg){
     if(mhp<=0){won=true;clearTimers();keyHandler=null;enemy.classList.add('ko');after(finish,700);return}
     after(next,cfg.gap||700)})}
   else{combo=0;miss++;showCombo();hurt(cfg.missDmg);if(S.hp<=0)return;after(next,cfg.gap||700)}};
+ chal.hurt=hurt;
  const next=()=>{if(won)return;keyHandler=null;chal.hint=null;cfg.next(chal,onAnswer)};
  updMP();next()}
 
@@ -750,23 +757,23 @@ function runTyping(w,ch,done){let fin=false,comp=false;const t0=Date.now(),par=2
  const inp=ch.querySelector('#ti');setTimeout(()=>inp.focus(),30);
  const norm=s=>s.replace(/[\s，,。.！!]/g,'');
  const check=enter=>{if(fin)return;const v=norm(inp.value);
-  if(v===w.w){fin=true;inp.classList.add('ok');inp.blur();done(true,w.d,Date.now()-t0<par)}
-  else if(enter&&v.length){sfx.bad();toast('有字打錯囉，再檢查一下！');inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);damage(3)}};
+  if(v===w.w){fin=true;ch.hint=null;inp.classList.add('ok');inp.blur();done(true,w.d,Date.now()-t0<par)}
+  else if(enter&&v.length){sfx.bad();toast('有字打錯囉，再檢查一下！');inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);(ch.hurt||damage)(3)}};
  inp.addEventListener('compositionstart',()=>comp=true);
  inp.addEventListener('compositionend',()=>{comp=false;setTimeout(()=>check(false),0)});
  inp.addEventListener('input',()=>{if(!comp)check(false)});
  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&!comp)check(true)});
  ch.hint=()=>{ch.querySelector('#kh').textContent='💡 鍵盤位置：'+zyKeys(w.z);inp.focus()};
- ch.querySelector('#skip').onclick=()=>{if(fin)return;fin=true;done(false)}}
+ ch.querySelector('#skip').onclick=()=>{if(fin)return;fin=true;ch.hint=null;done(false)}}
 let quizBag=[];
 function pickQuiz(){if(!quizBag.length)quizBag=shuffle(QUIZ);return quizBag.pop()}
 function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a),t0=Date.now();
  ch.innerHTML=`<div style="font-weight:700;color:#666">❓ 電腦知識問答</div><div class="q">${q.q}</div><div class="opts">${opts.map((o,i)=>`<button class="btn" data-i="${i}">${o}</button>`).join('')}</div><div class="expl" id="ex"></div>`;
  ch.hint=()=>{shuffle([...ch.querySelectorAll('.opts .btn')].filter(x=>opts[x.dataset.i]!==q.a[0])).slice(0,2).forEach(x=>{x.classList.add('gone');x.disabled=true})};
- ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000;
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000;
   ch.querySelectorAll('.opts .btn').forEach(x=>{if(opts[x.dataset.i]===q.a[0])x.classList.add('right')});if(!ok)b.classList.add('wrong');
   ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg,fast),1600)})}
-function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;keyHandler=null;const fast=Date.now()-t0<3500;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
+function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;ch.hint=null;keyHandler=null;const fast=Date.now()-t0<3500;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
  ch.hint=()=>{if(!fin)ch.querySelector('#hk').textContent=s.k};
  const mac=/Mac/.test(navigator.platform);
  ch.innerHTML=`<div style="font-weight:700;color:#666">⚡ 快捷鍵挑戰（真的按按看！）</div><div class="q" style="font-size:30px">請按下「${s.n}」的快捷鍵</div>
@@ -778,12 +785,12 @@ function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const e
 function runClick(ch,done,dmg=25){let fin=false,left=5;const t0=Date.now();
  ch.innerHTML=`<div style="font-weight:700;color:#666">🖱️ 7 秒內清光所有蟲蟲！ ${ic('cat')}點一下　${ic('lady')}點兩下　${ic('alien')}右鍵</div><div class="mini-arena" id="ma">${arenaBg}</div>`;
  const ma=ch.querySelector('#ma');ma.oncontextmenu=e=>e.preventDefault();
- const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;done(true,dmg,Date.now()-t0<4500)}};
+ const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;ch.hint=null;done(true,dmg,Date.now()-t0<4500)}};
  ch.hint=()=>{[...ma.querySelectorAll('.bug')].slice(0,2).forEach(kill)};
  for(let i=0;i<5;i++){const t=['click','dbl','right'][rnd(3)],el=document.createElement('div');el.className='bug';el.innerHTML=BUGART[t];
   el.style.left=3+rnd(80)+'%';el.style.top=10+rnd(70)+'%';ma.appendChild(el);
   if(t==='click')el.onclick=()=>kill(el);if(t==='dbl')el.ondblclick=()=>kill(el);if(t==='right')el.oncontextmenu=e=>{e.preventDefault();kill(el)}}
- after(()=>{if(!fin){fin=true;toast('時間到！');done(false)}},7000)}
+ after(()=>{if(!fin){fin=true;ch.hint=null;toast('時間到！');done(false)}},7000)}
 
 /* =========================================================
    第二關：注音村
@@ -834,7 +841,7 @@ function runSafety(it,ch,done,dmg=22){let fin=false;const t0=Date.now();
  <div class="msgcard"><div class="mh">${MSGIC[it.t]||'💬'} ${it.t}｜來自：<b>${esc(it.from)}</b></div><div class="mb">${esc(it.m)}</div></div>
  <div class="opts"><button class="btn safe" data-v="1">🛡️ 安全</button><button class="btn danger" data-v="0">⚠️ 危險</button></div><div class="expl" id="ex"></div>`;
  ch.hint=()=>{ch.querySelector('#ex').textContent='💡 提示：'+it.clue};
- ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=(b.dataset.v==='1')===it.safe,fast=Date.now()-t0<5000;
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=(b.dataset.v==='1')===it.safe,fast=Date.now()-t0<5000;
   ch.querySelectorAll('.opts .btn').forEach(x=>{if((x.dataset.v==='1')===it.safe)x.classList.add('right')});if(!ok)b.classList.add('wrong');
   ch.querySelector('#ex').textContent=(ok?'⭕ 判斷正確！':'❌ 判斷錯了！')+it.e;after(()=>done(ok,dmg,fast),2000)})}
 function harborIntro(){
@@ -897,7 +904,7 @@ function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);save();hud();lo
 const back=t=>`<div class="topbar"><button class="btn sm alt" onclick="go(arcadeScreen)">⬅ 廣場</button><h2>${t}</h2><div class="px" id="info"></div></div>`;
 
 /* --- 檔案分類大師 --- */
-function fileSort(){
+function fileSort(){busy=true;
  const ALL=[['貓咪.jpg','pic'],['風景.png','pic'],['小狗.gif','pic'],['全家福.jpeg','pic'],['兒歌.mp3','mus'],['鋼琴.wav','mus'],['鳥叫聲.mp3','mus'],['校慶.mp4','vid'],['煙火.mov','vid'],['跳舞.mp4','vid'],['作業.docx','doc'],['日記.txt','doc'],['報告.pdf','doc'],['成績.xlsx','doc']];
  const files=shuffle(ALL).slice(0,10);let left=files.length,miss=0;const t0=Date.now();
  main.innerHTML=back(`${ic('folder')} 檔案分類大師`)+`<p>看檔名後面的 <b>副檔名</b>（點後面的字），把檔案<b>按住拖曳</b>到正確的資料夾！</p><div class="tray" id="tray"></div>
@@ -921,13 +928,13 @@ function zhuyinKeys(){
  const mark=()=>{main.querySelectorAll('.key.hl').forEach(k=>k.classList.remove('hl'));if(hint&&cur)K(cur).classList.add('hl')};
  const nextK=()=>{let n;do{n=pool[rnd(pool.length)]}while(n===cur);cur=n;tg.textContent=ZY[cur];mark()};
  const flash=(c,cl)=>{const k=K(c);if(!k)return;k.classList.add(cl);setTimeout(()=>k.classList.remove(cl),180)};
- $('#go').onclick=e=>{if(started)return;started=true;e.target.remove();if(document.activeElement)document.activeElement.blur();nextK();info.textContent=`${time}s  ${score}分`;
+ $('#go').onclick=e=>{if(started)return;started=true;busy=true;e.target.remove();if(document.activeElement)document.activeElement.blur();nextK();info.textContent=`${time}s  ${score}分`;
   every(()=>{time--;info.textContent=`${time}s  ${score}分`;if(time<=0){clearTimers();keyHandler=null;reward(Math.min(40,score*2),Math.min(30,score),`答對 ${score} 個、按錯 ${miss} 次`,zhuyinKeys)}},1000);
   keyHandler=ev=>{if(ev.repeat||ev.ctrlKey||ev.metaKey||ev.altKey)return;if(!(ev.code in ZY))return;ev.preventDefault();
    if(ev.code===cur){score++;sfx.hit();flash(ev.code,'ok');nextK()}else{miss++;sfx.bad();flash(ev.code,'no')}info.textContent=`${time}s  ${score}分`}}}
 
 /* --- 快捷鍵忍者 --- */
-function ninja(){let round=0,score=0;
+function ninja(){let round=0,score=0;busy=true;
  main.innerHTML=back(`${ic('ninja')} 快捷鍵忍者`)+`<div id="challenge"></div><div class="cheat">${SHORTCUTS.map(s=>`<span>Ctrl+${s.k}＝${s.n}</span>`).join('')}</div>`;
  const ch=$('#challenge'),info=$('#info');
  const nx=()=>{round++;info.textContent=`第${round}/10題 ${score}分`;runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,ok=>{if(ok)score++;if(round>=10)reward(score*3,score*2,`10 題答對 ${score} 題`,ninja);else after(nx,200)})};nx()}
@@ -947,7 +954,7 @@ function memory(){
 /* ---------- 休息提醒：連續玩 30 分鐘，貓頭鷹老師提醒休息 ---------- */
 let playSec=0;
 setInterval(()=>{if(document.visibilityState==='visible'&&S.name)playSec+=15;
- if(playSec>=1800){playSec=0;showModal(`<div class="big">${OWL}</div><h2>休息一下吧！</h2><p>你已經連續玩 30 分鐘囉！<br>看看窗外遠方 20 秒、伸伸懶腰，<br>讓眼睛休息一下再回來～</p>`,[{t:'好，我休息一下',c:'g'}])}},15000);
+ if(playSec>=1800&&!busy&&!document.querySelector('.ov')){playSec=0;showModal(`<div class="big">${OWL}</div><h2>休息一下吧！</h2><p>你已經連續玩 30 分鐘囉！<br>看看窗外遠方 20 秒、伸伸懶腰，<br>讓眼睛休息一下再回來～</p>`,[{t:'好，我休息一下',c:'g'}])}},15000);
 
 /* ---------- 啟動 ---------- */
 go(titleScreen);
