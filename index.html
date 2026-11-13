@@ -138,6 +138,30 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 .hpick .sv{width:80px;height:80px;margin:0 auto}
 .hpick.sel{background:var(--gold);transform:translateY(-3px)}
 @media (max-width:640px){.fighter{width:96px;height:96px}.fighter.enemy{width:110px;height:110px}.side{width:46%;font-size:12px}.stage{height:270px}.combo{top:96px;font-size:22px}}
+.topbar{flex-wrap:wrap}
+.daily{margin-top:12px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:10px 14px}
+.dq{display:grid;gap:6px;margin-top:8px}
+.dqi{display:grid;grid-template-columns:1fr 130px 44px;gap:10px;align-items:center;font-weight:700}
+.dqi .meter{width:100%}
+.dqi small{text-align:right;color:#666}
+.dqi.done span{color:#2d6a4f;text-decoration:line-through}
+.ctabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.ccard{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:10px;text-align:center;box-shadow:0 3px 0 var(--ink);min-height:120px;animation:spawn .25s}
+.ccard.lock{background:#e9ecef;color:#999;display:flex;flex-direction:column;justify-content:center;box-shadow:none;border-style:dashed}
+.ccard .cq{font-size:40px;font-weight:900}
+.ccard .ct{font-weight:900;text-align:left;font-size:14px;line-height:1.5}
+.ccard .ca{font-weight:900;color:var(--blue);margin:6px 0}
+.ccard .ca.ok{color:#2d6a4f}.ccard .ca.bad{color:var(--red)}
+.ccard .cm{font-size:13px;text-align:left;background:#f1f3f5;border-radius:8px;padding:4px 6px;margin:6px 0;line-height:1.5}
+.ccard .cw{font-size:30px;font-weight:900;letter-spacing:3px;margin-top:10px}
+.ccard .czy{color:var(--blue);font-weight:700;letter-spacing:2px}
+.ccard small{color:#666;display:block;font-size:12px;line-height:1.5}
+.towerbox{display:flex;gap:16px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.towerart{width:130px;height:130px;flex:none;animation:bob 2.6s ease-in-out infinite}
+.trules{margin:6px 0;padding-left:20px;line-height:1.8}
+.cps{display:flex;flex-wrap:wrap;gap:10px}
+@media (max-width:640px){.dqi{grid-template-columns:1fr 70px 36px;font-size:14px}.towerbox{flex-direction:column}}
 .tpanel{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#e8dcf7;border:3px solid var(--purple);border-radius:12px;padding:10px 14px}
 .hint{margin-top:12px;background:#fff;border:3px dashed var(--ink);border-radius:12px;padding:10px 14px;font-weight:700}
 /* dialog */
@@ -321,7 +345,7 @@ const KLAB=c=>({Minus:'-',Semicolon:';',Comma:',',Period:'.',Slash:'/'}[c]||c.re
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyhstVReYzNVx1Rrk-HI6MT3b47DBYc7jfSz98STs18RuCMWX7JtCQbjYzXQfTWJ4S9/exec';
 
 /* ---------- 狀態與存檔 ---------- */
-const FRESH=()=>({name:'',hero:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},badges:{safe:false},stars:{},cleared:false,sound:true});
+const FRESH=()=>({name:'',hero:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},badges:{safe:false},stars:{},cleared:false,sound:true,codex:{q:[],s:[],w:[],k:[],e:[]},codexMs:0,daily:null,tower:{best:0}});
 let S=FRESH();
 let ACC=null; // 登入的學生帳號 {id,pw,name,cls,seat}；訪客／單機模式為 null
 let TEACHER=false,GOD=false; // 教師模式（全部解鎖、不記錄成績）、無敵
@@ -473,6 +497,7 @@ Object.assign(CH,{
  hero_robo:heroSvg({skin:'#adb5bd',shirt:'#6c757d',cape:'#9b5de5',emblem:`<rect x="44" y="70" width="12" height="10" rx="2" fill="#4cc9f0" ${SK2}/>`,head:`<path d="M50 14V6" ${SK}/><circle cx="50" cy="5" r="4" fill="#ffc93c" ${SK2}/><rect x="26" y="14" width="48" height="46" rx="12" fill="#adb5bd" ${SK}/>`,face:`<rect x="31" y="27" width="38" height="17" rx="8" fill="${K}"/><g class="eye"><circle cx="42" cy="35.5" r="3.8" fill="#4cc9f0"/><circle cx="58" cy="35.5" r="3.8" fill="#4cc9f0"/></g><path d="M43 51h14" ${SK2}/><ellipse cx="33" cy="50" rx="3.5" ry="2.2" fill="#ffafcc"/><ellipse cx="67" cy="50" rx="3.5" ry="2.2" fill="#ffafcc"/>`}),
  pirate:`<path d="M84 66L94 10" stroke="#9c6644" stroke-width="4" stroke-linecap="round"/><path d="M94 10Q99 28 91 44" fill="none" stroke="${K}" stroke-width="1.5"/><rect x="82" y="44" width="16" height="11" rx="2" fill="#fff" ${SK2}/><path d="M82 45L90 51L98 45" fill="none" ${SK2}/><path d="M24 96Q24 64 50 64Q76 64 76 96Z" fill="#c1121f" ${SK}/><path d="M50 66V96" ${SK2}/><circle cx="45" cy="77" r="2.5" fill="#ffc93c"/><circle cx="45" cy="87" r="2.5" fill="#ffc93c"/><path d="M74 76L86 66" ${SK}/><circle cx="50" cy="44" r="21" fill="#ffd6a5" ${SK}/><path d="M30 52Q50 76 70 52Q66 63 50 65Q34 63 30 52Z" fill="#6f1d1b" ${SK2}/><g class="eye"><circle cx="42" cy="42" r="3.5" fill="${K}"/><circle cx="43" cy="41" r="1.2" fill="#fff"/></g><circle cx="58" cy="42" r="6" fill="${K}"/><path d="M31 35L70 49" stroke="${K}" stroke-width="2.5"/><path d="M36 37L46 40" ${SK2}/><path d="M43 55Q50 51 57 55" fill="none" ${SK2}/><path d="M20 33Q50 0 80 33Q50 25 20 33Z" fill="${K}" ${SK}/><path d="M25 30Q50 21 75 30" stroke="#ffc93c" stroke-width="3" fill="none"/><text x="50" y="25" font-size="13" font-weight="900" text-anchor="middle" fill="#fff">@</text>`,
  lighthouse:`<path d="M8 93Q29 86 50 93T92 93" fill="none" stroke="#48cae4" stroke-width="5" stroke-linecap="round"/><path d="M38 86L42 34H58L62 86Z" fill="#fff"/><path d="M39.6 70H60.4L61.2 80H38.8ZM40.9 48H59.1L59.8 58H40.2Z" fill="#ef476f"/><path d="M38 86L42 34H58L62 86Z" fill="none" ${SK}/><path d="M60 26L86 17M60 31L86 39M40 26L14 17M40 31L14 39" stroke="#ffd166" stroke-width="3.5" stroke-linecap="round"/><rect x="40" y="22" width="20" height="12" fill="#ffd166" ${SK2}/><path d="M37 22L50 9L63 22Z" fill="#ef476f" ${SK2}/><rect x="46" y="74" width="8" height="12" rx="3" fill="${K}"/>`,
+ tower:`<circle cx="50" cy="7" r="6" fill="#ef476f" ${SK2}/><circle cx="50" cy="7" r="2.2" fill="${K}"/><path d="M31 94L36 30H64L69 94Z" fill="#5a189a" ${SK}/><path d="M37 46h26M36 62h28M35 78h30" stroke="#3c096c" stroke-width="2.5"/><path d="M29 30V16H36V21H43V16H50V21H57V16H64V21H71V16V30Z" fill="#7b2cbf" ${SK}/><rect x="45" y="36" width="10" height="14" rx="5" fill="#ffd166" ${SK2}/><rect x="40" y="54" width="8" height="11" rx="4" fill="#ffd166" ${SK2}/><rect x="52" y="54" width="8" height="11" rx="4" fill="#ffd166" ${SK2}/><path d="M42 94V84a8 8 0 0 1 16 0V94Z" fill="${K}"/><path d="M18 94H82" ${SK}/>`,
  star:`<polygon points="${starPts(50,50,44)}" fill="#ffc93c" ${SK}/>`,
  orb:`<circle cx="50" cy="50" r="30" fill="#ef476f" ${SK}/><circle cx="40" cy="40" r="9" fill="#fff" opacity=".6"/>`
 });
@@ -499,7 +524,10 @@ function heroPick(cb){let sel=S.hero||'boy';const ov=document.createElement('div
 function usePotion(){if(S.potions<=0){toast('沒有藥水了，去商店買吧！');return}if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return}S.potions--;S.hp=Math.min(S.maxHp,S.hp+40);sfx.good();toast('🧪 回復 40 HP！');save();hud()}
 function gainExp(n){S.exp+=n;while(S.exp>=need()){S.exp-=need();S.lv++;S.maxHp+=10;S.hp=S.maxHp;sfx.up();toast(`🎉 升級！現在是 Lv${S.lv}，HP 上限 +10`,2400)}save();hud()}
 function damage(n){if(S.hp<=0||(TEACHER&&GOD))return;S.hp=Math.max(0,S.hp-n);main.classList.remove('hurt');void main.offsetWidth;main.classList.add('hurt');hud();if(S.hp<=0)defeat()}
-function defeat(){gen++;clearTimers();keyHandler=null;const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下','');hud();sfx.bad();
+function defeat(){gen++;clearTimers();keyHandler=null;
+ if(towerRun){const f=towerRun.floor;S.hp=Math.ceil(S.maxHp/2);const r=towerEnd('倒下');hud();sfx.bad();
+  showModal(`<div class="big">🗼</div><h2>挑戰結束！</h2><p>你在第 <b>${f}</b> 層倒下了。<br>這次從第 ${r.start} 層出發，突破到第 <b>${r.cleared}</b> 層。<br>🏅 最高紀錄：第 ${S.tower.best||0} 層</p><p class="tip">在無盡塔倒下不會掉金幣，休息一下再來挑戰吧！</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}]);return}
+ const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下','');hud();sfx.bad();
  showModal(`<div class="big">😵</div><h2>你倒下了…</h2><p>貓頭鷹老師把你救回地圖，掉了 ${lost} 枚金幣。<br>去小遊戲廣場賺金幣、到商店買藥水，再來挑戰吧！</p>`,[{t:'回到地圖',f:()=>go(mapScreen)}])}
 
 /* ---------- 拖曳工具（滑鼠 / 觸控皆可） ---------- */
@@ -629,24 +657,26 @@ const NODES=[
  {id:'castle',name:'知識城堡',art:'castle',x:68,y:66,d:'電腦知識問答＋快捷鍵',lock:()=>!S.crystals.zhuyin,lockMsg:'先拿到 🔵 注音水晶才能進入知識城堡！',done:()=>S.crystals.know,go:()=>go(castleIntro)},
  {id:'boss',name:'Bug魔王城',art:'volcano',x:87,y:22,d:'最終決戰！',lock:()=>!(S.crystals.mouse&&S.crystals.zhuyin&&S.crystals.know),lockMsg:'要集滿三顆水晶，魔王城的大門才會打開！',done:()=>S.cleared,go:()=>go(bossIntro)},
  {id:'harbor',name:'網路安全港',art:'lighthouse',x:88,y:70,d:'判斷安全或危險，學會「防火牆」技能',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 滑鼠水晶 才能進入網路安全港！',done:()=>S.badges.safe,go:()=>go(harborIntro)},
+ {id:'tower',name:'Bug 無盡塔',art:'tower',x:64,y:15,d:'一層一層往上爬，挑戰最高紀錄！',lock:()=>!S.cleared,lockMsg:'打倒 Bug魔王 之後，無盡塔才會出現！',go:()=>go(towerScreen)},
  {id:'arcade',name:'小遊戲廣場',art:'wheel',x:45,y:85,d:'玩小遊戲賺金幣和經驗',go:()=>go(arcadeScreen)}
 ];
 function mapScreen(){
  const P=id=>NODES.find(n=>n.id===id);const pts=['forest','village','castle','boss'].map(id=>`${P(id).x},${P(id).y}`).join(' ');
- main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="look">👕 換造型</button><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC||TEACHER?'🚪 登出':'🏠 標題'}</button></div>
+ main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="codex">📖 圖鑑 ${codexGot()}/${codexTotal()}</button><button class="btn sm alt" id="look">👕 換造型</button><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC||TEACHER?'🚪 登出':'🏠 標題'}</button></div>
  ${(()=>{const road=(p,w)=>`<polyline points="${p}" fill="none" stroke="#bc8a5f" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#f1dca7" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><polyline points="${p}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 10" vector-effect="non-scaling-stroke"/>`;const xy=id=>`${P(id).x},${P(id).y}`;
-  return `<div class="map">${mapBg()}<svg viewBox="0 0 100 100" preserveAspectRatio="none">${road(`${xy('forest')} ${xy('arcade')}`,9)}${road(`${xy('forest')} ${xy('shop')}`,9)}${road(`${xy('castle')} ${xy('harbor')}`,9)}${road(pts,13)}</svg>`})()}
+  return `<div class="map">${mapBg()}<svg viewBox="0 0 100 100" preserveAspectRatio="none">${road(`${xy('forest')} ${xy('arcade')}`,9)}${road(`${xy('forest')} ${xy('shop')}`,9)}${road(`${xy('castle')} ${xy('harbor')}`,9)}${road(`${xy('boss')} ${xy('tower')}`,9)}${road(pts,13)}</svg>`})()}
  ${NODES.map(n=>{const lk=!TEACHER&&n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${ch(n.art)}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}${S.stars[STARKEY[n.id]]?`<span class="nst">${starStr(S.stars[STARKEY[n.id]])}</span>`:''}</span></button>`}).join('')}
- </div>${TEACHER?teacherPanel():`<div class="hint">${OWL} ${nextHint()}</div>`}`;
+ </div>${TEACHER?teacherPanel():`<div class="hint">${OWL} ${nextHint()}</div>`}${dailyPanel()}`;
  if(TEACHER)bindTeacherPanel();
  $('#look').onclick=()=>{sfx.click();heroPick(()=>go(mapScreen))};
+ $('#codex').onclick=()=>{sfx.click();go(()=>codexScreen('q'))};
  if(!S.hero)heroPick(()=>go(mapScreen));
  main.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const n=P(b.dataset.id);sfx.click();if(!TEACHER&&n.lock&&n.lock()){toast(n.lockMsg);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);return}n.go()});
  $('#help').onclick=helpModal;$('#ttl').onclick=()=>{if(ACC||TEACHER)logout();else{S=FRESH();go(titleScreen)}};save()}
 const STARKEY={forest:'mouse',village:'zhuyin',castle:'know',harbor:'harbor',boss:'boss'};
 const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 function nextHint(){const c=S.crystals;
- if(S.cleared)return '你已經是電腦王國的英雄了！可以繼續玩小遊戲挑戰高分喔。';
+ if(S.cleared)return `你已經是電腦王國的英雄了！挑戰 🗼 <b>Bug 無盡塔</b>（最高紀錄：第 ${S.tower.best||0} 層），或把 📖 <b>圖鑑</b> 收集完整吧！`;
  if(!c.mouse)return '下一步：到 🌲 <b>滑鼠森林</b> 收集滑鼠水晶！';
  if(!c.zhuyin)return '下一步：到 🏘️ <b>注音村</b> 用打字打敗錯字幽靈！記得切換到注音輸入法。'+(S.badges.safe?'':'<br>🌟 支線：到 ⚓ <b>網路安全港</b> 可以學會「🛡️ 防火牆」技能！');
  if(!c.know)return '下一步：到 🏰 <b>知識城堡</b> 回答電腦知識問題！';
@@ -669,7 +699,7 @@ function forestBattle(){
  if(TEACHER)$('#twin').onclick=()=>{if(over)return;over=true;clearTimers();bhp=0;$('#bhp').style.width='0%';$('#bhpt').textContent='0/100';fx($('#foe'),'hit',360);after(()=>winArea('mouse',{stars:3,miss:0}),400)};
  const hitBoss=(el,d)=>{if(over)return;const r=el.getBoundingClientRect(),a=ar.getBoundingClientRect();pop(ar,r.left-a.left+20,r.top-a.top,'-'+d);burst(ar,r.left-a.left+30,r.top-a.top+30,8);el.remove();alive--;sfx.hit();bhp=Math.max(0,bhp-d);
   $('#bhp').style.width=bhp+'%';$('#bhpt').textContent=bhp+'/100';const f=$('#foe');fx(f,'hit',360);burst(f,76,66,6);
-  if(bhp<=0){over=true;clearTimers();const r=fStars();after(()=>winArea('mouse',r),400)}};
+  if(bhp<=0){over=true;clearTimers();const r=fStars();['beetle','cat','lady','alien'].forEach(m=>codexAdd('e',m));quest('win');if(r.stars===3)quest('star3');after(()=>winArea('mouse',r),400)}};
  const wrong=(el,msg)=>{if(over)return;wrongs++;sfx.bad();toast(msg);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);damage(3)};
  const spawn=()=>{if(over||alive>=6)return;const w=ar.clientWidth,h=ar.clientHeight;let x,y;do{x=rnd(w-60);y=rnd(h-60)}while(x>w-140&&y>h-140);
   const r=Math.random(),t=r<.4?'click':r<.65?'dbl':r<.9?'right':'gem';
@@ -716,9 +746,9 @@ function battle(cfg){
  const showCombo=()=>{const c=$('#combo');if(combo>=2){c.textContent=`${combo} 連擊！`+(combo>=5?'🔥':'');fx(c,'bump',260)}else c.textContent=''};
  const hurt=n=>{if(won)return;if(shield){shield=false;$('#shieldfx').classList.remove('on');const p=rel(hero);pop(st,p.x,p.y-80,'防火牆擋下！','#118ab2');sfx.good();return}
   fx(hero,'hurt',360);damage(n);updHero()};
- const finish=()=>{const stars=1+(S.hp/S.maxHp>=.5?1:0)+(miss===0||maxCombo>=5?1:0);cfg.onWin({stars,maxCombo,miss})};
+ const finish=()=>{const stars=1+(S.hp/S.maxHp>=.5?1:0)+(miss===0||maxCombo>=5?1:0);codexAdd('e',cfg.art);quest('win');if(stars===3)quest('star3');cfg.onWin({stars,maxCombo,miss})};
  const checkRage=()=>{if(cfg.rage&&!rage&&mhp>0&&mhp<=cfg.hp/2){rage=true;atkEvery=Math.round(atkEvery*.6);enemy.classList.add('rage');fx(st,'quake',600);sfx.bad();say(cfg.rage,2600)}};
- $('#flee').onclick=()=>go(mapScreen);
+ $('#flee').onclick=()=>{if(cfg.onFlee)cfg.onFlee();else go(mapScreen)};
  if(TEACHER)$('#twin').onclick=()=>{if(won)return;won=true;mhp=0;$('#mhp').style.width='0%';$('#mhpt').textContent='0/'+cfg.hp;keyHandler=null;clearTimers();chal.innerHTML='';fx(st,'hit',360);after(()=>cfg.onWin({stars:3,maxCombo,miss}),400)};
  main.querySelectorAll('.skill').forEach(b=>b.onclick=()=>{const s=SKILLS.find(x=>x.id===b.dataset.s);if(won)return;
   if(!s.ok()){toast(s.lockMsg,2200);return}
@@ -726,7 +756,7 @@ function battle(cfg){
   if(s.id==='hint'){if(!chal.hint){toast('現在不能使用提示（這題已經作答或用過提示了）',2200);return}chal.hint();chal.hint=null}
   if(s.id==='shield'){if(shield){toast('防火牆已經開啟了');return}shield=true;$('#shieldfx').classList.add('on')}
   if(s.id==='power'){if(power){toast('超級攻擊已經準備好了');return}power=true;hero.classList.add('charged')}
-  mp-=s.cost;updMP();sfx.up();say(`${s.ic} ${s.n}！`,1200);
+  mp-=s.cost;updMP();sfx.up();say(`${s.ic} ${s.n}！`,1200);quest('skill');
   const inp=chal.querySelector('input');if(inp)inp.focus();else if(document.activeElement)document.activeElement.blur()});
  every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/atkEvery*100)+'%';updHero();
   if(atk>=atkEvery){atk=0;fx(st,'atk',500);sfx.bad();shoot(enemy,hero,'orb',()=>hurt(cfg.atkDmg))}},100);
@@ -734,7 +764,7 @@ function battle(cfg){
   if(ok){combo++;maxCombo=Math.max(maxCombo,combo);
    const mult=1+Math.min(combo-1,4)*.1,d=Math.round((dmg+atkBonus())*mult*(fast?1.3:1)*(power?2:1));
    const tag=(power?'超級攻擊！':'')+(fast?'會心一擊！':'');power=false;hero.classList.remove('charged');
-   mp=Math.min(100,mp+(fast?35:25));updMP();showCombo();fx(hero,'lunge',420);sfx.good();
+   mp=Math.min(100,mp+(fast?35:25));updMP();showCombo();fx(hero,'lunge',420);sfx.good();if(fast)quest('crit');if(combo===5)quest('combo');
    shoot(hero,enemy,'star',()=>{mhp=Math.max(0,mhp-d);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;
     fx(st,'hit',360);const q=rel(enemy);burst(st,q.x,q.y,fast?18:10);pop(st,q.x,q.y-90,'-'+d,fast||tag?'#ffc93c':null);if(tag)pop(st,q.x,q.y-120,tag,'#ef476f');
     if(fast)sfx.hit();checkRage();
@@ -757,7 +787,7 @@ function runTyping(w,ch,done){let fin=false,comp=false;const t0=Date.now(),par=2
  const inp=ch.querySelector('#ti');setTimeout(()=>inp.focus(),30);
  const norm=s=>s.replace(/[\s，,。.！!]/g,'');
  const check=enter=>{if(fin)return;const v=norm(inp.value);
-  if(v===w.w){fin=true;ch.hint=null;inp.classList.add('ok');inp.blur();done(true,w.d,Date.now()-t0<par)}
+  if(v===w.w){fin=true;ch.hint=null;inp.classList.add('ok');inp.blur();codexAdd('w',ALLW.findIndex(x=>x[0]===w.w));quest('type');done(true,w.d,Date.now()-t0<par)}
   else if(enter&&v.length){sfx.bad();toast('有字打錯囉，再檢查一下！');inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);(ch.hurt||damage)(3)}};
  inp.addEventListener('compositionstart',()=>comp=true);
  inp.addEventListener('compositionend',()=>{comp=false;setTimeout(()=>check(false),0)});
@@ -770,10 +800,10 @@ function pickQuiz(){if(!quizBag.length)quizBag=shuffle(QUIZ);return quizBag.pop(
 function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a),t0=Date.now();
  ch.innerHTML=`<div style="font-weight:700;color:#666">❓ 電腦知識問答</div><div class="q">${q.q}</div><div class="opts">${opts.map((o,i)=>`<button class="btn" data-i="${i}">${o}</button>`).join('')}</div><div class="expl" id="ex"></div>`;
  ch.hint=()=>{shuffle([...ch.querySelectorAll('.opts .btn')].filter(x=>opts[x.dataset.i]!==q.a[0])).slice(0,2).forEach(x=>{x.classList.add('gone');x.disabled=true})};
- ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000;
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000;if(ok){codexAdd('q',QUIZ.indexOf(q));quest('quiz')}
   ch.querySelectorAll('.opts .btn').forEach(x=>{if(opts[x.dataset.i]===q.a[0])x.classList.add('right')});if(!ok)b.classList.add('wrong');
   ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg,fast),1600)})}
-function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;ch.hint=null;keyHandler=null;const fast=Date.now()-t0<3500;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
+function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;ch.hint=null;keyHandler=null;const fast=Date.now()-t0<3500;if(ok)codexAdd('k',SHORTCUTS.indexOf(s));ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
  ch.hint=()=>{if(!fin)ch.querySelector('#hk').textContent=s.k};
  const mac=/Mac/.test(navigator.platform);
  ch.innerHTML=`<div style="font-weight:700;color:#666">⚡ 快捷鍵挑戰（真的按按看！）</div><div class="q" style="font-size:30px">請按下「${s.n}」的快捷鍵</div>
@@ -837,11 +867,11 @@ const MSGIC={'簡訊':'📱','網頁':'🌐','聊天':'💬','跳出視窗':'❗
 let safeBag=[];
 function pickSafety(){if(!safeBag.length)safeBag=shuffle(SAFETY);return safeBag.pop()}
 function runSafety(it,ch,done,dmg=22){let fin=false;const t0=Date.now();
- ch.innerHTML=`<div style="font-weight:700;color:#666">🛟 網路安全判斷：這個情況「安全」還是「危險」？</div>
+ ch.innerHTML=`<div style="font-weight:700;color:#666">🔒 網路安全判斷：這個情況「安全」還是「危險」？</div>
  <div class="msgcard"><div class="mh">${MSGIC[it.t]||'💬'} ${it.t}｜來自：<b>${esc(it.from)}</b></div><div class="mb">${esc(it.m)}</div></div>
  <div class="opts"><button class="btn safe" data-v="1">🛡️ 安全</button><button class="btn danger" data-v="0">⚠️ 危險</button></div><div class="expl" id="ex"></div>`;
  ch.hint=()=>{ch.querySelector('#ex').textContent='💡 提示：'+it.clue};
- ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=(b.dataset.v==='1')===it.safe,fast=Date.now()-t0<5000;
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=(b.dataset.v==='1')===it.safe,fast=Date.now()-t0<5000;if(ok){codexAdd('s',SAFETY.indexOf(it));quest('safe')}
   ch.querySelectorAll('.opts .btn').forEach(x=>{if((x.dataset.v==='1')===it.safe)x.classList.add('right')});if(!ok)b.classList.add('wrong');
   ch.querySelector('#ex').textContent=(ok?'⭕ 判斷正確！':'❌ 判斷錯了！')+it.e;after(()=>done(ok,dmg,fast),2000)})}
 function harborIntro(){
@@ -879,7 +909,7 @@ function ending(){
  <p style="font-size:20px;line-height:1.9">茲證明 <b style="font-size:30px;color:var(--blue)">${esc(S.name)}</b><br>精通滑鼠操作、注音打字與電腦知識，<br>成功打倒 Bug魔王 ${ic('boss')}，拯救了電腦王國！</p>
  <p class="px" style="margin-top:20px">LV ${S.lv}　　${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}</p><p>${ic('owl')} 貓頭鷹老師 頒發</p></div>
  <div class="center" style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" onclick="go(mapScreen)">🗺️ 回地圖繼續玩</button><button class="btn alt" onclick="go(arcadeScreen)">🎡 小遊戲廣場</button></div>`;
- dialog([[OWL,OWLN,'太厲害了，{name}！你是電腦王國真正的英雄！'],[OWL,OWLN,'記得：上網要安全、密碼不告訴別人、常常存檔，還有用電腦要記得休息喔！']])}
+ dialog([[OWL,OWLN,'太厲害了，{name}！你是電腦王國真正的英雄！'],[OWL,OWLN,'記得：上網要安全、密碼不告訴別人、常常存檔，還有用電腦要記得休息喔！'],[OWL,OWLN,'對了！地圖上出現了一座 <b>🗼 Bug 無盡塔</b>，魔王的手下都躲在裡面。看看你能爬到第幾層吧！']])}
 
 /* =========================================================
    道具商店
@@ -900,7 +930,7 @@ function arcadeScreen(){
  <div class="grid">${g.map((x,i)=>`<div class="gcard" data-i="${i}"><div class="e" style="background:${x.c}">${ch(x.e)}</div><h3>${x.n}</h3><p>${x.d}</p><p>🎯 練習：<b>${x.s}</b></p></div>`).join('')}</div>`;
  main.querySelectorAll('.gcard').forEach(c=>c.onclick=()=>{sfx.click();go(g[c.dataset.i].f)})}
 const GNAME={fileSort:'檔案分類大師',zhuyinKeys:'注音鍵盤反應王',ninja:'快捷鍵忍者',memory:'電腦零件記憶翻牌'};
-function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);save();hud();logRec('🎡 '+(GNAME[again.name]||'小遊戲'),'完成',msg);sfx.win();confetti();showModal(`<div class="big">${ch('trophy')}</div><h2>遊戲結束</h2><p>${msg}<br>${COIN} +${coins}　⭐ +${exp}</p>`,[{t:'再玩一次',c:'g',f:()=>go(again)},{t:'回廣場',c:'alt',f:()=>go(arcadeScreen)}])}
+function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);quest('mini');save();hud();logRec('🎡 '+(GNAME[again.name]||'小遊戲'),'完成',msg);sfx.win();confetti();showModal(`<div class="big">${ch('trophy')}</div><h2>遊戲結束</h2><p>${msg}<br>${COIN} +${coins}　⭐ +${exp}</p>`,[{t:'再玩一次',c:'g',f:()=>go(again)},{t:'回廣場',c:'alt',f:()=>go(arcadeScreen)}])}
 const back=t=>`<div class="topbar"><button class="btn sm alt" onclick="go(arcadeScreen)">⬅ 廣場</button><h2>${t}</h2><div class="px" id="info"></div></div>`;
 
 /* --- 檔案分類大師 --- */
@@ -950,6 +980,78 @@ function memory(){
   if(open.length===2){moves++;info.textContent='步數 '+moves;const [a,b]=open.map(x=>deck[x.dataset.i]);
    if(a.k===b.k){open.forEach(x=>{x.classList.add('got')});open=[];got++;sfx.good();if(got===P.length)after(()=>reward(Math.max(8,36-(moves-6)*2),15,`用了 ${moves} 步完成！`,memory),400)}
    else{lock=true;after(()=>{open.forEach(x=>{x.classList.remove('up','txt');x.textContent='?'});open=[];lock=false},800)}}})}
+
+/* =========================================================
+   📖 知識圖鑑：答對題目、打倒怪物就能收集卡片
+   ========================================================= */
+const ALLW=[...WORDS.easy,...WORDS.mid,...WORDS.hard];
+const MONS=[{id:'cat',n:'毛毛蟲',w:'滑鼠森林',d:'用滑鼠左鍵點一下就能打倒。'},{id:'lady',n:'瓢蟲',w:'滑鼠森林',d:'要用左鍵快速點兩下。'},{id:'alien',n:'外星蟲',w:'滑鼠森林',d:'只怕滑鼠右鍵。'},{id:'beetle',n:'蟲蟲大王',w:'滑鼠森林',d:'森林的老大，戴著金色皇冠。'},{id:'ghost',n:'錯字幽靈',w:'注音村',d:'把村民的字變成亂碼，最怕正確的注音打字。'},{id:'robot',n:'亂碼機器人',w:'知識城堡',d:'螢幕臉上只會顯示 #@!%，怕正確的電腦知識。'},{id:'pirate',n:'釣魚海盜',w:'網路安全港',d:'用假訊息釣人上鉤，帽子上有 @ 標誌。'},{id:'boss',n:'Bug魔王',w:'Bug魔王城',d:'電腦王國的大魔王，生氣時會狂暴化。'}];
+const CODEX=[{k:'q',n:'電腦知識',ic:'❓',list:()=>QUIZ,lock:'在知識城堡或魔王戰答對'},{k:'s',n:'網路安全',ic:'🔒',list:()=>SAFETY,lock:'在網路安全港判斷正確'},{k:'w',n:'注音詞語',ic:'⌨️',list:()=>ALLW,lock:'在注音村打對這個詞'},{k:'k',n:'快捷鍵',ic:'⚡',list:()=>SHORTCUTS,lock:'在快捷鍵挑戰按對'},{k:'e',n:'怪物',ic:'👾',list:()=>MONS,lock:'打敗牠就能收集'}];
+const CMS=[[.25,50],[.5,100],[.75,150],[1,300]];
+const codexTotal=()=>CODEX.reduce((a,c)=>a+c.list().length,0);
+const codexGot=()=>CODEX.reduce((a,c)=>a+(S.codex[c.k]||[]).length,0);
+function codexAdd(k,i){if(i==null||i<0||!S.name)return;const a=S.codex[k]=S.codex[k]||[];if(a.includes(i))return;a.push(i);toast('📖 圖鑑新增一張卡片！',1300);quest('card');codexMilestone();save()}
+function codexMilestone(){const tot=codexTotal();while(S.codexMs<CMS.length&&codexGot()/tot>=CMS[S.codexMs][0]){const [p,c]=CMS[S.codexMs];S.coins+=c;S.codexMs++;sfx.win();toast(`📖 圖鑑收集達 ${p*100}%！獎勵金幣 +${c}`,3000);logRec('知識圖鑑',`收集 ${p*100}%`,`${codexGot()}/${tot}`)}hud()}
+function cardBody(k,it){
+ if(k==='q')return `<div class="ct">❓ ${it.q}</div><div class="ca">✔ ${it.a[0]}</div><small>${it.e}</small>`;
+ if(k==='s')return `<div class="ct">${MSGIC[it.t]||'💬'} ${esc(it.from)}</div><div class="cm">${esc(it.m)}</div><div class="ca ${it.safe?'ok':'bad'}">${it.safe?'🛡️ 安全':'⚠️ 危險'}</div><small>${it.e}</small>`;
+ if(k==='w')return `<div class="cw">${it[0]}</div><div class="czy">${it[1]}</div>`;
+ if(k==='k')return `<div class="cw" style="font-size:20px"><span class="keycap">Ctrl</span>+<span class="keycap">${it.k}</span></div><div class="ca">${it.n}</div>`;
+ return `<div style="width:84px;height:84px;margin:0 auto">${ch(it.id)}</div><div class="ca">${it.n}</div><small>📍 ${it.w}｜${it.d}</small>`}
+function codexScreen(tab='q'){const c=CODEX.find(x=>x.k===tab),got=S.codex[tab]||[],list=c.list(),next=CMS[S.codexMs],tot=codexTotal(),n=codexGot();
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" id="cback">⬅ 地圖</button><h2>📖 知識圖鑑</h2><div class="stat">${n} / ${tot}</div></div>
+ <div class="meter exp" style="width:100%;height:16px"><i style="width:${n/tot*100}%"></i></div>
+ <div class="tip">${next?`收集到 <b>${Math.ceil(next[0]*tot)}</b> 張，可以得到 ${COIN} ${next[1]}！答對新的題目、打敗新的怪物就能收集。`:'🎉 圖鑑已經全部收集完成，你是電腦王國的博士！'}</div>
+ <div class="ctabs">${CODEX.map(x=>`<button class="btn sm ${x.k===tab?'':'alt'}" data-k="${x.k}">${x.ic} ${x.n} ${(S.codex[x.k]||[]).length}/${x.list().length}</button>`).join('')}</div>
+ <div class="cgrid">${list.map((it,i)=>{const id=tab==='e'?it.id:i;return got.includes(id)?`<div class="ccard">${cardBody(tab,it)}</div>`:`<div class="ccard lock"><div class="cq">？</div><small>${c.lock}</small></div>`}).join('')}</div>`;
+ $('#cback').onclick=()=>go(mapScreen);
+ main.querySelectorAll('.ctabs .btn').forEach(b=>b.onclick=()=>{sfx.click();go(()=>codexScreen(b.dataset.k))})}
+
+/* =========================================================
+   📅 每日任務：每天 3 個小目標
+   ========================================================= */
+const QUESTS=[{id:'win',n:'打贏 2 場戰鬥',t:2},{id:'combo',n:'打出一次 5 連擊',t:1},{id:'quiz',n:'答對 8 題知識問答',t:8},{id:'type',n:'打對 6 個注音詞語',t:6},{id:'safe',n:'答對 5 題網路安全判斷',t:5,need:()=>S.crystals.mouse},{id:'mini',n:'玩 2 次小遊戲',t:2},{id:'star3',n:'拿到一次三星評價',t:1},{id:'crit',n:'打出 3 次會心一擊',t:3},{id:'card',n:'解鎖 3 張新圖鑑卡',t:3},{id:'tower',n:'在無盡塔爬 3 層',t:3,need:()=>S.cleared},{id:'skill',n:'使用 2 次技能',t:2}];
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
+const qdef=id=>QUESTS.find(q=>q.id===id);
+function dailyEnsure(){if(S.daily&&S.daily.d===today())return;S.daily={d:today(),q:shuffle(QUESTS.filter(q=>!q.need||q.need())).slice(0,3).map(q=>({id:q.id,p:0})),bonus:false}}
+function quest(id,n=1){if(!S.name)return;dailyEnsure();let chg=false;
+ S.daily.q.forEach(x=>{const d=qdef(x.id);if(x.id!==id||x.p>=d.t)return;x.p=Math.min(d.t,x.p+n);chg=true;if(x.p>=d.t){S.coins+=20;gainExp(15);sfx.up();toast(`✅ 每日任務完成：${d.n}（金幣 +20、經驗 +15）`,2800)}});
+ if(!chg)return;
+ if(!S.daily.bonus&&S.daily.q.every(x=>x.p>=qdef(x.id).t)){S.daily.bonus=true;S.potions++;S.coins+=30;toast('🎉 今天的任務全部完成！額外獎勵：藥水 +1、金幣 +30',3400);logRec('每日任務','全部完成',S.daily.q.map(x=>qdef(x.id).n).join('、'))}
+ save();hud()}
+function dailyPanel(){dailyEnsure();const all=S.daily.bonus;
+ return `<div class="daily"><div><b>📅 今日任務</b> <span class="tip" style="margin:0">${all?'全部完成！明天會有新任務 🎉':'每完成一項：金幣 +20、經驗 +15；三項全完成再送藥水一瓶'}</span></div>
+ <div class="dq">${S.daily.q.map(x=>{const d=qdef(x.id),ok=x.p>=d.t;return `<div class="dqi ${ok?'done':''}"><span>${ok?'✅':'⬜'} ${d.n}</span><div class="meter exp"><i style="width:${x.p/d.t*100}%"></i></div><small>${x.p}/${d.t}</small></div>`}).join('')}</div></div>`}
+
+/* =========================================================
+   🗼 Bug 無盡塔：打倒魔王後開放，一層一層往上爬
+   ========================================================= */
+const TOWER_FOES=[{art:'beetle',n:'蟲蟲衛兵'},{art:'ghost',n:'錯字幽靈'},{art:'robot',n:'亂碼機器人'},{art:'pirate',n:'釣魚海盜'},{art:'alien',n:'外星蟲兵'}];
+const TOWER_BG=['linear-gradient(#3c096c,#9d4edd)','linear-gradient(#03045e,#0096c7)','linear-gradient(#370617,#d00000)','linear-gradient(#10002b,#5a189a)','linear-gradient(#000,#495057)'];
+let towerRun=null; // {start, floor（正在打的樓層）, cleared（已突破的最高樓層）}
+function towerCheckpoints(){const best=S.tower.best||0,c=[1];for(let f=6;f<=best+1;f+=5)c.push(f);return c}
+function towerScreen(){const best=S.tower.best||0;
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" id="tback2">⬅ 地圖</button><h2>🗼 Bug 無盡塔</h2><div class="stat">🏅 最高紀錄：第 ${best} 層</div></div>
+ <div class="towerbox"><div class="towerart">${ch('tower')}</div><div>
+ <p style="font-size:17px;line-height:1.7">Bug 魔王的手下躲進了這座塔！<br>一層一層往上爬，題目會越來越難、敵人也越來越強。</p>
+ <ul class="trules"><li>每突破一層：回復 <b>20 HP</b>，拿到金幣和經驗（越高層越多）</li><li>第 5、10、15… 層是 <b>魔王分身</b>，打贏有大獎</li><li>倒下或逃跑時挑戰結束，記錄最高樓層（<b>不會掉金幣</b>）</li><li>每突破 5 層，就會解鎖新的起點</li></ul></div></div>
+ <h3>選擇起點</h3><div class="cps">${towerCheckpoints().map(f=>`<button class="btn ${f===1?'alt':'g'}" data-f="${f}">🚩 從第 ${f} 層開始</button>`).join('')}</div>`;
+ $('#tback2').onclick=()=>go(mapScreen);
+ main.querySelectorAll('.cps .btn').forEach(b=>b.onclick=()=>{sfx.click();const f=+b.dataset.f;towerRun={start:f,floor:f,cleared:f-1};go(towerFloor)})}
+function towerFoe(f){return f%5===0?{art:'boss',n:'Bug魔王分身',boss:true}:TOWER_FOES[(f-1)%TOWER_FOES.length]}
+function towerFloor(){const f=towerRun.floor,e=towerFoe(f),lv=f<4?'easy':f<9?'mid':'hard';
+ const kinds=['quiz','type','sc'];if(f>=3)kinds.push('safe');if(f>=5)kinds.push('click');
+ battle({name:`${f}F ${e.n}`,area:'Bug 無盡塔',art:e.art,bg:TOWER_BG[Math.floor((f-1)/5)%TOWER_BG.length],rage:e.boss?'不准你再往上爬！':null,
+  hp:Math.round((e.boss?150:80)+f*14),atkEvery:Math.max(8000,22000-f*700),atkDmg:8+Math.floor(f/2),missDmg:5+Math.floor(f/3),
+  next:(c,done)=>{const k=kinds[rnd(kinds.length)];if(k==='quiz')runQuiz(pickQuiz(),c,done);else if(k==='type')runTyping(pickWord(lv),c,done);else if(k==='sc')runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],c,done);else if(k==='safe')runSafety(pickSafety(),c,done);else runClick(c,done)},
+  onWin:towerWin,onFlee:()=>{towerEnd('逃跑');go(mapScreen)}})}
+function towerWin(){const f=towerRun.floor,boss=f%5===0,c=10+f*2+(boss?30:0),x=10+f*3+(boss?30:0);
+ towerRun.cleared=f;const nb=f>(S.tower.best||0);if(nb)S.tower.best=f;
+ S.coins+=c;S.hp=Math.min(S.maxHp,S.hp+20);quest('tower');gainExp(x);save();hud();sfx.win();if(boss||nb)confetti();
+ showModal(`<div class="big">${ch('tower')}</div><h2>第 ${f} 層突破！</h2>${nb?'<p class="newbest">🎉 新的最高紀錄！</p>':''}<p>${COIN} +${c}　⭐ +${x}　❤️ +20<br>目前 HP：<b>${S.hp}/${S.maxHp}</b>　藥水：${S.potions} 瓶</p>${(f+1)%5===0?'<p><b>⚠️ 下一層是「魔王分身」！</b>記得先喝藥水補血。</p>':''}`,
+  [{t:`⬆ 挑戰第 ${f+1} 層`,c:'g',f:()=>{towerRun.floor=f+1;go(towerFloor)}},{t:'🏠 結束挑戰',c:'alt',f:()=>{towerEnd('結束');go(mapScreen)}}])}
+function towerEnd(how){const r=towerRun;if(!r)return null;towerRun=null;
+ logRec('Bug 無盡塔','挑戰結束',`${how}：從第 ${r.start} 層出發，突破到第 ${r.cleared} 層（最高紀錄 ${S.tower.best||0} 層）`);save();return r}
 
 /* ---------- 休息提醒：連續玩 30 分鐘，貓頭鷹老師提醒休息 ---------- */
 let playSec=0;
