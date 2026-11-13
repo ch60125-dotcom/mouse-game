@@ -1,2331 +1,581 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows 滑鼠小達人：50關大冒險（三年級闖關版）</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
-
-        * {
-            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body {
-            overflow: hidden;
-            background: linear-gradient(145deg, #0c2d57 0%, #1d4ed8 48%, #0284c7 100%);
-        }
-
-        /* 全畫面滑鼠波紋特效 */
-        .click-ripple {
-            position: fixed;
-            border-radius: 9999px;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%) scale(0.2);
-            animation: rippleOut 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes rippleOut {
-            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
-        }
-
-        /* 兒童版大按鈕立體壓感 */
-        .kid-btn {
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
-            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.28);
-        }
-        .kid-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.3);
-        }
-        .kid-btn:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        /* 滑鼠 SVG 部位發光 */
-        .mouse-zone {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .mouse-zone:hover {
-            filter: brightness(1.15);
-        }
-        .zone-glow-left {
-            fill: #38bdf8 !important;
-            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.95));
-        }
-        .zone-glow-right {
-            fill: #c084fc !important;
-            filter: drop-shadow(0 0 16px rgba(192, 132, 252, 0.95));
-        }
-        .zone-glow-wheel {
-            fill: #facc15 !important;
-            filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.95));
-        }
-
-        /* 氣球與飛碟浮動動畫 */
-        @keyframes floatUpDown {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-14px) rotate(3deg); }
-        }
-        .balloon-float {
-            animation: floatUpDown 2.1s ease-in-out infinite;
-        }
-
-        @keyframes pulseTarget {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
-        }
-        .target-pulse {
-            animation: pulseTarget 1.5s ease-in-out infinite;
-        }
-
-        /* 雙擊連擊能量環 */
-        .dbl-first-hit {
-            box-shadow: 0 0 0 8px rgba(250, 204, 21, 0.85), 0 0 30px rgba(250, 204, 21, 0.9) !important;
-            transform: scale(1.08) !important;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>電腦王國大冒險</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#22223b;--paper:#fffbea;--gold:#ffc93c;--red:#ef476f;--green:#06d6a0;--blue:#118ab2;--purple:#9b5de5;--sky:#caf0f8}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans TC',system-ui,sans-serif;background:#1d2145;background-image:radial-gradient(circle at 15% 0%,#3a4190 0,transparent 55%),radial-gradient(circle at 90% 100%,#4b2a6b 0,transparent 50%);color:var(--ink);min-height:100vh;user-select:none;-webkit-user-select:none}
+#app{max-width:1000px;margin:0 auto;padding:12px}
+.px{font-family:'Press Start 2P',monospace;font-size:11px}
+#hud{display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:var(--paper);border:4px solid var(--ink);border-radius:14px;padding:8px 14px;box-shadow:0 6px 0 #0007;margin-bottom:14px;min-height:56px}
+#hud:empty{display:none}
+.stat{display:flex;align-items:center;gap:6px;font-weight:900}
+.meter{width:120px;height:14px;background:#e9e3cf;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.meter>i{display:block;height:100%;background:var(--green);transition:width .3s}
+.meter.exp>i{background:var(--gold)}
+.meter.foehp{width:100%;height:20px}
+.meter.foehp>i{background:var(--red)}
+.meter.atk{width:100%;height:8px;border-width:2px}
+.meter.atk>i{background:var(--purple);transition:none}
+#main{position:relative;background:var(--paper);border:4px solid var(--ink);border-radius:18px;min-height:580px;padding:16px;box-shadow:0 8px 0 #0007;overflow:hidden}
+h1,h2,h3{margin:.2em 0}
+.btn{font:inherit;font-weight:900;font-size:18px;padding:10px 18px;border:3px solid var(--ink);border-radius:12px;background:var(--gold);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .05s,filter .1s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.sm{font-size:14px;padding:5px 10px;box-shadow:0 3px 0 var(--ink)}
+.btn.alt{background:#fff}
+.btn.g{background:var(--green)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.topbar h2{flex:1}
+.center{text-align:center}
+.tip{color:#666;font-size:14px;margin-top:8px}
+input.tin{font:inherit;font-size:30px;font-weight:700;padding:10px 14px;border:4px solid var(--ink);border-radius:12px;width:min(460px,90%);text-align:center;background:#fff;outline:none;user-select:text;-webkit-user-select:text}
+input.tin:focus{border-color:var(--blue);box-shadow:0 0 0 4px #118ab233}
+input.tin.ok{border-color:var(--green);background:#e6fff6}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes lunge{0%,100%{transform:scale(1)}40%{transform:scale(1.5) translateY(20px)}}
+@keyframes popup{0%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-50px)}}
+@keyframes spawn{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes flashred{0%{box-shadow:inset 0 0 0 0 #ef476f00}30%{box-shadow:inset 0 0 0 14px #ef476faa}100%{box-shadow:inset 0 0 0 0 #ef476f00}}
+.hurt{animation:flashred .4s}
+/* title */
+.title{text-align:center;padding:30px 10px}
+.title .logo{font-size:90px;animation:bob 2s infinite}
+.title h1{font-size:46px;font-weight:900;letter-spacing:4px;color:var(--ink);text-shadow:4px 4px 0 var(--gold)}
+.title .sub{font-size:18px;color:#555;margin-bottom:24px}
+/* map */
+.map{position:relative;height:520px;border-radius:14px;border:3px solid var(--ink);overflow:hidden;background:
+ radial-gradient(ellipse at 87% 22%,#6d2e2e 0 9%,transparent 10%),
+ radial-gradient(ellipse at 16% 68%,#2d6a4f 0 13%,transparent 14%),
+ linear-gradient(160deg,#b7e4c7,#74c69d 55%,#52b788)}
+.river{position:absolute;left:-10%;top:48%;width:120%;height:46px;background:#48cae4;border-top:4px solid #90e0ef;border-bottom:4px solid #0096c7;transform:rotate(-8deg);opacity:.85}
+.map svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer;border:none;background:none;font:inherit;padding:0}
+.node .ico{font-size:58px;display:block;filter:drop-shadow(0 5px 0 #0005);transition:transform .15s}
+.node:hover .ico{transform:scale(1.15) translateY(-5px)}
+.node .lbl{display:inline-block;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:2px 10px;font-weight:900;white-space:nowrap}
+.node.locked .ico{filter:grayscale(1) brightness(.75) drop-shadow(0 5px 0 #0005)}
+.node.done .lbl{background:var(--green)}
+.node .tipx{display:none;position:absolute;left:50%;top:-34px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;white-space:nowrap;z-index:5}
+.node:hover .tipx{display:block}
+.hint{margin-top:12px;background:#fff;border:3px dashed var(--ink);border-radius:12px;padding:10px 14px;font-weight:700}
+/* dialog */
+.scene{height:540px;display:flex;align-items:center;justify-content:center;font-size:120px;border-radius:14px;border:3px solid var(--ink)}
+.dlg{position:absolute;left:24px;right:24px;bottom:24px;background:#fff;border:4px solid var(--ink);border-radius:14px;padding:14px 16px 26px 100px;min-height:120px;cursor:pointer;z-index:50;box-shadow:0 6px 0 #0005}
+.dlg .face{position:absolute;left:16px;top:12px;font-size:62px}
+.dlg .who{font-weight:900;color:var(--blue)}
+.dlg .txt{font-size:20px;line-height:1.6}
+.dlg .nx{position:absolute;right:16px;bottom:6px;font-size:13px;color:#888;animation:blink 1s infinite}
+/* battle */
+.foe{display:flex;align-items:center;gap:16px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 16px}
+.foe .m{font-size:76px;line-height:1}
+.foe .info{flex:1}
+.foe.hit .m{animation:shake .3s}
+.foe.atk .m{animation:lunge .45s}
+#challenge{margin-top:14px;min-height:330px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:18px;text-align:center;position:relative}
+.zy{font-size:22px;color:var(--blue);letter-spacing:3px;font-weight:700}
+.word{font-size:58px;font-weight:900;letter-spacing:8px;margin:4px 0 14px}
+.q{font-size:24px;font-weight:900;margin:6px 0 18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:680px;margin:0 auto}
+.opts .btn{background:#fff;font-size:19px}
+.opts .btn.right{background:var(--green)}
+.opts .btn.wrong{background:var(--red);color:#fff}
+.expl{margin-top:14px;font-weight:700;color:var(--blue);min-height:26px}
+.keycap{display:inline-block;border:3px solid var(--ink);border-bottom-width:6px;border-radius:8px;padding:4px 12px;background:#fff;font-weight:900;margin:0 3px}
+.pop{position:absolute;font-weight:900;font-size:26px;color:var(--red);pointer-events:none;animation:popup .8s forwards;text-shadow:2px 2px 0 #fff;z-index:30;transform:translate(-50%,0)}
+/* arena */
+.arena{position:relative;height:400px;border:3px solid var(--ink);border-radius:14px;margin-top:12px;overflow:hidden;background:radial-gradient(circle at 30% 30%,#d8f3dc,#95d5b2 60%,#74c69d);cursor:crosshair}
+.mini-arena{position:relative;height:260px;border:3px solid var(--ink);border-radius:12px;background:#d8f3dc;overflow:hidden}
+.bug{position:absolute;font-size:46px;cursor:pointer;animation:spawn .2s;line-height:1;touch-action:none}
+.bug:hover{transform:scale(1.15)}
+.bug.gem{filter:drop-shadow(0 0 8px #fff)}
+.bag{position:absolute;right:12px;bottom:12px;width:96px;height:96px;border:3px dashed var(--ink);border-radius:16px;background:#fff8;display:flex;align-items:center;justify-content:center;font-size:52px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.legend span{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:3px 10px;font-weight:700}
+.dragging{opacity:.9;transform:scale(1.15);cursor:grabbing}
+/* keyboard */
+.kb{display:inline-block;margin-top:14px}
+.kr{display:flex;gap:5px;margin-bottom:5px}
+.kr:nth-child(2){margin-left:20px}.kr:nth-child(3){margin-left:34px}.kr:nth-child(4){margin-left:54px}
+.key{width:50px;height:54px;border:2px solid var(--ink);border-bottom-width:5px;border-radius:8px;background:#fff;position:relative;transition:background .1s}
+.key b{position:absolute;left:5px;top:2px;font-size:11px;color:#888}
+.key span{position:absolute;right:6px;bottom:3px;font-size:22px;font-weight:900}
+.key.hl{background:var(--gold)}
+.key.ok{background:var(--green)}
+.key.no{background:var(--red)}
+.target{font-size:110px;font-weight:900;color:var(--blue);line-height:1.1}
+/* arcade */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.gcard{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:14px;cursor:pointer;box-shadow:0 5px 0 var(--ink);transition:transform .1s}
+.gcard:hover{transform:translateY(-4px)}
+.gcard .e{font-size:50px}
+.gcard h3{font-size:20px}
+.gcard p{margin:4px 0;color:#555;font-size:14px}
+.folders{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.folder{border:3px solid var(--ink);border-radius:14px;background:#ffe8a3;min-height:130px;text-align:center;padding:8px;transition:transform .1s}
+.folder .fi{font-size:44px}
+.folder .fn{font-weight:900}
+.folder .cnt{font-size:13px;color:#555}
+.folder.flash{background:var(--green)}
+.tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:100px;border:3px dashed #aaa;border-radius:14px;padding:12px;background:#fff}
+.file{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;text-align:center;cursor:grab;width:110px;touch-action:none}
+.file .fe{font-size:30px}
+.file .nm{font-weight:700;font-size:15px;word-break:break-all}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:620px;margin:10px auto}
+.mc{height:100px;border:3px solid var(--ink);border-radius:12px;background:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:#fff;box-shadow:0 4px 0 var(--ink)}
+.mc.up{background:#fff;color:var(--ink)}
+.mc.up.txt{font-size:24px}
+.mc.got{background:var(--green);cursor:default}
+.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.item{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:14px;text-align:center}
+.item .e{font-size:54px}
+/* modal & toast */
+.ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal{background:var(--paper);border:4px solid var(--ink);border-radius:18px;padding:22px 26px;max-width:480px;width:100%;text-align:center;box-shadow:0 8px 0 #0008;animation:spawn .2s}
+.modal .big{font-size:70px}
+.modal p{font-size:17px;line-height:1.6}
+.modal .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+#toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+#toast div{background:var(--ink);color:#fff;font-weight:700;padding:8px 16px;border-radius:12px;animation:spawn .15s}
+.cert{border:10px double var(--gold);border-radius:16px;padding:30px;background:#fff;text-align:center;max-width:640px;margin:10px auto}
+.cert h1{font-size:40px;letter-spacing:6px}
+.cheat{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;font-size:14px}
+.cheat span{background:#f1f1f1;border-radius:8px;padding:3px 8px}
+@media (max-width:640px){.opts{grid-template-columns:1fr}.word{font-size:40px}.folders{grid-template-columns:repeat(2,1fr)}.key{width:30px;height:40px}.key span{font-size:15px}.title h1{font-size:32px}}
+</style>
 </head>
-<body class="h-screen w-screen text-white flex flex-col select-none">
-
-    <!-- 點擊波紋與彩帶畫布 -->
-    <div id="ripple-layer" class="fixed inset-0 pointer-events-none z-50"></div>
-    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
-
-    <!-- ==================== 頂部導覽列 ==================== -->
-    <header class="h-16 bg-slate-900/85 backdrop-blur-md border-b-2 border-sky-400/40 px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shadow-lg border-2 border-white/40">
-                <i class="fa-brands fa-windows text-2xl text-white"></i>
-            </div>
-            <div>
-                <h1 class="text-lg sm:text-2xl font-black tracking-wide text-white flex items-center gap-2">
-                    Windows 滑鼠小達人
-                    <span class="text-xs sm:text-sm px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black">50關大冒險</span>
-                </h1>
-            </div>
-        </div>
-
-        <!-- 學生進度與分數顯示 -->
-        <div id="student-hud" class="hidden md:flex items-center gap-3 bg-slate-800/90 px-4 py-1.5 rounded-2xl border-2 border-sky-400/40">
-            <span id="hud-student-name" class="text-base font-black text-sky-300">301班 小達人</span>
-            <span class="text-slate-500">|</span>
-            <span class="text-base font-black text-emerald-300">已破：<b id="hud-cleared-count">0</b> / 50 關</span>
-            <span class="text-slate-500">|</span>
-            <span class="text-lg font-black text-amber-300">⭐ <b id="hud-score">0</b> 分</span>
-        </div>
-
-        <!-- 右側功能按鈕 -->
-        <div class="flex items-center gap-2">
-            <button onclick="switchScreen('welcome')" class="px-3.5 py-2 rounded-xl font-black text-sm sm:text-base bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 flex items-center gap-1.5">
-                <i class="fa-solid fa-house text-sky-400"></i> <span class="hidden sm:inline">首頁</span>
-            </button>
-            <button onclick="openWorldMap()" class="px-3.5 py-2 rounded-xl font-black text-sm sm:text-base bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-map-location-dot text-amber-300"></i> <span class="hidden sm:inline">50關地圖</span>
-            </button>
-            <button onclick="switchScreen('leaderboard')" class="px-3.5 py-2 rounded-xl font-black text-sm sm:text-base bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 flex items-center gap-1.5">
-                <i class="fa-solid fa-trophy text-amber-400"></i> <span class="hidden md:inline">英雄榜</span>
-            </button>
-            <button onclick="openTeacherModal()" id="cloud-status-pill" class="px-3 py-2 rounded-xl font-black text-xs sm:text-sm bg-slate-800 text-amber-300 border border-slate-600 flex items-center gap-1.5" title="點擊查看雲端排行榜連線設定">
-                <span id="cloud-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                <span id="cloud-status-text" class="hidden xl:inline">連線檢測中</span>
-            </button>
-            <button onclick="toggleTts()" id="tts-btn" class="px-3 py-2 rounded-xl font-black text-sm bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 flex items-center gap-1" title="語音朗讀開關">
-                <i class="fa-solid fa-volume-high"></i> <span id="tts-label" class="hidden lg:inline">語音開</span>
-            </button>
-            <button onclick="openTeacherModal()" class="px-3 py-2 rounded-xl font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600" title="教師管理與QA跳關器">
-                <i class="fa-solid fa-chalkboard-user"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- ==================== 主畫面區（全螢幕單頁切換） ==================== -->
-    <main class="flex-grow relative overflow-hidden flex items-center justify-center p-3 sm:p-5">
-
-        <!-- 畫面 1：歡迎登錄頁 -->
-        <section id="screen-welcome" class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-xl rounded-3xl border-4 border-sky-400/60 shadow-2xl p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-5">
-            <div class="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-amber-400/20 border-2 border-amber-400 text-amber-300 text-base sm:text-lg font-black">
-                🌟 國小三年級電腦課 • 5大關卡 × 10小關 = 50關大挑戰 🌟
-            </div>
-
-            <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                Windows 滑鼠小達人 <span class="text-sky-400">50關大冒險</span>
-            </h2>
-
-            <p class="text-base sm:text-xl text-sky-100 font-bold max-w-2xl">
-                每一大關都有 <b>5 關電腦課任務</b> ＋ <b>5 關趣味小遊戲</b>！通過 10 小關就能解鎖下一大關喔！
-            </p>
-
-            <!-- 班級與姓名大輸入框 -->
-            <div class="w-full max-w-2xl bg-slate-800/90 p-5 rounded-3xl border-2 border-sky-400/40 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                <div class="sm:col-span-5 text-left">
-                    <label class="block text-base font-black text-sky-300 mb-1.5">🏫 1. 選擇你的班級：</label>
-                    <select id="input-class" class="w-full px-4 py-3 rounded-2xl bg-slate-950 border-2 border-sky-400 text-white text-xl font-black focus:outline-none">
-                        <option value="301班">301班</option>
-                        <option value="302班">302班</option>
-                        <option value="303班">303班</option>
-                        <option value="304班">304班</option>
-                        <option value="305班">305班</option>
-                        <option value="306班">306班</option>
-                        <option value="307班">307班</option>
-                        <option value="308班">308班</option>
-                        <option value="練習組">練習組</option>
-                    </select>
-                </div>
-                <div class="sm:col-span-7 text-left">
-                    <label class="block text-base font-black text-amber-300 mb-1.5">✏️ 2. 輸入座號與姓名：</label>
-                    <input type="text" id="input-name" maxlength="16" placeholder="例如：05 王小明"
-                           class="w-full px-4 py-3 rounded-2xl bg-slate-950 border-2 border-amber-400 text-white text-xl font-black placeholder-slate-500 focus:outline-none">
-                </div>
-            </div>
-
-            <!-- 開始大按鈕 -->
-            <div class="flex flex-wrap items-center justify-center gap-4 pt-1">
-                <button onclick="enterWorldMapFromWelcome()" class="kid-btn px-10 py-4 rounded-3xl bg-gradient-to-r from-emerald-400 to-green-500 text-slate-950 font-black text-2xl sm:text-3xl border-4 border-white flex items-center gap-3">
-                    <i class="fa-solid fa-play"></i> 進入 50 關地圖！
-                </button>
-                <button onclick="switchScreen('warmup')" class="kid-btn px-6 py-4 rounded-3xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xl border-4 border-white flex items-center gap-2">
-                    <i class="fa-solid fa-computer-mouse"></i> 滑鼠構造認識
-                </button>
-            </div>
-        </section>
-
-        <!-- 畫面 2：5 大關卡世界地圖（每大關 10 小關，過完才能去下一大關） -->
-        <section id="screen-map" class="hidden w-full max-w-6xl h-full max-h-[85vh] bg-slate-900/95 backdrop-blur-xl rounded-3xl border-4 border-sky-400/60 shadow-2xl p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-slate-800 pb-3">
-                <div>
-                    <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
-                        🗺️ 滑鼠冒險 5 大世界地圖
-                    </h2>
-                    <p class="text-sm sm:text-base text-sky-300 font-bold">
-                        完成每一大關的 <b>10 個小關卡</b>，就能解鎖下一個新世界！
-                    </p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="switchScreen('leaderboard')" class="kid-btn px-4 py-2 rounded-2xl bg-amber-400 text-slate-950 font-black text-base flex items-center gap-1.5">
-                        🏆 看全班英雄榜
-                    </button>
-                </div>
-            </div>
-
-            <!-- 5 大關卡卡片區 -->
-            <div id="world-cards-grid" class="grid grid-cols-1 md:grid-cols-5 gap-3.5 my-auto py-2">
-                <!-- JS 動態生成 5 大關卡卡片 -->
-            </div>
-
-            <!-- 選中大關後的 10 小關清單 -->
-            <div id="substage-drawer" class="bg-slate-950/90 rounded-2xl border-2 border-sky-400/50 p-4">
-                <div class="flex items-center justify-between mb-2.5">
-                    <h3 id="drawer-world-title" class="text-lg sm:text-xl font-black text-amber-300">
-                        第一大關：左鍵神射手（點擊小關卡立即開始）
-                    </h3>
-                    <span id="drawer-world-status" class="text-sm font-black text-emerald-400">進度：0 / 10 小關</span>
-                </div>
-                <div id="substage-buttons-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2">
-                    <!-- JS 動態生成 1~10 小關按鈕 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 畫面 3：滑鼠部件大圖解熱身室 -->
-        <section id="screen-warmup" class="hidden w-full max-w-5xl bg-slate-900/90 backdrop-blur-xl rounded-3xl border-4 border-sky-400/60 shadow-2xl p-6 sm:p-8 flex flex-col items-center justify-between gap-4">
-            <div class="text-center">
-                <span class="px-4 py-1 rounded-full bg-sky-500/20 border border-sky-400 text-sky-300 text-base font-black">認識滑鼠三寶</span>
-                <h2 class="text-2xl sm:text-4xl font-black text-white mt-1">點點看大滑鼠，認識手指位置！</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-center">
-                <div class="md:col-span-5 flex flex-col items-center">
-                    <svg viewBox="0 0 240 330" class="w-48 sm:w-56 h-auto drop-shadow-2xl">
-                        <rect x="20" y="20" width="200" height="290" rx="95" fill="#1e293b" stroke="#64748b" stroke-width="6"/>
-                        <path id="warm-left" onclick="warmupInspect('left')" class="mouse-zone"
-                              d="M 24 115 L 24 100 C 24 45, 75 24, 116 24 L 116 145 L 24 145 Z"
-                              fill="#0284c7" stroke="#bae6fd" stroke-width="4"/>
-                        <path id="warm-right" onclick="warmupInspect('right')" class="mouse-zone"
-                              d="M 124 24 C 165 24, 216 45, 216 100 L 216 145 L 124 145 Z"
-                              fill="#9333ea" stroke="#e9d5ff" stroke-width="4"/>
-                        <rect id="warm-wheel" onclick="warmupInspect('wheel')" class="mouse-zone"
-                              x="102" y="48" width="36" height="72" rx="18"
-                              fill="#eab308" stroke="#fef08a" stroke-width="4"/>
-                        <text x="68" y="98" text-anchor="middle" fill="#fff" font-size="22" font-weight="900" pointer-events="none">左鍵</text>
-                        <text x="172" y="98" text-anchor="middle" fill="#fff" font-size="22" font-weight="900" pointer-events="none">右鍵</text>
-                        <text x="120" y="220" text-anchor="middle" fill="#94a3b8" font-size="20" font-weight="900" pointer-events="none">✋ 掌心抱機身</text>
-                    </svg>
-                </div>
-
-                <div class="md:col-span-7 bg-slate-800/90 rounded-3xl p-6 border-4 border-sky-400/50">
-                    <div id="warmup-badge" class="inline-block px-4 py-1 rounded-full bg-sky-500 text-slate-950 font-black text-base mb-2">
-                        ☝️ 食指放左鍵
-                    </div>
-                    <h3 id="warmup-title" class="text-2xl sm:text-3xl font-black text-white mb-2">
-                        左鍵：選取、雙擊開檔案、按住拖曳
-                    </h3>
-                    <p id="warmup-desc" class="text-lg sm:text-xl text-sky-100 font-bold leading-relaxed mb-5">
-                        用「食指」輕輕放在左鍵上。按一下可以選東西，快速按兩下可以打開資料夾，按住不放可以搬移東西！
-                    </p>
-
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="warmupInspect('left')" class="p-3 rounded-2xl bg-sky-500/20 border-2 border-sky-400 text-sky-200 font-black text-base hover:bg-sky-500/40">
-                            ☝️ 看左鍵
-                        </button>
-                        <button onclick="warmupInspect('right')" class="p-3 rounded-2xl bg-purple-500/20 border-2 border-purple-400 text-purple-200 font-black text-base hover:bg-purple-500/40">
-                            🖕 看右鍵
-                        </button>
-                        <button onclick="warmupInspect('wheel')" class="p-3 rounded-2xl bg-amber-500/20 border-2 border-amber-400 text-amber-200 font-black text-base hover:bg-amber-500/40">
-                            🔄 看滾輪
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="openWorldMap()" class="kid-btn px-10 py-3.5 rounded-3xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-2xl border-4 border-white">
-                🚀 回到 50 關冒險地圖！
-            </button>
-        </section>
-
-        <!-- 畫面 4：單一畫面一關（50關大舞台） -->
-        <section id="screen-stage" class="hidden w-full max-w-5xl h-full max-h-[85vh] bg-slate-900/95 backdrop-blur-xl rounded-3xl border-4 border-sky-400/70 shadow-2xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden">
-
-            <!-- 頂部：大關卡名稱 + 10小關進度豆豆 + 語音與重置鈕 -->
-            <div class="flex flex-col gap-2 shrink-0">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <button onclick="openWorldMap()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 font-black text-sm border border-slate-600">
-                            <i class="fa-solid fa-arrow-left mr-1"></i>地圖
-                        </button>
-                        <span id="stage-world-badge" class="px-3.5 py-1 rounded-xl bg-amber-400 text-slate-950 font-black text-base sm:text-lg">
-                            第一大關 • 1-1
-                        </span>
-                        <span id="stage-type-badge" class="px-3 py-1 rounded-xl bg-sky-500/20 border border-sky-400 text-sky-300 font-black text-sm">
-                            💻 電腦課任務
-                        </span>
-                    </div>
-
-                    <!-- 本大關 10 小關進度燈 -->
-                    <div id="stage-10-dots" class="flex items-center gap-1.5"></div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="replayStageVoice()" class="px-3 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400 text-sky-200 font-black text-sm flex items-center gap-1">
-                            <i class="fa-solid fa-volume-high"></i> 唸題目
-                        </button>
-                        <button onclick="resetCurrentSubStage()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400 text-amber-200 font-black text-sm flex items-center gap-1" title="如果卡住了，點這裡重新開始這一小關">
-                            <i class="fa-solid fa-rotate-right"></i> 重置本小關
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 超大題目橫幅 -->
-                <div class="bg-slate-800/95 border-2 border-sky-400/50 rounded-2xl px-4 py-2.5 text-center shadow-inner">
-                    <h2 id="stage-question-title" class="text-xl sm:text-3xl font-black text-white leading-snug">
-                        題目載入中...
-                    </h2>
-                    <p id="stage-question-sub" class="text-sm sm:text-lg font-bold text-amber-300 mt-0.5">
-                        請跟著提示操作滑鼠！
-                    </p>
-                </div>
-            </div>
-
-            <!-- 中央：單一關卡超大互動舞台 -->
-            <div id="stage-play-area" class="flex-grow my-2 rounded-3xl bg-gradient-to-b from-sky-950/90 to-slate-950/95 border-2 border-sky-500/40 relative overflow-hidden flex items-center justify-center p-4">
-                <!-- 每一小關動態生成內容 -->
-            </div>
-
-            <!-- 底部：溫馨小提示與卡關救星列 -->
-            <div class="flex items-center justify-between gap-2 bg-slate-950/80 px-4 py-2 rounded-2xl border border-slate-800 shrink-0">
-                <div id="stage-bottom-tip" class="text-sm sm:text-base font-bold text-sky-200 truncate">
-                    💡 小提示：食指放左鍵、中指放右鍵！
-                </div>
-                <div class="text-xs sm:text-sm font-black text-slate-400 shrink-0">
-                    過關獎勵：<span class="text-amber-300">+100 分</span>
-                </div>
-            </div>
-
-            <!-- 小關過關彈出遮罩 -->
-            <div id="stage-pass-overlay" class="hidden absolute inset-0 z-40 bg-slate-950/92 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
-                <div id="pass-emoji" class="text-7xl sm:text-8xl mb-3 animate-bounce">🎉</div>
-                <h3 id="pass-title" class="text-3xl sm:text-5xl font-black text-emerald-400 mb-2">
-                    太棒了！過關！
-                </h3>
-                <p id="pass-knowledge" class="text-lg sm:text-2xl font-bold text-white max-w-xl mb-6 bg-slate-800/90 p-4 rounded-2xl border-2 border-emerald-400/50">
-                    你學會了滑鼠操作技巧！
-                </p>
-                <div class="flex flex-wrap items-center justify-center gap-4">
-                    <button id="pass-next-btn" onclick="goNextSubStage()" class="kid-btn px-10 py-4 rounded-3xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-2xl sm:text-3xl border-4 border-white flex items-center gap-3">
-                        下一小關 <i class="fa-solid fa-circle-right"></i>
-                    </button>
-                    <button onclick="openWorldMap()" class="kid-btn px-6 py-4 rounded-3xl bg-slate-700 hover:bg-slate-600 text-white font-black text-xl border-2 border-slate-400">
-                        回 50 關地圖
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 畫面 5：50關全破畢業證書頁 -->
-        <section id="screen-victory" class="hidden w-full max-w-4xl bg-slate-900/95 backdrop-blur-xl rounded-3xl border-4 border-amber-400 shadow-2xl p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-4">
-            <div class="text-7xl">👑</div>
-            <h2 class="text-3xl sm:text-5xl font-black text-amber-300">恭喜完成滑鼠大冒險！</h2>
-            <p id="victory-student-line" class="text-xl sm:text-2xl font-black text-white">301班 王小明</p>
-
-            <div class="grid grid-cols-2 gap-4 w-full max-w-lg my-2">
-                <div class="bg-slate-800/90 p-4 rounded-2xl border-2 border-emerald-400/50">
-                    <div class="text-sm font-bold text-slate-300">突破關卡數</div>
-                    <div id="victory-cleared" class="text-3xl sm:text-4xl font-black text-emerald-400 mt-1">50 / 50 關</div>
-                </div>
-                <div class="bg-slate-800/90 p-4 rounded-2xl border-2 border-amber-400/50">
-                    <div class="text-sm font-bold text-slate-300">總得分</div>
-                    <div id="victory-score" class="text-3xl sm:text-4xl font-black text-amber-400 mt-1">5000 分</div>
-                </div>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-center gap-4 mt-2">
-                <button onclick="switchScreen('leaderboard')" class="kid-btn px-8 py-4 rounded-3xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-2xl border-4 border-white flex items-center gap-2">
-                    <i class="fa-solid fa-trophy"></i> 看全班雲端排行榜
-                </button>
-                <button onclick="openWorldMap()" class="kid-btn px-6 py-4 rounded-3xl bg-sky-500 text-slate-950 font-black text-xl border-4 border-white">
-                    回 50 關地圖再玩一次
-                </button>
-            </div>
-        </section>
-
-        <!-- 畫面 6：雲端即時英雄榜 -->
-        <section id="screen-leaderboard" class="hidden w-full max-w-5xl h-full max-h-[85vh] bg-slate-900/95 backdrop-blur-xl rounded-3xl border-4 border-amber-400/70 shadow-2xl p-5 sm:p-6 flex flex-col justify-between">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-800 pb-3 shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl font-black">
-                        🏆
-                    </div>
-                    <div>
-                        <h2 class="text-xl sm:text-3xl font-black text-white">三年級滑鼠小達人 • 雲端英雄榜</h2>
-                        <p class="text-xs sm:text-sm text-emerald-400 font-bold">⚡ 每過一小關自動同步更新全班進度與總分</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <select id="lb-class-filter" onchange="window.renderLeaderboard()" class="px-3 py-2 rounded-xl bg-slate-950 border-2 border-sky-400 text-white font-black text-base">
-                        <option value="ALL">🌎 全部班級總榜</option>
-                        <option value="301班">301班</option>
-                        <option value="302班">302班</option>
-                        <option value="303班">303班</option>
-                        <option value="304班">304班</option>
-                        <option value="305班">305班</option>
-                        <option value="306班">306班</option>
-                        <option value="307班">307班</option>
-                        <option value="308班">308班</option>
-                        <option value="練習組">練習組</option>
-                    </select>
-                    <button onclick="openWorldMap()" class="kid-btn px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-black text-base">
-                        繼續闖關
-                    </button>
-                </div>
-            </div>
-
-            <!-- 前三名頒獎卡 -->
-            <div id="lb-top3-cards" class="grid grid-cols-3 gap-3 my-3 shrink-0"></div>
-
-            <!-- 排行榜捲動列表 -->
-            <div class="flex-grow overflow-y-auto rounded-2xl bg-slate-950/80 border-2 border-slate-800">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-800 text-sky-300 text-sm sm:text-base font-black sticky top-0">
-                        <tr>
-                            <th class="py-2.5 px-4">名次</th>
-                            <th class="py-2.5 px-4">班級</th>
-                            <th class="py-2.5 px-4">座號姓名</th>
-                            <th class="py-2.5 px-4 text-center">闖關進度</th>
-                            <th class="py-2.5 px-4 text-right">總分</th>
-                            <th class="py-2.5 px-4 text-center">最新徽章</th>
-                            <th id="th-teacher-del" class="py-2.5 px-4 text-center hidden">管理</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lb-tbody" class="divide-y divide-slate-800 text-base sm:text-lg font-bold">
-                        <tr><td colspan="7" class="py-10 text-center text-slate-400">正在載入雲端英雄榜...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ==================== 大字版 Windows 右鍵選單 ==================== -->
-    <div id="kid-context-menu" class="fixed hidden z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-4 border-purple-400 rounded-3xl shadow-2xl p-3 text-white">
-        <div class="px-3 py-1.5 text-sm font-black text-purple-300 border-b border-slate-700 mb-1">
-            🪟 Windows 右鍵魔法選單
-        </div>
-        <button onclick="handleContextMenuAction('refresh')" class="w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-600 font-black text-lg flex items-center justify-between">
-            <span>🔄 重新整理 (E)</span>
-            <span class="text-xs bg-purple-400/30 px-2 py-0.5 rounded-lg">常用</span>
-        </button>
-        <button onclick="handleContextMenuAction('new_folder')" class="w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-600 font-black text-lg flex items-center justify-between mt-1">
-            <span>📁 新增資料夾 (N)</span>
-        </button>
-        <button onclick="handleContextMenuAction('wallpaper')" class="w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-600 font-black text-lg flex items-center justify-between mt-1">
-            <span>🎨 更換桌面背景</span>
-        </button>
-        <button onclick="handleContextMenuAction('rename')" class="w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-600 font-black text-lg flex items-center justify-between mt-1">
-            <span>✏️ 重新命名 (M)</span>
-        </button>
-        <button onclick="handleContextMenuAction('delete')" class="w-full text-left px-4 py-3 rounded-2xl hover:bg-rose-600 text-rose-300 hover:text-white font-black text-lg flex items-center justify-between mt-1">
-            <span>🗑️ 刪除檔案 (D)</span>
-        </button>
-    </div>
-
-    <!-- ==================== 溫馨提示大氣泡 ==================== -->
-    <div id="kid-toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden px-7 py-3.5 rounded-3xl bg-amber-400 text-slate-950 font-black text-xl sm:text-2xl shadow-2xl border-4 border-white items-center gap-3">
-        <span id="kid-toast-text">提示訊息</span>
-    </div>
-
-    <!-- ==================== 👨‍🏫 教師管理與 QA 50關跳關測試器 Modal (密碼 1234) ==================== -->
-    <div id="teacher-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-2 border-indigo-400 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-black text-indigo-300"><i class="fa-solid fa-chalkboard-user mr-2"></i>教師管理 & 雲端連線設定</h3>
-                <button onclick="closeTeacherModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 hover:bg-rose-600 hover:text-white">✕</button>
-            </div>
-
-            <div id="teacher-lock-box">
-                <p class="text-sm text-slate-300 mb-3">請輸入教師密碼（預設：<b class="text-amber-300">1234</b>）：</p>
-                <div class="flex gap-2">
-                    <input type="password" id="teacher-pwd" placeholder="輸入 1234" class="flex-grow px-4 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold text-center"/>
-                    <button onclick="unlockTeacher()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black">解鎖</button>
-                </div>
-            </div>
-
-            <div id="teacher-admin-box" class="hidden space-y-3">
-                <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 text-sm font-bold flex items-center justify-between">
-                    <span>✓ 已解鎖教師管理權限</span>
-                    <span id="teacher-cloud-badge" class="px-2.5 py-0.5 rounded-full bg-slate-900 text-amber-300 text-xs">檢測中</span>
-                </div>
-
-                <!-- ☁️ 自訂專屬雲端金鑰 / 簡易免登入連線設定 -->
-                <div class="p-3.5 rounded-2xl bg-slate-950 border-2 border-sky-400/60 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-black text-sky-300">☁️ 自訂專屬雲端金鑰（全班免登入即時排行）</span>
-                        <button onclick="document.getElementById('firebase-guide-box').classList.toggle('hidden')" class="px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-400/50 text-sky-200 text-xs font-black">
-                            📖 2分鐘免費申請教學
-                        </button>
-                    </div>
-
-                    <div id="firebase-guide-box" class="hidden p-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 space-y-1.5 leading-relaxed">
-                        <p class="font-black text-amber-300">💡 若將此 HTML 獨立放到學校網站/GitHub，只需 3 步驟即可全班免登入連線：</p>
-                        <p>1️⃣ 前往 <b class="text-sky-300">console.firebase.google.com</b> 新增免費專案，點選「新增 Web 應用程式 (&lt;/&gt;)」，複製 `firebaseConfig` 括號 `{ ... }` 內容貼到下方。</p>
-                        <p>2️⃣ 左側選單點 <b>Authentication ➔ Sign-in method</b>，將「<b>匿名 (Anonymous)</b>」開啟。</p>
-                        <p>3️⃣ 左側選單點 <b>Firestore Database</b> 建立資料庫（選<b>測試模式 Test mode</b>），完成後點下方「儲存金鑰並立即連線」！</p>
-                    </div>
-
-                    <textarea id="custom-firebase-input" rows="3" placeholder='貼上 firebaseConfig JSON，例如：{"apiKey":"...","projectId":"..."}'
-                              class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-emerald-300 font-mono focus:outline-none focus:border-sky-400"></textarea>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="window.applyCustomCloudConfig()" class="py-2 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs sm:text-sm">
-                            ⚡ 儲存金鑰並立即連線
-                        </button>
-                        <button onclick="window.copyClassroomCloudLink()" class="py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs sm:text-sm">
-                            🔗 複製含金鑰全班連結
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between text-xs text-slate-400 pt-1">
-                        <span>📌 學生點開「含金鑰全班連結」即自動配對同一資料庫！</span>
-                        <button onclick="window.clearCustomCloudConfig()" class="text-rose-400 hover:underline font-bold">清除自訂金鑰</button>
-                    </div>
-                </div>
-
-                <button onclick="unlockAll50StagesForTeacher()" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-base">
-                    🔓 一鍵解鎖全部 5 大關（共 50 小關）方便教學示範
-                </button>
-
-                <!-- QA 50關快速跳關與自動驗證面板 -->
-                <div class="p-3 rounded-2xl bg-slate-950 border border-sky-500/40 space-y-2">
-                    <div class="text-sm font-black text-sky-300">🧪 QA 團隊 50 關任選跳關測試器：</div>
-                    <div class="flex gap-2">
-                        <select id="qa-jump-select" class="flex-grow px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm font-bold"></select>
-                        <button onclick="qaJumpToSelectedStage()" class="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 font-black text-sm">跳關測試</button>
-                    </div>
-                    <button onclick="qaForcePassCurrentStage()" class="w-full py-2 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-300 font-black text-sm">
-                        ⏭️ 直接通過目前這一小關（教學跳關用）
-                    </button>
-                </div>
-
-                <button onclick="window.exportCsv()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black">
-                    📥 匯出目前班級成績單 (CSV)
-                </button>
-                <button onclick="window.clearClassScores()" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black">
-                    🗑️ 清空目前篩選班級的排行紀錄
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 50 關主遊戲引擎（含完整 QA 保護機制） ==================== -->
-    <script>
-        let audioCtx = null;
-        let ttsEnabled = true;
-        window.teacherAdminUnlocked = false;
-
-        let studentInfo = {
-            className: '301班',
-            name: '小達人',
-            score: 0,
-            clearedMap: {}
-        };
-
-        let selectedWorldIdx = 0;
-        let currentWorldIdx = 0;
-        let currentSubIdx = 0;
-        let stageLocked = false;
-        let activeTimers = [];
-        let stageCleanupFns = [];
-        let contextTargetCallback = null;
-
-        // ==================== 5 大關 × 10 小關 = 50 關完整資料庫 ====================
-        const WORLDS_DATA = [
-            {
-                id: 1,
-                name: '第一大關：左鍵神射手',
-                subtitle: '食指按一下（單擊）與瞄準訓練',
-                icon: '🎯',
-                color: 'from-sky-400 to-blue-600',
-                badge: '🎯 左鍵神射手',
-                stages: [
-                    { code: '1-1', type: 'pc', title: '認識左鍵：哪一個按鍵是「食指」按的左鍵？', sub: '請直接用滑鼠點一下圖中藍色的「左鍵」！', tip: '☝️ 食指放在滑鼠左邊的按鍵就是左鍵！', knowledge: '太棒了！食指輕輕放在左鍵，是最常用的按鍵喔！', tpl: 'mouse_part', targetPart: 'left' },
-                    { code: '1-2', type: 'pc', title: '桌面選取：請按一下左鍵選取「🎨 小畫家」', sub: '只要按一下左鍵，圖示變亮就過關！', tip: '☝️ 左鍵按一下叫做「單擊（選取）」！', knowledge: '左鍵按一下可以把桌面上的圖示「選起來」！', tpl: 'pc_single_select', targetIcon: '🎨', targetLabel: '小畫家', wrongIcon: '🗑️', wrongLabel: '資源回收筒' },
-                    { code: '1-3', type: 'pc', title: '關閉視窗：請點視窗右上角紅色的「✖」', sub: '把擋住畫面的大公告視窗關掉吧！', tip: '🎯 瞄準視窗右上角紅色的 ✖ 按一下左鍵！', knowledge: '在 Windows 裡，點右上角的 ✖ 就能關閉視窗！', tpl: 'pc_close_win', winTitle: '📢 電腦教室小提醒', winBody: '下課離開座位前，記得把椅子靠攏喔！' },
-                    { code: '1-4', type: 'pc', title: '開始選單：請先點左下角「開始」，再點「關機」', sub: '練習正確的電腦下課關機步驟！', tip: '🪟 先點藍色 Windows 開始鈕，再點紅色電源關機！', knowledge: '下課關機要從「開始選單 ➔ 電源 ➔ 關機」，不能直接拔插頭喔！', tpl: 'pc_start_shutdown' },
-                    { code: '1-5', type: 'pc', title: '最大化視窗：請點視窗右上角綠色的「🗖 放大鈕」', sub: '讓小小的作業視窗放大變滿版吧！', tip: '🗖 叉叉左邊的正方形按鈕可以放大視窗！', knowledge: '點一下右上角的正方形「🗖」可以把視窗最大化！', tpl: 'pc_max_win' },
-                    { code: '1-6', type: 'game', title: '【遊戲】氣球神射手：左鍵點破 5 顆彩色氣球！', sub: '看到大氣球飄起來，用左鍵按一下戳破它！', tip: '🎈 瞄準氣球按一下左鍵！', knowledge: '你的左鍵瞄準速度越來越快了！', tpl: 'game_balloons', goal: 5 },
-                    { code: '1-7', type: 'game', title: '【遊戲】森林打地鼠：左鍵打中 5 隻探頭地鼠！', sub: '地鼠從洞裡跳出來時，快用左鍵點牠！', tip: '🐹 看到地鼠冒出來就按左鍵！', knowledge: '手眼協調一級棒！移動滑鼠＋左鍵單擊超精準！', tpl: 'game_mole', goal: 5 },
-                    { code: '1-8', type: 'game', title: '【遊戲】太空抓飛碟：點中 5 艘移動的外星飛碟！', sub: '飛碟會左右飛行，瞄準後按左鍵捕捉！', tip: '🛸 跟著飛碟移動滑鼠，按左鍵！', knowledge: '移動中的目標也能精準點中，太厲害了！', tpl: 'game_ufo', goal: 5 },
-                    { code: '1-9', type: 'game', title: '【遊戲】小心炸彈：只點 5 個「⭐ 金幣」，別點炸彈！', sub: '點到炸彈不會扣分，但要認清楚金幣喔！', tip: '⭐ 用左鍵點閃亮的金幣 5 次！', knowledge: '眼睛看清楚再按左鍵，就不會誤觸危險按鈕！', tpl: 'game_coin_bomb', goal: 5 },
-                    { code: '1-10', type: 'boss', title: '【第一關魔王】廣告大魔王：連關 5 個彈出視窗！', sub: '把 5 個亂跳的廣告視窗右上角「✖」全部關掉！', tip: '👑 瞄準每個視窗右上角的紅色 ✖ 按左鍵！', knowledge: '🎉 恭喜突破第一大關！解鎖「第二大關：雙擊閃電俠」！', tpl: 'boss_popups', goal: 5 }
-                ]
-            },
-            {
-                id: 2,
-                name: '第二大關：雙擊閃電俠',
-                subtitle: '食指快速連按兩下左鍵（打開程式）',
-                icon: '⚡',
-                color: 'from-amber-400 to-orange-500',
-                badge: '⚡ 雙擊閃電俠',
-                stages: [
-                    { code: '2-1', type: 'pc', title: '雙擊開資料夾：快速連按兩下打開「📁 三年級遊戲區」', sub: '食指在黃色資料夾上「喀喀」連按兩下左鍵！', tip: '⚡ 按第一下後不要停，馬上按第二下！', knowledge: '打開桌面上的資料夾，要快速連按兩下左鍵（雙擊）！', tpl: 'pc_dbl_icon', icon: '📁', label: '三年級遊戲區', resultText: '🎉 資料夾打開了！裡面有好多好玩遊戲！' },
-                    { code: '2-2', type: 'pc', title: '打開瀏覽器：快速連按兩下打開「🌐 上網瀏覽器」', sub: '電腦課要上網查資料，請雙擊打開瀏覽器！', tip: '⚡ 對準地球圖示，左鍵快速連按兩下！', knowledge: '桌面上的程式捷徑，也是用左鍵雙擊打開喔！', tpl: 'pc_dbl_icon', icon: '🌐', label: 'Edge 瀏覽器', resultText: '🌐 瀏覽器開啟成功！準備上網探索世界！' },
-                    { code: '2-3', type: 'pc', title: '打開照片：請連按兩下打開「🖼️ 班級合照.jpg」', sub: '想看大張的班級照片，請對照片連按兩下左鍵！', tip: '🖼️ 對著照片圖示連按兩下左鍵！', knowledge: '連按兩下左鍵就能打開照片或圖片檔！', tpl: 'pc_dbl_icon', icon: '🖼️', label: '班級合照.jpg', resultText: '📸 哇！是大家笑得超開心的合照！' },
-                    { code: '2-4', type: 'pc', title: '聽音樂囉：請連按兩下播放「🎵 下課快樂歌.mp3」', sub: '快速連按兩下左鍵啟動音樂播放器！', tip: '🎵 對著音符圖示「喀喀」連按兩下！', knowledge: '雙擊音樂檔案就能開始播放好聽的音樂！', tpl: 'pc_dbl_icon', icon: '🎵', label: '下課快樂歌.mp3', resultText: '🎶 音樂響起～全班一起開心唱！' },
-                    { code: '2-5', type: 'pc', title: '雙擊進子資料夾：請依序雙擊打開 2 層資料夾！', sub: '先雙擊「📁 電腦作業」，再雙擊裡面的「📝 我的作品」！', tip: '⚡ 連過兩關雙擊考驗！', knowledge: '資料夾裡面還有資料夾時，一層一層雙擊就能找到檔案！', tpl: 'pc_dbl_nested' },
-                    { code: '2-6', type: 'game', title: '【遊戲】黃金寶箱：每個寶箱都要「連按兩下」打開！', sub: '共有 3 個神祕寶箱，對每個寶箱雙擊左鍵！', tip: '🎁 按一下只會搖晃，連按兩下才會打開！', knowledge: '抓到雙擊的節奏了！「喀喀」兩下超順手！', tpl: 'game_dbl_items', icon: '🎁', openIcon: '💎', label: '神秘寶箱', count: 3 },
-                    { code: '2-7', type: 'game', title: '【遊戲】恐龍孵蛋記：連按兩下敲開 3 顆恐龍蛋！', sub: '小恐龍想出來了，對每顆蛋快速連按兩下左鍵！', tip: '🥚 對準恐龍蛋「喀喀」連按兩下！', knowledge: '三隻可愛的小恐龍都順利孵化出來囉！', tpl: 'game_dbl_items', icon: '🥚', openIcon: '🦖', label: '恐龍蛋', count: 3 },
-                    { code: '2-8', type: 'game', title: '【遊戲】拯救小企鵝：連按兩下敲碎 3 個大冰塊！', sub: '小企鵝被冰塊包住了，快用雙擊幫牠破冰！', tip: '🧊 連按兩下左鍵敲碎冰塊！', knowledge: '你的雙擊速度就像閃電俠一樣快！', tpl: 'game_dbl_items', icon: '🧊', openIcon: '🐧', label: '極地冰塊', count: 3 },
-                    { code: '2-9', type: 'game', title: '【遊戲】魔法貝殼：連按兩下打開 4 個海底貝殼找珍珠！', sub: '對每個貝殼快速連按兩下左鍵！', tip: '🐚 連按兩下左鍵打開貝殼！', knowledge: '太強了！連開 4 個貝殼完全難不倒你！', tpl: 'game_dbl_items', icon: '🐚', openIcon: '🫧', label: '魔法貝殼', count: 4 },
-                    { code: '2-10', type: 'boss', title: '【第二關魔王】雙擊裝甲巨人：連按兩下擊破 4 個護盾！', sub: '魔王的能源核心需要「雙擊左鍵」才能擊破！', tip: '👑 對準發光核心，每個都要「快速連按兩下」！', knowledge: '🎉 恭喜突破第二大關！解鎖「第三大關：右鍵魔法師」！', tpl: 'game_dbl_items', icon: '🛡️', openIcon: '💥', label: '魔王護盾核心', count: 4 }
-                ]
-            },
-            {
-                id: 3,
-                name: '第三大關：右鍵魔法師',
-                subtitle: '中指按右鍵（叫出功能選單）',
-                icon: '🪄',
-                color: 'from-purple-500 to-fuchsia-600',
-                badge: '🪄 右鍵魔法師',
-                stages: [
-                    { code: '3-1', type: 'pc', title: '認識右鍵：哪一個按鍵是「中指」按的右鍵？', sub: '請直接用滑鼠點一下圖中紫色的「右鍵」！', tip: '🖕 中指放在滑鼠右邊的按鍵就是右鍵！', knowledge: '中指負責按右鍵，專門用來叫出「功能選單」！', tpl: 'mouse_part', targetPart: 'right' },
-                    { code: '3-2', type: 'pc', title: '桌面重新整理：在框內按「右鍵」，再點「🔄 重新整理」', sub: '先用中指按一下右鍵叫出選單，再用左鍵點重新整理！', tip: '🖕 第一步：按右鍵 ➔ ☝️ 第二步：左鍵點「重新整理」', knowledge: '當電腦畫面怪怪的或圖示亂掉時，按右鍵點「重新整理」最好用！', tpl: 'pc_context_task', targetCmd: 'refresh', boxIcon: '🖥️', boxTitle: '在這裡按一下「滑鼠右鍵」', cmdLabel: '🔄 重新整理 (E)' },
-                    { code: '3-3', type: 'pc', title: '新增資料夾：在框內按「右鍵」，再點「📁 新增資料夾」', sub: '學會自己建立一個專屬的作業資料夾！', tip: '🖕 按右鍵叫出選單 ➔ 點選「📁 新增資料夾」', knowledge: '在桌面空白處按右鍵，就能快速建立新的資料夾喔！', tpl: 'pc_context_task', targetCmd: 'new_folder', boxIcon: '📂', boxTitle: '在桌面按「右鍵」建立新資料夾', cmdLabel: '📁 新增資料夾 (N)' },
-                    { code: '3-4', type: 'pc', title: '換新桌布：在框內按「右鍵」，再點「🎨 更換桌面背景」', sub: '幫你的虛擬 Windows 換一張超酷的桌面背景！', tip: '🖕 按右鍵叫出選單 ➔ 點選「🎨 更換桌面背景」', knowledge: '在桌面按右鍵也能進入個人化設定更換桌布喔！', tpl: 'pc_context_task', targetCmd: 'wallpaper', boxIcon: '🌈', boxTitle: '按「右鍵」幫電腦換新衣', cmdLabel: '🎨 更換桌面背景' },
-                    { code: '3-5', type: 'pc', title: '刪除壞檔案：對著壞檔案按「右鍵」，點「🗑️ 刪除檔案」', sub: '除了拖進垃圾桶，也可以按右鍵刪除喔！', tip: '🖕 對著病毒圖示按右鍵 ➔ 點選「🗑️ 刪除檔案」', knowledge: '在檔案上面按右鍵，可以選擇重新命名、複製或刪除！', tpl: 'pc_context_task', targetCmd: 'delete', boxIcon: '👾', boxTitle: '對壞壞檔案按「右鍵」刪除它', cmdLabel: '🗑️ 刪除檔案 (D)' },
-                    { code: '3-6', type: 'game', title: '【遊戲】右鍵抓幽靈：對 3 隻調皮幽靈直接按「右鍵」！', sub: '注意！這關要用「中指按右鍵」發射紫光收服幽靈！', tip: '🖕 對準幽靈直接按「滑鼠右鍵」（左鍵沒有效喔）！', knowledge: '你的中指越來越靈活了，按右鍵又快又準！', tpl: 'game_right_click_targets', icon: '👻', doneIcon: '✨', label: '調皮幽靈', count: 3 },
-                    { code: '3-7', type: 'game', title: '【遊戲】右鍵魔法花：對 4 朵花苞按「右鍵」施展開花魔法！', sub: '中指按一下右鍵，讓花苞綻放成美麗花朵！', tip: '🖕 對著每朵花苞按一下「滑鼠右鍵」！', knowledge: '花園裡開滿了漂亮的花，右鍵魔法大成功！', tpl: 'game_right_click_targets', icon: '🌱', doneIcon: '🌻', label: '魔法花苞', count: 4 },
-                    { code: '3-8', type: 'game', title: '【遊戲】右鍵拆炸彈：對 4 顆定時炸彈按「右鍵」剪斷電線！', sub: '千萬別按左鍵引爆！請用「中指按右鍵」安全拆除！', tip: '🖕 對準炸彈按「滑鼠右鍵」解除危機！', knowledge: '太冷靜了！左鍵跟右鍵分得一清二楚！', tpl: 'game_right_click_targets', icon: '💣', doneIcon: '🏳️', label: '危機炸彈', count: 4 },
-                    { code: '3-9', type: 'game', title: '【遊戲】左右鍵大考驗：照指示按「左鍵」或「右鍵」！', sub: '藍色牌子按左鍵，紫色牌子按右鍵，完成 4 張！', tip: '☝️ 藍色＝食指左鍵 ｜ 🖕 紫色＝中指右鍵', knowledge: '左鍵、右鍵自由切換，你已經是手指特工了！', tpl: 'game_left_right_mix', count: 4 },
-                    { code: '3-10', type: 'boss', title: '【第三關魔王】暗影魔法師：按「右鍵」反彈 5 顆魔法球！', sub: '魔王發射紫色魔法球，對準每顆球按「右鍵」反彈回去！', tip: '👑 全部都要用「中指按右鍵」反彈！', knowledge: '🎉 恭喜突破第三大關！解鎖「第四大關：滾輪探險家」！', tpl: 'game_right_click_targets', icon: '🔮', doneIcon: '⚡', label: '暗影魔法球', count: 5 }
-                ]
-            },
-            {
-                id: 4,
-                name: '第四大關：滾輪探險家',
-                subtitle: '食指轉動中間滾輪（上下捲動畫面）',
-                icon: '🎡',
-                color: 'from-emerald-400 to-teal-600',
-                badge: '🎡 滾輪探險家',
-                stages: [
-                    { code: '4-1', type: 'pc', title: '認識滾輪：哪一個是滑鼠中間的「滾輪」？', sub: '請點一下滑鼠圖中黃色的「滾輪」！', tip: '🔄 夾在左鍵和右鍵中間的輪子就是滾輪！', knowledge: '滾輪可以用食指輕輕往前滾或往後滾，讓畫面上下移動！', tpl: 'mouse_part', targetPart: 'wheel' },
-                    { code: '4-2', type: 'pc', title: '閱讀教室公約：請轉動「滾輪」把公約捲到底 (100%)', sub: '轉動滑鼠中間的滾輪，看完 5 條電腦教室公約！', tip: '🔄 在畫面上轉動滾輪（或點下方輔助按鈕）！', knowledge: '看長長的文章或網頁時，轉動滾輪就能往下看更多內容！', tpl: 'wheel_progress', icon: '📜', label: '電腦教室公約', theme: '往下捲動看完整公約' },
-                    { code: '4-3', type: 'pc', title: '瀏覽學校網頁：請轉動「滾輪」找到最底下的寶藏密碼！', sub: '網頁好長喔，快轉動滾輪滑到最下面吧！', tip: '🔄 持續轉動滾輪直到進度條 100%！', knowledge: '上網查資料時，滾輪是我們最好的幫手！', tpl: 'wheel_progress', icon: '🌐', label: '快樂國小首頁', theme: '捲動網頁尋找底部密碼' },
-                    { code: '4-4', type: 'pc', title: '挑選小貼圖：轉動「滾輪」瀏覽相簿全部貼圖！', sub: '把相簿捲到 100% 就能看到隱藏版黃金貼圖！', tip: '🔄 用食指轉動滑鼠中間的滾輪！', knowledge: '檔案總管裡有很多照片時，也是用滾輪上下尋找喔！', tpl: 'wheel_progress', icon: '🖼️', label: '貼圖相簿資料夾', theme: '捲動相簿找黃金貼圖' },
-                    { code: '4-5', type: 'pc', title: '地圖放大鏡：轉動「滾輪」把台灣地圖放大到 100%！', sub: '在電子地圖上轉動滾輪，可以把地圖放大看清楚！', tip: '🔄 轉動滾輪放大地圖！', knowledge: '在很多地圖與繪圖軟體裡，轉動滾輪可以放大縮小畫面！', tpl: 'wheel_progress', icon: '🗺️', label: '台灣寶島地圖', theme: '轉動滾輪放大地圖' },
-                    { code: '4-6', type: 'game', title: '【遊戲】深海潛水艇：轉動滾輪下潛到海底 100 公尺！', sub: '轉動滾輪讓黃色潛水艇一路潛到深海找寶藏！', tip: '🤿 轉動滑鼠滾輪，潛水艇就會往下潛！', knowledge: '潛水艇成功抵達深海寶藏區！', tpl: 'wheel_progress', icon: '🚢', label: '深海潛水艇號', theme: '轉動滾輪下潛 100 公尺' },
-                    { code: '4-7', type: 'game', title: '【遊戲】太空火箭升空：轉動滾輪把火箭推上外太空！', sub: '快速轉動滾輪補充推進能量，衝向 100% 高空！', tip: '🚀 轉動滑鼠滾輪幫火箭加速！', knowledge: '火箭順利進入外太空軌道！', tpl: 'wheel_progress', icon: '🚀', label: '台灣一號火箭', theme: '轉動滾輪衝上外太空' },
-                    { code: '4-8', type: 'game', title: '【遊戲】摩天大樓電梯：轉動滾輪搭電梯到 101 樓頂樓！', sub: '轉動滾輪讓電梯一層一層往上爬！', tip: '🏢 轉動滾輪啟動高速電梯！', knowledge: '叮！101 樓觀景台到了，風景超漂亮！', tpl: 'wheel_progress', icon: '🛗', label: '101 觀景電梯', theme: '轉動滾輪爬升到頂樓' },
-                    { code: '4-9', type: 'game', title: '【遊戲】小釣手大豐收：轉動滾輪收線釣起大金魚！', sub: '大魚上鉤了！快轉動滾輪捲動釣魚線！', tip: '🎣 轉動滾輪把釣魚線捲回來！', knowledge: '哇！釣到一條超大的黃金錦鯉！', tpl: 'wheel_progress', icon: '🎣', label: '黃金釣魚竿', theme: '轉動滾輪收線釣大魚' },
-                    { code: '4-10', type: 'boss', title: '【第四關魔王】巨龍發電機：狂轉滾輪充滿 100% 雷電能量！', sub: '快速轉動滾輪發電，發射雷電光束擊敗機械巨龍！', tip: '👑 快速轉動滾輪集滿能量條！', knowledge: '🎉 恭喜突破第四大關！解鎖最終「第五大關：拖曳大力士」！', tpl: 'wheel_progress', icon: '⚡', label: '雷電能量核心', theme: '轉動滾輪充滿 100% 電量擊敗巨龍' }
-                ]
-            },
-            {
-                id: 5,
-                name: '第五大關：拖曳大力士',
-                subtitle: '左鍵按住不放搬移檔案 & 拉框多選',
-                icon: '🧲',
-                color: 'from-rose-500 to-orange-500',
-                badge: '👑 50關滑鼠總冠軍',
-                stages: [
-                    { code: '5-1', type: 'pc', title: '丟進回收筒：按住左鍵把「🦠 壞壞病毒」拖進資源回收筒！', sub: '對準病毒按住左鍵不放，拉到右邊垃圾桶再放開！', tip: '✊ 左鍵按住不放 ➔ 移動滑鼠 ➔ 到垃圾桶放開！', knowledge: '按住左鍵不放移動東西，就叫做「拖曳（Drag & Drop）」！', tpl: 'drag_items', items: [{ icon: '🦠', label: '壞壞病毒' }], targetIcon: '🗑️', targetLabel: '資源回收筒' },
-                    { code: '5-2', type: 'pc', title: '交電腦作業：把「🎨 我的畫作」拖進「📁 作業繳交區」！', sub: '按住左鍵不放，把畫作搬進老師的資料夾裡！', tip: '✊ 按住左鍵把畫作拉到右邊資料夾！', knowledge: '整理檔案時，用左鍵拖曳就能把檔案搬進資料夾！', tpl: 'drag_items', items: [{ icon: '🎨', label: '我的畫作.png' }], targetIcon: '📁', targetLabel: '作業繳交區' },
-                    { code: '5-3', type: 'pc', title: '檔案分類達人：把 2 張照片都拖進「📸 相簿資料夾」！', sub: '共有 2 張照片，請一張一張按住左鍵拖進右邊相簿！', tip: '✊ 兩張照片都要拖進右邊的相簿資料夾喔！', knowledge: '連續拖曳多個檔案也難不倒你！', tpl: 'drag_items', items: [{ icon: '🏞️', label: '風景照.jpg' }, { icon: '🐶', label: '小狗照.jpg' }], targetIcon: '📸', targetLabel: '相簿資料夾' },
-                    { code: '5-4', type: 'pc', title: '拉框多選神技：在空白處按住左鍵拉出藍框，框住 3 個檔案！', sub: '可一次拉大框，或分次拉框把 3 個檔案都框起來！', tip: '🟦 從左上角空白處「按住左鍵不放」往右下角拉出藍色框框！', knowledge: '在 Windows 桌面按住左鍵拉出框框，可以一次選取好多檔案！', tpl: 'marquee_select', icon: '📄', label: '作業檔', count: 3 },
-                    { code: '5-5', type: 'pc', title: '調整音量滑桿：按住左鍵把「🔊 音量拉桿」拖到最右邊！', sub: '把左邊的喇叭滑塊按住左鍵，拉到右邊的 100% 音箱！', tip: '✊ 按住左邊的 🔊 圖示往右拉到底！', knowledge: '電腦調音量、拉影片進度條，都是用左鍵按住拖曳喔！', tpl: 'drag_items', items: [{ icon: '🔊', label: '音量滑塊' }], targetIcon: '🎶', targetLabel: '100% 滿格音量' },
-                    { code: '5-6', type: 'game', title: '【遊戲】美味漢堡王：把「🥩 漢堡肉」和「🧀 起司」拖到麵包上！', sub: '按住左鍵把兩樣食材都放進漢堡盤子裡！', tip: '🍔 把左邊 2 個食材拖進右邊漢堡盤！', knowledge: '香噴噴的起司牛肉漢堡完成囉！', tpl: 'drag_items', items: [{ icon: '🥩', label: '香煎漢堡肉' }, { icon: '🧀', label: '濃郁起司片' }], targetIcon: '🍔', targetLabel: '美味漢堡盤' },
-                    { code: '5-7', type: 'game', title: '【遊戲】動物拼圖樂：把「🦁 獅子」和「🐘 大象」拖回動物園！', sub: '幫迷路的動物寶寶搬回右邊的快樂動物園！', tip: '✊ 按住左鍵把動物拖回動物園！', knowledge: '動物們都平安回到家了，謝謝你！', tpl: 'drag_items', items: [{ icon: '🦁', label: '小獅子' }, { icon: '🐘', label: '小大象' }], targetIcon: '🎪', targetLabel: '快樂動物園' },
-                    { code: '5-8', type: 'game', title: '【遊戲】果園採收王：把 3 顆紅蘋果全部拖進「🧺 水果籃」！', sub: '按住左鍵把樹上的 3 顆大蘋果採收進籃子裡！', tip: '🍎 共有 3 顆蘋果，一顆一顆拖進籃子！', knowledge: '果園大豐收！你的拖曳穩定度滿分！', tpl: 'drag_items', items: [{ icon: '🍎', label: '紅蘋果 1' }, { icon: '🍎', label: '紅蘋果 2' }, { icon: '🍎', label: '紅蘋果 3' }], targetIcon: '🧺', targetLabel: '大水果籃' },
-                    { code: '5-9', type: 'game', title: '【遊戲】牧場圈綿羊：按住左鍵拉出藍色圍欄，框住 4 隻小綿羊！', sub: '在空白處按住左鍵拉出框框，把 4 隻綿羊圈起來！', tip: '🐑 按住左鍵拉出藍色框框碰到綿羊即可！', knowledge: '4 隻小綿羊都乖乖進圍欄休息囉！', tpl: 'marquee_select', icon: '🐑', label: '小綿羊', count: 4 },
-                    { code: '5-10', type: 'boss', title: '【最終大魔王】終極電腦守護神：把 3 顆能量寶石拖進神盾！', sub: '最後一關（第 50 關）！把 3 顆寶石拖進中央神盾擊敗大魔王！', tip: '👑 把左邊 3 顆寶石全部拖進右邊的黃金神盾！', knowledge: '🏆 太神啦！你完成了全部 50 關挑戰，榮獲「Windows 滑鼠總冠軍」！', tpl: 'drag_items', items: [{ icon: '💎', label: '勇氣寶石' }, { icon: '🌟', label: '智慧寶石' }, { icon: '🔥', label: '力量寶石' }], targetIcon: '🛡️', targetLabel: '終極黃金神盾' }
-                ]
-            }
-        ];
-
-        // ==================== 音效與國語語音導讀 ====================
-        function ensureAudio() {
-            if (!audioCtx) {
-                const AC = window.AudioContext || window.webkitAudioContext;
-                if (AC) audioCtx = new AC();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        function playTone(type) {
-            ensureAudio();
-            if (!audioCtx) return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            if (type === 'left') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(850, now);
-                osc.frequency.exponentialRampToValueAtTime(320, now + 0.05);
-                gain.gain.setValueAtTime(0.18, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
-                osc.start(now); osc.stop(now + 0.05);
-            } else if (type === 'right') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(520, now);
-                osc.frequency.exponentialRampToValueAtTime(240, now + 0.07);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
-                osc.start(now); osc.stop(now + 0.07);
-            } else if (type === 'pass') {
-                [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
-                    const o = audioCtx.createOscillator();
-                    const g = audioCtx.createGain();
-                    o.type = 'triangle';
-                    o.frequency.value = f;
-                    o.connect(g); g.connect(audioCtx.destination);
-                    g.gain.setValueAtTime(0.18, now + idx * 0.07);
-                    g.gain.exponentialRampToValueAtTime(0.008, now + idx * 0.07 + 0.28);
-                    o.start(now + idx * 0.07);
-                    o.stop(now + idx * 0.07 + 0.28);
-                });
-            }
-        }
-
-        function speakText(text) {
-            if (!ttsEnabled || !('speechSynthesis' in window)) return;
-            try {
-                window.speechSynthesis.cancel();
-                const clean = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9，。！？、]/g, ' ');
-                const u = new SpeechSynthesisUtterance(clean);
-                u.lang = 'zh-TW';
-                u.rate = 1.0;
-                u.pitch = 1.1;
-                window.speechSynthesis.speak(u);
-            } catch (e) {}
-        }
-
-        function toggleTts() {
-            ttsEnabled = !ttsEnabled;
-            const btn = document.getElementById('tts-btn');
-            const lbl = document.getElementById('tts-label');
-            if (ttsEnabled) {
-                btn.className = 'px-3 py-2 rounded-xl font-black text-sm bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 flex items-center gap-1';
-                lbl.textContent = '語音開';
-                speakText('語音導讀已開啟');
-            } else {
-                btn.className = 'px-3 py-2 rounded-xl font-black text-sm bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1';
-                lbl.textContent = '語音關';
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-            }
-        }
-
-        window.addEventListener('mousedown', (e) => {
-            const layer = document.getElementById('ripple-layer');
-            if (!layer) return;
-            const r = document.createElement('div');
-            const isRight = e.button === 2;
-            r.className = 'click-ripple';
-            r.style.left = `${e.clientX}px`;
-            r.style.top = `${e.clientY}px`;
-            r.style.width = '54px';
-            r.style.height = '54px';
-            r.style.border = isRight ? '5px solid #c084fc' : '5px solid #38bdf8';
-            layer.appendChild(r);
-            playTone(isRight ? 'right' : 'left');
-            setTimeout(() => r.remove(), 550);
-
-            const menu = document.getElementById('kid-context-menu');
-            if (menu && e.button === 0 && !menu.contains(e.target)) {
-                menu.classList.add('hidden');
-            }
-        });
-
-        window.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        function showKidToast(msg) {
-            const t = document.getElementById('kid-toast');
-            const txt = document.getElementById('kid-toast-text');
-            if (!t || !txt) return;
-            txt.textContent = msg;
-            t.classList.remove('hidden');
-            t.classList.add('flex');
-            clearTimeout(window._kidToastTimer);
-            window._kidToastTimer = setTimeout(() => {
-                t.classList.add('hidden');
-                t.classList.remove('flex');
-            }, 2600);
-        }
-        window.showKidToast = showKidToast;
-
-        // ==================== 進度管理與儲存 ====================
-        function loadSavedProgress() {
-            try {
-                const raw = localStorage.getItem('win_mouse_50stages_v2');
-                if (raw && raw.trim().startsWith('{')) {
-                    const parsed = JSON.parse(raw);
-                    studentInfo = { ...studentInfo, ...parsed };
-                    const clsInput = document.getElementById('input-class');
-                    const nameInput = document.getElementById('input-name');
-                    if (clsInput && studentInfo.className) clsInput.value = studentInfo.className;
-                    if (nameInput && studentInfo.name && studentInfo.name !== '小達人') nameInput.value = studentInfo.name;
-                }
-            } catch (e) {}
-            updateTopHud();
-        }
-
-        function saveProgress() {
-            try {
-                localStorage.setItem('win_mouse_50stages_v2', JSON.stringify(studentInfo));
-            } catch (e) {}
-            updateTopHud();
-        }
-
-        function getClearedCount() {
-            return Object.keys(studentInfo.clearedMap || {}).length;
-        }
-
-        function isWorldUnlocked(wIdx) {
-            if (wIdx === 0 || window.teacherAdminUnlocked) return true;
-            const prevWorld = WORLDS_DATA[wIdx - 1];
-            return prevWorld.stages.every(s => studentInfo.clearedMap[s.code]);
-        }
-
-        function isSubStageUnlocked(wIdx, sIdx) {
-            if (!isWorldUnlocked(wIdx)) return false;
-            if (sIdx === 0 || window.teacherAdminUnlocked) return true;
-            const world = WORLDS_DATA[wIdx];
-            const prevStage = world.stages[sIdx - 1];
-            return Boolean(studentInfo.clearedMap[prevStage.code]);
-        }
-
-        function getLatestBadgeTitle() {
-            for (let i = WORLDS_DATA.length - 1; i >= 0; i--) {
-                const w = WORLDS_DATA[i];
-                if (w.stages.every(s => studentInfo.clearedMap[s.code])) {
-                    return w.badge;
-                }
-            }
-            return '🌱 見習小達人';
-        }
-
-        function updateTopHud() {
-            const hud = document.getElementById('student-hud');
-            if (!hud) return;
-            hud.classList.remove('hidden');
-            hud.classList.add('flex');
-            document.getElementById('hud-student-name').textContent = `${studentInfo.className} ${studentInfo.name}`;
-            document.getElementById('hud-cleared-count').textContent = getClearedCount();
-            document.getElementById('hud-score').textContent = studentInfo.score;
-        }
-
-        // ==================== 畫面切換 ====================
-        function clearStageResources() {
-            activeTimers.forEach(id => { clearInterval(id); clearTimeout(id); });
-            activeTimers = [];
-            stageCleanupFns.forEach(fn => { try { fn(); } catch (e) {} });
-            stageCleanupFns = [];
-            const menu = document.getElementById('kid-context-menu');
-            if (menu) menu.classList.add('hidden');
-        }
-
-        function switchScreen(name) {
-            clearStageResources();
-            ['welcome', 'map', 'warmup', 'stage', 'victory', 'leaderboard'].forEach(s => {
-                const el = document.getElementById(`screen-${s}`);
-                if (el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(`screen-${name}`);
-            if (target) target.classList.remove('hidden');
-            if (name === 'leaderboard' && typeof window.renderLeaderboard === 'function') {
-                window.renderLeaderboard();
-            }
-        }
-
-        function enterWorldMapFromWelcome() {
-            const cls = document.getElementById('input-class').value;
-            const rawName = document.getElementById('input-name').value.trim().replace(/[<>]/g, '');
-            if (!rawName) {
-                showKidToast('✏️ 請先輸入你的「座號與姓名」喔！');
-                speakText('請先輸入你的座號與姓名喔');
-                document.getElementById('input-name').focus();
-                return;
-            }
-            studentInfo.className = cls;
-            studentInfo.name = rawName;
-            saveProgress();
-            openWorldMap();
-        }
-
-        function openWorldMap() {
-            switchScreen('map');
-            for (let i = 0; i < WORLDS_DATA.length; i++) {
-                if (isWorldUnlocked(i)) {
-                    const allDone = WORLDS_DATA[i].stages.every(s => studentInfo.clearedMap[s.code]);
-                    if (!allDone) { selectedWorldIdx = i; break; }
-                }
-            }
-            renderWorldMapUI();
-        }
-
-        function renderWorldMapUI() {
-            const grid = document.getElementById('world-cards-grid');
-            if (!grid) return;
-            grid.innerHTML = WORLDS_DATA.map((w, wIdx) => {
-                const unlocked = isWorldUnlocked(wIdx);
-                const doneCount = w.stages.filter(s => studentInfo.clearedMap[s.code]).length;
-                const isSelected = wIdx === selectedWorldIdx;
-
-                return `
-                    <div onclick="selectWorldOnMap(${wIdx})"
-                         class="cursor-pointer rounded-3xl p-4 border-4 transition-all flex flex-col justify-between ${
-                            !unlocked
-                                ? 'bg-slate-900/70 border-slate-700 opacity-60'
-                                : isSelected
-                                    ? 'bg-gradient-to-b ' + w.color + ' border-white scale-105 shadow-2xl'
-                                    : 'bg-slate-800/90 border-sky-400/50 hover:border-white'
-                         }">
-                        <div class="flex items-center justify-between">
-                            <span class="text-4xl">${unlocked ? w.icon : '🔒'}</span>
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-black ${
-                                doneCount === 10 ? 'bg-emerald-400 text-slate-950' : 'bg-slate-950/70 text-white'
-                            }">${doneCount} / 10 關</span>
-                        </div>
-                        <div class="my-2">
-                            <div class="text-base sm:text-lg font-black text-white leading-tight">${w.name}</div>
-                            <div class="text-xs font-bold text-white/85 mt-1">${w.subtitle}</div>
-                        </div>
-                        <div class="text-xs font-black px-3 py-1.5 rounded-xl text-center ${
-                            !unlocked ? 'bg-slate-950 text-slate-400' : 'bg-white text-slate-950'
-                        }">
-                            ${!unlocked ? '🔒 先過完上一大關' : doneCount === 10 ? '👑 已全破！點此重溫' : '▶ 點此選小關'}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            renderSubStageDrawer(selectedWorldIdx);
-        }
-
-        function selectWorldOnMap(wIdx) {
-            if (!isWorldUnlocked(wIdx)) {
-                showKidToast('🔒 請先完成前一大關的 10 個小關卡，才能解鎖這一關喔！');
-                speakText('請先完成前一大關的十個小關卡，才能解鎖喔');
-                return;
-            }
-            selectedWorldIdx = wIdx;
-            renderWorldMapUI();
-        }
-
-        function renderSubStageDrawer(wIdx) {
-            const w = WORLDS_DATA[wIdx];
-            const doneCount = w.stages.filter(s => studentInfo.clearedMap[s.code]).length;
-            document.getElementById('drawer-world-title').textContent = `${w.icon} ${w.name}（點選下方 1~10 小關開始挑戰）`;
-            document.getElementById('drawer-world-status').textContent = `已完成：${doneCount} / 10 小關`;
-
-            const subGrid = document.getElementById('substage-buttons-grid');
-            subGrid.innerHTML = w.stages.map((st, sIdx) => {
-                const cleared = Boolean(studentInfo.clearedMap[st.code]);
-                const unlocked = isSubStageUnlocked(wIdx, sIdx);
-                const isGame = st.type === 'game';
-                const isBoss = st.type === 'boss';
-
-                return `
-                    <button onclick="startSubStage(${wIdx}, ${sIdx})"
-                            class="kid-btn p-2.5 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 ${
-                                cleared
-                                    ? 'bg-emerald-500 text-slate-950 border-white font-black'
-                                    : unlocked
-                                        ? 'bg-amber-400 text-slate-950 border-white font-black animate-pulse'
-                                        : 'bg-slate-900 text-slate-500 border-slate-700 font-bold'
-                            }">
-                        <span class="text-xs font-black">${st.code}</span>
-                        <span class="text-xl">${cleared ? '⭐' : !unlocked ? '🔒' : isBoss ? '👑' : isGame ? '🎮' : '💻'}</span>
-                        <span class="text-[11px] truncate w-full text-center">${isBoss ? '大魔王' : isGame ? '遊戲關' : '電腦課'}</span>
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function warmupInspect(part) {
-            ['left', 'right', 'wheel'].forEach(p => {
-                document.getElementById(`warm-${p}`).classList.remove('zone-glow-left', 'zone-glow-right', 'zone-glow-wheel');
-            });
-            const badge = document.getElementById('warmup-badge');
-            const title = document.getElementById('warmup-title');
-            const desc = document.getElementById('warmup-desc');
-
-            if (part === 'left') {
-                document.getElementById('warm-left').classList.add('zone-glow-left');
-                badge.textContent = '☝️ 食指放左鍵';
-                title.textContent = '左鍵：單擊選取、雙擊打開、按住拖曳';
-                desc.textContent = '把「食指」放在左鍵上。按一下可以選取圖示，快速連按兩下可以打開資料夾，按住不放可以搬移東西！';
-            } else if (part === 'right') {
-                document.getElementById('warm-right').classList.add('zone-glow-right');
-                badge.textContent = '🖕 中指放右鍵';
-                title.textContent = '右鍵：叫出 Windows 魔法功能選單';
-                desc.textContent = '把「中指」放在右鍵上。按一下右鍵會跳出選單，可以重新整理桌面、新增資料夾或刪除檔案！';
-            } else {
-                document.getElementById('warm-wheel').classList.add('zone-glow-wheel');
-                badge.textContent = '🔄 食指轉滾輪';
-                title.textContent = '滾輪：上下捲動網頁與長文章';
-                desc.textContent = '用食指輕輕轉動中間的滾輪，可以把看不完的長網頁或故事書往上、往下捲動！';
-            }
-            speakText(title.textContent + '。' + desc.textContent);
-        }
-
-        // ==================== 啟動單一小關舞台 ====================
-        function startSubStage(wIdx, sIdx) {
-            if (!isSubStageUnlocked(wIdx, sIdx)) {
-                showKidToast('🔒 請先通過前面的小關卡，才能挑戰這一關喔！');
-                speakText('請先通過前面的小關卡喔');
-                return;
-            }
-            currentWorldIdx = wIdx;
-            currentSubIdx = sIdx;
-            stageLocked = false;
-
-            switchScreen('stage');
-            document.getElementById('stage-pass-overlay').classList.add('hidden');
-
-            const world = WORLDS_DATA[wIdx];
-            const st = world.stages[sIdx];
-
-            document.getElementById('stage-world-badge').textContent = `${world.icon} 第 ${world.id} 大關 • ${st.code}`;
-            const typeBadge = document.getElementById('stage-type-badge');
-            if (st.type === 'boss') {
-                typeBadge.className = 'px-3 py-1 rounded-xl bg-rose-500/30 border border-rose-400 text-rose-200 font-black text-sm';
-                typeBadge.textContent = '👑 守關大魔王';
-            } else if (st.type === 'game') {
-                typeBadge.className = 'px-3 py-1 rounded-xl bg-amber-500/30 border border-amber-400 text-amber-200 font-black text-sm';
-                typeBadge.textContent = '🎮 趣味遊戲關';
-            } else {
-                typeBadge.className = 'px-3 py-1 rounded-xl bg-sky-500/20 border border-sky-400 text-sky-300 font-black text-sm';
-                typeBadge.textContent = '💻 電腦課任務';
-            }
-
-            const dotsBox = document.getElementById('stage-10-dots');
-            dotsBox.innerHTML = world.stages.map((item, idx) => {
-                const done = Boolean(studentInfo.clearedMap[item.code]);
-                const cur = idx === sIdx;
-                return `<span class="w-6 h-6 rounded-full text-xs font-black flex items-center justify-center border ${
-                    cur ? 'bg-amber-400 text-slate-950 border-white scale-110'
-                        : done ? 'bg-emerald-500 text-slate-950 border-emerald-200'
-                               : 'bg-slate-800 text-slate-400 border-slate-600'
-                }">${idx + 1}</span>`;
-            }).join('');
-
-            document.getElementById('stage-question-title').textContent = st.title;
-            document.getElementById('stage-question-sub').textContent = st.sub;
-            document.getElementById('stage-bottom-tip').textContent = `💡 提示：${st.tip}`;
-
-            speakText(`第 ${st.code} 關。${st.title}。${st.sub}`);
-            buildStageTemplate(st);
-        }
-
-        function resetCurrentSubStage() {
-            showKidToast('🔄 已為你重新載入本小關！');
-            startSubStage(currentWorldIdx, currentSubIdx);
-        }
-
-        function replayStageVoice() {
-            const st = WORLDS_DATA[currentWorldIdx].stages[currentSubIdx];
-            speakText(`${st.title}。${st.sub}`);
-        }
-
-        // ==================== 小關過關結算與自動同步雲端 ====================
-        function completeCurrentSubStage() {
-            if (stageLocked) return;
-            stageLocked = true;
-            clearStageResources();
-            playTone('pass');
-            fireConfetti();
-
-            const world = WORLDS_DATA[currentWorldIdx];
-            const st = world.stages[currentSubIdx];
-
-            if (!studentInfo.clearedMap[st.code]) {
-                studentInfo.clearedMap[st.code] = true;
-                studentInfo.score += st.type === 'boss' ? 150 : 100;
-            }
-            saveProgress();
-
-            if (typeof window.uploadStudentScore === 'function') {
-                window.uploadStudentScore({
-                    className: studentInfo.className,
-                    name: studentInfo.name,
-                    clearedCount: getClearedCount(),
-                    score: studentInfo.score,
-                    badge: getLatestBadgeTitle(),
-                    timestamp: Date.now()
-                });
-            }
-
-            const overlay = document.getElementById('stage-pass-overlay');
-            const isWorldLast = currentSubIdx === 9;
-            document.getElementById('pass-emoji').textContent = isWorldLast ? '🏆' : '🎉';
-            document.getElementById('pass-title').textContent = isWorldLast
-                ? `恭喜突破【${world.name}】全部 10 小關！`
-                : `太棒了！第 ${st.code} 小關過關！`;
-            document.getElementById('pass-knowledge').textContent = st.knowledge;
-
-            const nextBtn = document.getElementById('pass-next-btn');
-            if (currentWorldIdx === 4 && currentSubIdx === 9) {
-                nextBtn.innerHTML = `領取 50 關總冠軍獎盃 <i class="fa-solid fa-crown"></i>`;
-            } else if (isWorldLast) {
-                nextBtn.innerHTML = `前往下一大關（第 ${currentWorldIdx + 2} 大關） <i class="fa-solid fa-rocket"></i>`;
-            } else {
-                nextBtn.innerHTML = `挑戰下一小關 (${world.id}-${currentSubIdx + 2}) <i class="fa-solid fa-circle-right"></i>`;
-            }
-
-            overlay.classList.remove('hidden');
-            speakText(`太棒了！過關！${st.knowledge}`);
-        }
-
-        function goNextSubStage() {
-            if (currentSubIdx < 9) {
-                startSubStage(currentWorldIdx, currentSubIdx + 1);
-            } else if (currentWorldIdx < 4) {
-                selectedWorldIdx = currentWorldIdx + 1;
-                startSubStage(currentWorldIdx + 1, 0);
-            } else {
-                showVictoryScreen();
-            }
-        }
-
-        function showVictoryScreen() {
-            switchScreen('victory');
-            fireConfetti();
-            document.getElementById('victory-student-line').textContent = `${studentInfo.className} • ${studentInfo.name}`;
-            document.getElementById('victory-cleared').textContent = `${getClearedCount()} / 50 關`;
-            document.getElementById('victory-score').textContent = `${studentInfo.score} 分`;
-            speakText(`恭喜 ${studentInfo.name} 完成滑鼠大冒險！`);
-        }
-
-        function bindEasyDblClick(el, onDoubleSuccess, onSingleNotice) {
-            let lastClickTime = 0;
-            let singleHintTimer = null;
-
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const now = Date.now();
-                const diff = now - lastClickTime;
-
-                if (diff > 30 && diff <= 750) {
-                    clearTimeout(singleHintTimer);
-                    lastClickTime = 0;
-                    el.classList.remove('dbl-first-hit');
-                    onDoubleSuccess();
-                } else {
-                    lastClickTime = now;
-                    el.classList.add('dbl-first-hit');
-                    clearTimeout(singleHintTimer);
-                    singleHintTimer = setTimeout(() => {
-                        el.classList.remove('dbl-first-hit');
-                        if (onSingleNotice) onSingleNotice();
-                    }, 760);
-                }
-            });
-        }
-
-        // ==================== 關卡模板生成器 ====================
-        function buildStageTemplate(st) {
-            const box = document.getElementById('stage-play-area');
-            box.innerHTML = '';
-
-            switch (st.tpl) {
-                case 'mouse_part': renderTplMousePart(box, st); break;
-                case 'pc_single_select': renderTplPcSingleSelect(box, st); break;
-                case 'pc_close_win': renderTplPcCloseWin(box, st); break;
-                case 'pc_start_shutdown': renderTplPcStartShutdown(box); break;
-                case 'pc_max_win': renderTplPcMaxWin(box); break;
-                case 'game_balloons': renderTplGameBalloons(box, st.goal); break;
-                case 'game_mole': renderTplGameMole(box, st.goal); break;
-                case 'game_ufo': renderTplGameUfo(box, st.goal); break;
-                case 'game_coin_bomb': renderTplGameCoinBomb(box, st.goal); break;
-                case 'boss_popups': renderTplBossPopups(box, st.goal); break;
-                case 'pc_dbl_icon': renderTplPcDblIcon(box, st); break;
-                case 'pc_dbl_nested': renderTplPcDblNested(box); break;
-                case 'game_dbl_items': renderTplGameDblItems(box, st); break;
-                case 'pc_context_task': renderTplPcContextTask(box, st); break;
-                case 'game_right_click_targets': renderTplGameRightClickTargets(box, st); break;
-                case 'game_left_right_mix': renderTplGameLeftRightMix(box, st.count); break;
-                case 'wheel_progress': renderTplWheelProgress(box, st); break;
-                case 'drag_items': renderTplDragItems(box, st); break;
-                case 'marquee_select': renderTplMarqueeSelect(box, st); break;
-            }
-        }
-
-        function renderTplMousePart(box, st) {
-            box.innerHTML = `
-                <div class="flex flex-col items-center gap-3">
-                    <svg viewBox="0 0 240 310" class="w-56 sm:w-64 h-auto drop-shadow-2xl">
-                        <rect x="20" y="20" width="200" height="270" rx="95" fill="#1e293b" stroke="#64748b" stroke-width="6"/>
-                        <path id="tpl-m-left" class="mouse-zone"
-                              d="M 24 115 L 24 100 C 24 45, 75 24, 116 24 L 116 145 L 24 145 Z"
-                              fill="#0284c7" stroke="#bae6fd" stroke-width="4"/>
-                        <path id="tpl-m-right" class="mouse-zone"
-                              d="M 124 24 C 165 24, 216 45, 216 100 L 216 145 L 124 145 Z"
-                              fill="#9333ea" stroke="#e9d5ff" stroke-width="4"/>
-                        <rect id="tpl-m-wheel" class="mouse-zone"
-                              x="102" y="48" width="36" height="72" rx="18"
-                              fill="#eab308" stroke="#fef08a" stroke-width="4"/>
-                        <text x="68" y="98" text-anchor="middle" fill="#fff" font-size="22" font-weight="900" pointer-events="none">左鍵</text>
-                        <text x="172" y="98" text-anchor="middle" fill="#fff" font-size="22" font-weight="900" pointer-events="none">右鍵</text>
-                        <text x="120" y="90" text-anchor="middle" fill="#0f172a" font-size="14" font-weight="900" pointer-events="none">滾輪</text>
-                    </svg>
-                </div>
-            `;
-            ['left', 'right', 'wheel'].forEach(p => {
-                document.getElementById(`tpl-m-${p}`).onclick = () => {
-                    if (p === st.targetPart) completeCurrentSubStage();
-                    else showKidToast('💡 看清楚題目顏色與位置，再試一次喔！');
-                };
-            });
-        }
-
-        function renderTplPcSingleSelect(box, st) {
-            box.innerHTML = `
-                <div class="flex items-center justify-center gap-12 sm:gap-20">
-                    <div id="single-good" class="target-pulse cursor-pointer w-44 h-44 sm:w-52 sm:h-52 rounded-3xl bg-white/10 hover:bg-sky-500/30 border-4 border-sky-300 flex flex-col items-center justify-center gap-3 shadow-2xl">
-                        <span class="text-7xl sm:text-8xl">${st.targetIcon}</span>
-                        <span class="text-2xl font-black text-white bg-sky-600 px-4 py-1 rounded-xl">${st.targetLabel}</span>
-                    </div>
-                    <div id="single-wrong" class="cursor-pointer w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-white/5 hover:bg-white/10 border-2 border-white/20 flex flex-col items-center justify-center gap-3 opacity-80">
-                        <span class="text-6xl sm:text-7xl">${st.wrongIcon}</span>
-                        <span class="text-xl font-bold text-slate-300">${st.wrongLabel}</span>
-                    </div>
-                </div>
-            `;
-            document.getElementById('single-good').onclick = () => completeCurrentSubStage();
-            document.getElementById('single-wrong').onclick = () => showKidToast(`💡 請點選左邊的「${st.targetIcon} ${st.targetLabel}」喔！`);
-        }
-
-        function renderTplPcCloseWin(box, st) {
-            box.innerHTML = `
-                <div class="w-full max-w-lg bg-slate-900 rounded-3xl border-4 border-sky-400 shadow-2xl overflow-hidden">
-                    <div class="bg-slate-800 px-5 py-3.5 flex items-center justify-between border-b-2 border-slate-700">
-                        <span class="text-xl font-black text-white">${st.winTitle}</span>
-                        <button id="win-close-x" class="target-pulse w-14 h-12 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-3xl flex items-center justify-center border-2 border-white shadow-lg">
-                            ✖
-                        </button>
-                    </div>
-                    <div class="p-8 text-center">
-                        <div class="text-6xl mb-3">🖥️</div>
-                        <p class="text-2xl font-black text-sky-200 mb-2">${st.winBody}</p>
-                        <p class="text-lg font-bold text-amber-300">👉 請點視窗右上角紅色的「✖」關閉視窗！</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('win-close-x').onclick = () => completeCurrentSubStage();
-        }
-
-        function renderTplPcStartShutdown(box) {
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col justify-between items-center p-2">
-                    <div class="my-auto text-center">
-                        <div id="start-step-hint" class="text-2xl sm:text-3xl font-black text-amber-300 mb-3">
-                            第一步：請點下方藍色的「🪟 開始」按鈕！
-                        </div>
-                        <div id="start-popup-menu" class="hidden mx-auto w-72 bg-slate-900/95 border-4 border-sky-400 rounded-3xl p-5 shadow-2xl">
-                            <div class="text-lg font-black text-sky-300 mb-3">🪟 Windows 開始選單</div>
-                            <button id="btn-power-off" class="target-pulse w-full py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-2xl border-2 border-white flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-power-off"></i> 關機
-                            </button>
-                        </div>
-                    </div>
-                    <div class="w-full max-w-xl h-16 bg-slate-900/95 border-2 border-sky-400/50 rounded-2xl flex items-center justify-center px-4 shadow-2xl">
-                        <button id="btn-win-start" class="target-pulse px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xl flex items-center gap-2 border-2 border-white">
-                            <i class="fa-brands fa-windows text-2xl"></i> 開始
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.getElementById('btn-win-start').onclick = () => {
-                document.getElementById('start-popup-menu').classList.remove('hidden');
-                document.getElementById('start-step-hint').textContent = '第二步：太棒了！現在請點紅色的「⏻ 關機」！';
-                speakText('現在請點紅色的關機按鈕');
-            };
-            document.getElementById('btn-power-off').onclick = () => completeCurrentSubStage();
-        }
-
-        function renderTplPcMaxWin(box) {
-            box.innerHTML = `
-                <div class="w-96 bg-slate-900 rounded-3xl border-4 border-emerald-400 shadow-2xl overflow-hidden">
-                    <div class="bg-slate-800 px-4 py-3 flex items-center justify-between border-b-2 border-slate-700">
-                        <span class="text-lg font-black text-white">📝 小小的作業視窗</span>
-                        <div class="flex items-center gap-2">
-                            <button id="btn-win-max" class="target-pulse w-14 h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-2xl flex items-center justify-center border-2 border-white">
-                                🗖
-                            </button>
-                            <button id="btn-win-wrong-x" class="w-11 h-11 rounded-xl bg-slate-700 text-slate-300 font-black text-lg">
-                                ✖
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6 text-center">
-                        <p class="text-xl font-black text-white">視窗太小看不清楚嗎？</p>
-                        <p class="text-lg font-bold text-emerald-300 mt-2">👉 請點右上角綠色的「🗖」放大視窗！</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('btn-win-max').onclick = () => completeCurrentSubStage();
-            document.getElementById('btn-win-wrong-x').onclick = () => showKidToast('💡 這一關要點綠色的「🗖 放大按鈕」喔！');
-        }
-
-        function renderTplGameBalloons(box, goal) {
-            let hit = 0;
-            const colors = ['bg-rose-500', 'bg-amber-400', 'bg-emerald-400', 'bg-sky-400', 'bg-purple-500'];
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-amber-400 text-amber-300 font-black text-xl">
-                        🎈 已點破氣球：<span id="balloon-score">0</span> / ${goal}
-                    </div>
-                    <div id="balloon-row" class="flex flex-wrap items-center justify-center gap-6 my-auto"></div>
-                </div>
-            `;
-            const row = document.getElementById('balloon-row');
-            for (let i = 0; i < goal; i++) {
-                const b = document.createElement('button');
-                b.className = `balloon-float cursor-pointer w-28 h-32 sm:w-32 sm:h-36 rounded-full ${colors[i % colors.length]} border-4 border-white shadow-2xl flex flex-col items-center justify-center text-5xl transition-transform hover:scale-110`;
-                b.style.animationDelay = `${i * 0.25}s`;
-                b.innerHTML = `🎈<span class="text-sm font-black text-slate-950 bg-white/80 px-2 rounded-full mt-1">點我</span>`;
-                b.onclick = () => {
-                    if (b.dataset.popped) return;
-                    b.dataset.popped = '1';
-                    b.innerHTML = '💥';
-                    b.className = 'w-28 h-32 sm:w-32 sm:h-36 flex items-center justify-center text-6xl scale-125 opacity-30 transition-all';
-                    hit++;
-                    document.getElementById('balloon-score').textContent = hit;
-                    if (hit >= goal) completeCurrentSubStage();
-                };
-                row.appendChild(b);
-            }
-        }
-
-        function renderTplGameMole(box, goal) {
-            let hit = 0;
-            let activeHole = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-amber-400 text-amber-300 font-black text-xl">
-                        🐹 已打中地鼠：<span id="mole-score">0</span> / ${goal}
-                    </div>
-                    <div id="mole-grid" class="grid grid-cols-3 gap-5 my-auto"></div>
-                </div>
-            `;
-            const grid = document.getElementById('mole-grid');
-            const holes = [];
-            for (let i = 0; i < 6; i++) {
-                const h = document.createElement('button');
-                h.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-amber-950/90 border-4 border-amber-700 flex items-center justify-center text-6xl shadow-inner transition-transform';
-                h.onclick = () => {
-                    if (i === activeHole) {
-                        hit++;
-                        document.getElementById('mole-score').textContent = hit;
-                        h.innerHTML = '💫';
-                        activeHole = -1;
-                        if (hit >= goal) completeCurrentSubStage();
-                        else spawnMole();
-                    }
-                };
-                grid.appendChild(h);
-                holes.push(h);
-            }
-
-            function spawnMole() {
-                holes.forEach(h => {
-                    h.innerHTML = '🕳️';
-                    h.classList.remove('bg-amber-400', 'scale-105', 'border-white');
-                });
-                activeHole = Math.floor(Math.random() * 6);
-                holes[activeHole].innerHTML = '🐹';
-                holes[activeHole].classList.add('bg-amber-400', 'scale-105', 'border-white');
-            }
-            spawnMole();
-            const timer = setInterval(spawnMole, 1500);
-            activeTimers.push(timer);
-        }
-
-        function renderTplGameUfo(box, goal) {
-            let hit = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2 relative">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-sky-400 text-sky-300 font-black text-xl z-10">
-                        🛸 已捕捉飛碟：<span id="ufo-score">0</span> / ${goal}
-                    </div>
-                    <div class="flex-grow w-full flex items-center justify-center">
-                        <button id="ufo-btn" class="cursor-pointer w-36 h-36 rounded-full bg-indigo-600 hover:bg-indigo-500 border-4 border-white shadow-2xl flex flex-col items-center justify-center gap-1 transition-all duration-300">
-                            <span class="text-6xl">🛸</span>
-                            <span class="text-sm font-black text-amber-300">點我捕捉！</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-            const btn = document.getElementById('ufo-btn');
-            function moveUfo() {
-                const dx = Math.floor((Math.random() - 0.5) * 260);
-                const dy = Math.floor((Math.random() - 0.5) * 110);
-                btn.style.transform = `translate(${dx}px, ${dy}px)`;
-            }
-            btn.onclick = () => {
-                hit++;
-                document.getElementById('ufo-score').textContent = hit;
-                if (hit >= goal) completeCurrentSubStage();
-                else moveUfo();
-            };
-            const timer = setInterval(moveUfo, 1300);
-            activeTimers.push(timer);
-        }
-
-        function renderTplGameCoinBomb(box, goal) {
-            let hit = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-amber-400 text-amber-300 font-black text-xl">
-                        ⭐ 已收集金幣：<span id="coin-score">0</span> / ${goal}
-                    </div>
-                    <div id="coin-grid" class="flex flex-wrap items-center justify-center gap-4 my-auto max-w-2xl"></div>
-                </div>
-            `;
-            const grid = document.getElementById('coin-grid');
-            const items = ['⭐', '⭐', '💣', '⭐', '💣', '⭐', '⭐', '💣'];
-            items.forEach(type => {
-                const isCoin = type === '⭐';
-                const b = document.createElement('button');
-                b.className = `w-28 h-28 rounded-3xl border-4 flex flex-col items-center justify-center gap-1 text-5xl font-black shadow-xl ${
-                    isCoin ? 'bg-amber-400/20 border-amber-300 hover:bg-amber-400/40' : 'bg-rose-950/60 border-rose-500/50'
-                }`;
-                b.innerHTML = `${type}<span class="text-xs text-white">${isCoin ? '金幣' : '別點炸彈'}</span>`;
-                b.onclick = () => {
-                    if (b.dataset.done) return;
-                    if (isCoin) {
-                        b.dataset.done = '1';
-                        b.innerHTML = '✅';
-                        b.className = 'w-28 h-28 rounded-3xl bg-emerald-500/30 border-2 border-emerald-400 flex items-center justify-center text-5xl opacity-50';
-                        hit++;
-                        document.getElementById('coin-score').textContent = hit;
-                        if (hit >= goal) completeCurrentSubStage();
-                    } else {
-                        showKidToast('💥 哎呀！那是炸彈，請點黃色的「⭐ 金幣」喔！');
-                    }
-                };
-                grid.appendChild(b);
-            });
-        }
-
-        function renderTplBossPopups(box, goal) {
-            let closed = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-rose-600 border-2 border-white text-white font-black text-xl">
-                        👑 已關閉魔王視窗：<span id="boss1-score">0</span> / ${goal}
-                    </div>
-                    <div id="popup-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 my-auto"></div>
-                </div>
-            `;
-            const grid = document.getElementById('popup-grid');
-            for (let i = 0; i < goal; i++) {
-                const win = document.createElement('div');
-                win.className = 'w-48 bg-slate-900 border-4 border-rose-400 rounded-2xl overflow-hidden shadow-xl';
-                win.innerHTML = `
-                    <div class="bg-slate-800 px-3 py-1.5 flex items-center justify-between border-b border-slate-700">
-                        <span class="text-xs font-black text-rose-300">👾 廣告 #${i + 1}</span>
-                        <button class="close-btn w-9 h-8 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-black text-lg border border-white">✖</button>
-                    </div>
-                    <div class="p-3 text-center text-sm font-bold text-slate-200">點右上角 ✖ 關掉我！</div>
-                `;
-                win.querySelector('.close-btn').onclick = () => {
-                    if (win.dataset.closed) return;
-                    win.dataset.closed = '1';
-                    win.className = 'w-48 h-24 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl';
-                    win.innerHTML = '✅';
-                    closed++;
-                    document.getElementById('boss1-score').textContent = closed;
-                    if (closed >= goal) completeCurrentSubStage();
-                };
-                grid.appendChild(win);
-            }
-        }
-
-        function renderTplPcDblIcon(box, st) {
-            box.innerHTML = `
-                <div class="flex flex-col items-center gap-4">
-                    <div id="dbl-target-box" class="target-pulse cursor-pointer w-52 h-52 sm:w-60 sm:h-60 rounded-3xl bg-amber-400/20 hover:bg-amber-400/30 border-4 border-amber-300 flex flex-col items-center justify-center gap-3 shadow-2xl relative transition-all">
-                        <div id="dbl-step-badge" class="hidden absolute -top-4 px-4 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-base shadow-lg">
-                            ⚡ 1/2 再快按一下！
-                        </div>
-                        <span class="text-7xl sm:text-8xl pointer-events-none">${st.icon}</span>
-                        <span class="text-2xl font-black text-white bg-slate-900/90 px-4 py-1.5 rounded-2xl pointer-events-none">${st.label}</span>
-                    </div>
-                    <div id="dbl-feedback" class="text-xl font-black text-amber-300">
-                        👆 對準上方圖示，食指「喀喀」快速連按兩下左鍵！
-                    </div>
-                </div>
-            `;
-            const target = document.getElementById('dbl-target-box');
-            const badge = document.getElementById('dbl-step-badge');
-            const fb = document.getElementById('dbl-feedback');
-
-            target.addEventListener('mousedown', () => badge.classList.remove('hidden'));
-
-            bindEasyDblClick(
-                target,
-                () => {
-                    fb.textContent = st.resultText;
-                    completeCurrentSubStage();
-                },
-                () => {
-                    badge.classList.add('hidden');
-                    fb.textContent = '💡 你剛才只按了一下，要「快速連按兩下」才會打開喔！';
-                    showKidToast('⚡ 再快一點點！「喀喀」連按兩下左鍵！');
-                }
-            );
-        }
-
-        function renderTplPcDblNested(box) {
-            let step = 1;
-            box.innerHTML = `
-                <div class="flex flex-col items-center gap-4">
-                    <div id="nested-step-banner" class="px-5 py-1.5 rounded-full bg-amber-400 text-slate-950 font-black text-xl">
-                        第 1 層：請雙擊打開「📁 電腦作業」資料夾
-                    </div>
-                    <div id="nested-icon-box" class="target-pulse cursor-pointer w-52 h-52 rounded-3xl bg-sky-500/20 border-4 border-sky-300 flex flex-col items-center justify-center gap-3 shadow-2xl transition-all">
-                        <span id="nested-emoji" class="text-8xl pointer-events-none">📁</span>
-                        <span id="nested-label" class="text-2xl font-black text-white bg-slate-900/90 px-4 py-1 rounded-xl pointer-events-none">電腦作業</span>
-                    </div>
-                </div>
-            `;
-            const iconBox = document.getElementById('nested-icon-box');
-            bindEasyDblClick(
-                iconBox,
-                () => {
-                    if (step === 1) {
-                        step = 2;
-                        document.getElementById('nested-step-banner').textContent = '第 2 層：太棒了！再雙擊打開裡面的「📝 我的作品」！';
-                        document.getElementById('nested-emoji').textContent = '📝';
-                        document.getElementById('nested-label').textContent = '我的作品.docx';
-                        speakText('太棒了！再連按兩下打開我的作品');
-                    } else {
-                        completeCurrentSubStage();
-                    }
-                },
-                () => showKidToast('⚡ 要快速連按兩下左鍵喔！')
-            );
-        }
-
-        function renderTplGameDblItems(box, st) {
-            let opened = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-amber-400 text-amber-300 font-black text-xl">
-                        ⚡ 已雙擊打開：<span id="dbl-game-score">0</span> / ${st.count}
-                    </div>
-                    <div id="dbl-game-grid" class="flex flex-wrap items-center justify-center gap-6 my-auto"></div>
-                    <div class="text-base font-bold text-sky-200">💡 每個「${st.label}」都要快速連按兩下左鍵喔！</div>
-                </div>
-            `;
-            const grid = document.getElementById('dbl-game-grid');
-            for (let i = 0; i < st.count; i++) {
-                const card = document.createElement('div');
-                card.className = 'cursor-pointer w-36 h-40 sm:w-40 sm:h-44 rounded-3xl bg-slate-800/90 hover:bg-slate-700 border-4 border-amber-300 flex flex-col items-center justify-center gap-2 shadow-xl transition-all relative';
-                card.innerHTML = `
-                    <span class="item-hint hidden absolute -top-3 px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-xs">再按一下！</span>
-                    <span class="item-emoji text-6xl sm:text-7xl pointer-events-none">${st.icon}</span>
-                    <span class="item-txt text-base font-black text-amber-200 pointer-events-none">連按兩下</span>
-                `;
-                const hintEl = card.querySelector('.item-hint');
-                card.addEventListener('mousedown', () => {
-                    if (!card.dataset.opened) hintEl.classList.remove('hidden');
-                });
-
-                bindEasyDblClick(
-                    card,
-                    () => {
-                        if (card.dataset.opened) return;
-                        card.dataset.opened = '1';
-                        hintEl.classList.add('hidden');
-                        card.className = 'w-36 h-40 sm:w-40 sm:h-44 rounded-3xl bg-emerald-500/30 border-4 border-emerald-400 flex flex-col items-center justify-center gap-2 shadow-xl scale-105';
-                        card.querySelector('.item-emoji').textContent = st.openIcon;
-                        card.querySelector('.item-txt').textContent = '成功！';
-                        opened++;
-                        document.getElementById('dbl-game-score').textContent = opened;
-                        if (opened >= st.count) completeCurrentSubStage();
-                    },
-                    () => {
-                        hintEl.classList.add('hidden');
-                        showKidToast('⚡ 差一點點！「喀喀」快速連按兩下左鍵！');
-                    }
-                );
-                grid.appendChild(card);
-            }
-        }
-
-        function renderTplPcContextTask(box, st) {
-            box.innerHTML = `
-                <div id="ctx-zone" class="w-full max-w-xl h-64 rounded-3xl bg-purple-950/60 border-4 border-dashed border-purple-400 flex flex-col items-center justify-center gap-3 cursor-context-menu p-6 text-center shadow-2xl">
-                    <span class="text-7xl pointer-events-none">${st.boxIcon}</span>
-                    <div class="text-2xl sm:text-3xl font-black text-white pointer-events-none">${st.boxTitle}</div>
-                    <div class="px-5 py-1.5 rounded-full bg-purple-500/30 border border-purple-300 text-purple-200 font-black text-lg pointer-events-none">
-                        🖕 第一步：中指按「右鍵」 ➔ 第二步：點「${st.cmdLabel}」
-                    </div>
-                </div>
-            `;
-            const zone = document.getElementById('ctx-zone');
-            zone.onclick = () => showKidToast('🖕 這裡要用「中指按右鍵」才會跳出魔法選單喔！');
-            zone.oncontextmenu = (e) => {
-                e.preventDefault();
-                const menu = document.getElementById('kid-context-menu');
-                menu.classList.remove('hidden');
-                const x = Math.min(e.clientX, window.innerWidth - 300);
-                const y = Math.min(e.clientY, window.innerHeight - 280);
-                menu.style.left = `${x}px`;
-                menu.style.top = `${y}px`;
-                contextTargetCallback = (cmd) => {
-                    if (cmd === st.targetCmd) completeCurrentSubStage();
-                    else showKidToast(`💡 請點選單裡的「${st.cmdLabel}」喔！`);
-                };
-            };
-        }
-
-        function handleContextMenuAction(cmd) {
-            document.getElementById('kid-context-menu').classList.add('hidden');
-            if (contextTargetCallback) contextTargetCallback(cmd);
-        }
-
-        function renderTplGameRightClickTargets(box, st) {
-            let done = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-purple-900 border-2 border-purple-300 text-purple-200 font-black text-xl">
-                        🪄 已用右鍵收服：<span id="rc-score">0</span> / ${st.count}
-                    </div>
-                    <div id="rc-grid" class="flex flex-wrap items-center justify-center gap-5 my-auto"></div>
-                    <div class="text-base font-black text-purple-200">🖕 請直接對目標按「中指右鍵」！</div>
-                </div>
-            `;
-            const grid = document.getElementById('rc-grid');
-            for (let i = 0; i < st.count; i++) {
-                const item = document.createElement('div');
-                item.className = 'cursor-context-menu w-32 h-36 sm:w-36 sm:h-40 rounded-3xl bg-purple-900/60 hover:bg-purple-800/70 border-4 border-purple-400 flex flex-col items-center justify-center gap-2 shadow-xl transition-all';
-                item.innerHTML = `
-                    <span class="rc-emoji text-6xl pointer-events-none">${st.icon}</span>
-                    <span class="rc-lbl text-sm font-black text-purple-200 bg-slate-900/80 px-3 py-0.5 rounded-full pointer-events-none">按右鍵</span>
-                `;
-                item.onclick = () => showKidToast('🖕 要用「中指按右鍵」才有魔法喔！');
-                item.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    if (item.dataset.done) return;
-                    item.dataset.done = '1';
-                    item.className = 'w-32 h-36 sm:w-36 sm:h-40 rounded-3xl bg-emerald-500/30 border-4 border-emerald-400 flex flex-col items-center justify-center gap-2 scale-105';
-                    item.querySelector('.rc-emoji').textContent = st.doneIcon;
-                    item.querySelector('.rc-lbl').textContent = '成功！';
-                    done++;
-                    document.getElementById('rc-score').textContent = done;
-                    if (done >= st.count) completeCurrentSubStage();
-                };
-                grid.appendChild(item);
-            }
-        }
-
-        function renderTplGameLeftRightMix(box, count) {
-            let done = 0;
-            box.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-between py-2">
-                    <div class="px-5 py-1.5 rounded-full bg-slate-900 border-2 border-sky-400 text-white font-black text-xl">
-                        🎯 已完成牌子：<span id="mix-score">0</span> / ${count}
-                    </div>
-                    <div id="mix-grid" class="flex flex-wrap items-center justify-center gap-5 my-auto"></div>
-                </div>
-            `;
-            const grid = document.getElementById('mix-grid');
-            for (let i = 0; i < count; i++) {
-                const needRight = i % 2 === 1;
-                const card = document.createElement('div');
-                card.className = `cursor-pointer w-36 h-40 rounded-3xl border-4 flex flex-col items-center justify-center gap-2 shadow-xl ${
-                    needRight ? 'bg-purple-600/30 border-purple-400' : 'bg-sky-600/30 border-sky-400'
-                }`;
-                card.innerHTML = `
-                    <span class="text-5xl pointer-events-none">${needRight ? '🖕' : '☝️'}</span>
-                    <span class="text-xl font-black text-white pointer-events-none">${needRight ? '請按右鍵' : '請按左鍵'}</span>
-                `;
-                card.onclick = () => {
-                    if (card.dataset.done) return;
-                    if (!needRight) markMixCardDone(card);
-                    else showKidToast('🖕 紫色牌子要用「中指按右鍵」喔！');
-                };
-                card.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    if (card.dataset.done) return;
-                    if (needRight) markMixCardDone(card);
-                    else showKidToast('☝️ 藍色牌子要用「食指按左鍵」喔！');
-                };
-                grid.appendChild(card);
-            }
-
-            function markMixCardDone(card) {
-                card.dataset.done = '1';
-                card.className = 'w-36 h-40 rounded-3xl bg-emerald-500/30 border-4 border-emerald-400 flex items-center justify-center text-6xl';
-                card.innerHTML = '✅';
-                done++;
-                document.getElementById('mix-score').textContent = done;
-                if (done >= count) completeCurrentSubStage();
-            }
-        }
-
-        function renderTplWheelProgress(box, st) {
-            let progress = 0;
-            box.innerHTML = `
-                <div class="w-full max-w-2xl bg-slate-900/95 border-4 border-amber-400 rounded-3xl p-6 flex flex-col items-center gap-4 shadow-2xl">
-                    <div class="flex items-center justify-between w-full">
-                        <span class="text-xl sm:text-2xl font-black text-white">${st.icon} ${st.label}</span>
-                        <span id="wheel-pct-badge" class="px-4 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xl">0%</span>
-                    </div>
-
-                    <div class="w-full h-9 bg-slate-950 rounded-full p-1 border-2 border-slate-700 overflow-hidden">
-                        <div id="wheel-bar-fill" class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 rounded-full transition-all duration-150" style="width: 0%"></div>
-                    </div>
-
-                    <div class="w-full py-5 rounded-2xl bg-slate-800/90 border-2 border-sky-400/40 flex flex-col items-center justify-center gap-2 text-center">
-                        <div id="wheel-anim-icon" class="text-7xl transition-transform">${st.icon}</div>
-                        <div class="text-xl sm:text-2xl font-black text-amber-300">🔄 請直接轉動滑鼠中間的「滾輪」！</div>
-                        <div class="text-sm font-bold text-slate-300">（往前滾或往後滾都可以累積進度喔！）</div>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <button id="wheel-fallback-up" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm font-black text-sky-300">
-                            🔼 往上轉滾輪 (+25%)
-                        </button>
-                        <button id="wheel-fallback-down" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm font-black text-sky-300">
-                            🔽 往下轉滾輪 (+25%)
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            function stepWheel() {
-                if (stageLocked) return;
-                progress = Math.min(100, progress + 25);
-                const badge = document.getElementById('wheel-pct-badge');
-                const bar = document.getElementById('wheel-bar-fill');
-                const icon = document.getElementById('wheel-anim-icon');
-                if (badge) badge.textContent = `${progress}%`;
-                if (bar) bar.style.width = `${progress}%`;
-                if (icon) icon.style.transform = `scale(${1 + progress / 250})`;
-                if (progress >= 100) completeCurrentSubStage();
-            }
-
-            const onWindowWheel = (e) => {
-                e.preventDefault();
-                stepWheel();
-            };
-            window.addEventListener('wheel', onWindowWheel, { passive: false });
-            stageCleanupFns.push(() => window.removeEventListener('wheel', onWindowWheel));
-
-            document.getElementById('wheel-fallback-up').onclick = stepWheel;
-            document.getElementById('wheel-fallback-down').onclick = stepWheel;
-        }
-
-        function renderTplDragItems(box, st) {
-            const total = st.items.length;
-            let delivered = 0;
-
-            box.innerHTML = `
-                <div id="drag-arena" class="w-full h-full flex items-center justify-around relative px-4 select-none">
-                    <div id="drag-sources-col" class="flex flex-col items-center gap-4 z-20"></div>
-
-                    <div class="text-center pointer-events-none hidden sm:flex flex-col items-center">
-                        <div class="text-4xl text-amber-400 animate-pulse">➡️ ➡️ ➡️</div>
-                        <div class="text-base font-black text-amber-300 mt-1">按住左鍵不放拖過去</div>
-                    </div>
-
-                    <div id="drag-drop-zone" class="w-52 h-56 sm:w-60 sm:h-64 rounded-3xl bg-slate-900/90 border-4 border-dashed border-emerald-400 flex flex-col items-center justify-center gap-2 shadow-2xl transition-all">
-                        <span class="text-7xl sm:text-8xl pointer-events-none">${st.targetIcon}</span>
-                        <span class="text-xl sm:text-2xl font-black text-emerald-300 pointer-events-none">${st.targetLabel}</span>
-                        <span id="drag-counter-badge" class="px-4 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-white font-black text-base pointer-events-none">
-                            進度：0 / ${total}
-                        </span>
-                    </div>
-                </div>
-            `;
-
-            const col = document.getElementById('drag-sources-col');
-            const dropZone = document.getElementById('drag-drop-zone');
-
-            st.items.forEach((item) => {
-                const el = document.createElement('div');
-                el.className = 'cursor-grab active:cursor-grabbing w-36 h-32 sm:w-44 sm:h-36 rounded-3xl bg-rose-500/25 border-4 border-rose-400 flex flex-col items-center justify-center gap-1 shadow-2xl touch-none';
-                el.innerHTML = `
-                    <span class="text-5xl sm:text-6xl pointer-events-none">${item.icon}</span>
-                    <span class="text-base sm:text-lg font-black text-white bg-slate-900/90 px-3 py-0.5 rounded-xl pointer-events-none">${item.label}</span>
-                `;
-                col.appendChild(el);
-
-                let dragging = false;
-                let startX = 0, startY = 0;
-
-                el.addEventListener('pointerdown', (e) => {
-                    if (e.button !== 0 && e.pointerType === 'mouse') return;
-                    if (el.dataset.done) return;
-                    dragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    el.setPointerCapture(e.pointerId);
-                    el.style.transition = 'none';
-                    el.style.zIndex = '50';
-                });
-
-                el.addEventListener('pointermove', (e) => {
-                    if (!dragging) return;
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    el.style.transform = `translate(${dx}px, ${dy}px) scale(1.08)`;
-
-                    if (isOverlapping(el, dropZone)) {
-                        dropZone.classList.add('bg-emerald-500/30', 'scale-105', 'border-white');
-                    } else {
-                        dropZone.classList.remove('bg-emerald-500/30', 'scale-105', 'border-white');
-                    }
-                });
-
-                el.addEventListener('pointerup', () => {
-                    if (!dragging) return;
-                    dragging = false;
-                    dropZone.classList.remove('bg-emerald-500/30', 'scale-105', 'border-white');
-
-                    if (isOverlapping(el, dropZone)) {
-                        el.dataset.done = '1';
-                        el.style.transition = 'all 0.2s ease';
-                        el.style.transform = 'scale(0)';
-                        setTimeout(() => el.classList.add('hidden'), 200);
-                        delivered++;
-                        document.getElementById('drag-counter-badge').textContent = `進度：${delivered} / ${total}`;
-                        if (delivered >= total) completeCurrentSubStage();
-                    } else {
-                        el.style.transition = 'transform 0.25s ease';
-                        el.style.transform = 'translate(0px, 0px)';
-                        showKidToast(`✊ 請按住左鍵不放，把「${item.label}」拉進右邊的「${st.targetLabel}」！`);
-                    }
-                });
-            });
-        }
-
-        function isOverlapping(a, b) {
-            const r1 = a.getBoundingClientRect();
-            const r2 = b.getBoundingClientRect();
-            const pad = 45;
-            return !(
-                r1.right < r2.left - pad ||
-                r1.left > r2.right + pad ||
-                r1.bottom < r2.top - pad ||
-                r1.top > r2.bottom + pad
-            );
-        }
-
-        function renderTplMarqueeSelect(box, st) {
-            box.innerHTML = `
-                <div id="marquee-board" class="w-full h-full rounded-2xl bg-slate-950/60 border-2 border-sky-400/40 relative overflow-hidden flex flex-col items-center justify-center cursor-crosshair select-none">
-                    <div class="absolute top-3 left-1/2 -translate-x-1/2 px-5 py-1 rounded-full bg-slate-900/90 border border-sky-400 text-sky-200 font-black text-base pointer-events-none z-20">
-                        🟦 按住左鍵拉出藍色框框（已框選：<span id="mq-count">0</span> / ${st.count}）
-                    </div>
-                    <div id="mq-items-wrap" class="flex items-center justify-center gap-8 sm:gap-12 pointer-events-none z-10"></div>
-                    <div id="mq-rect" class="hidden fixed border-4 border-sky-300 bg-sky-400/30 rounded-xl pointer-events-none z-50"></div>
-                </div>
-            `;
-
-            const board = document.getElementById('marquee-board');
-            const wrap = document.getElementById('mq-items-wrap');
-            const rectEl = document.getElementById('mq-rect');
-            const targets = [];
-
-            for (let i = 0; i < st.count; i++) {
-                const t = document.createElement('div');
-                t.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-slate-800 border-4 border-slate-600 flex flex-col items-center justify-center gap-1 transition-all';
-                t.innerHTML = `
-                    <span class="text-5xl sm:text-6xl">${st.icon}</span>
-                    <span class="text-sm font-black text-white">${st.label} ${i + 1}</span>
-                `;
-                wrap.appendChild(t);
-                targets.push(t);
-            }
-
-            let pulling = false;
-            let sx = 0, sy = 0;
-
-            board.addEventListener('pointerdown', (e) => {
-                if (e.button !== 0 && e.pointerType === 'mouse') return;
-                pulling = true;
-                sx = e.clientX;
-                sy = e.clientY;
-                board.setPointerCapture(e.pointerId);
-                rectEl.classList.remove('hidden');
-                updateRect(sx, sy);
-            });
-
-            board.addEventListener('pointermove', (e) => {
-                if (!pulling) return;
-                updateRect(e.clientX, e.clientY);
-            });
-
-            board.addEventListener('pointerup', () => {
-                if (!pulling) return;
-                pulling = false;
-                rectEl.classList.add('hidden');
-                const selectedTotal = targets.filter(t => t.dataset.selected === '1').length;
-                if (selectedTotal >= st.count) {
-                    completeCurrentSubStage();
-                } else {
-                    showKidToast(`🟦 目前已框住 ${selectedTotal}/${st.count} 個，繼續按住左鍵拉框把剩下的框起來！`);
-                }
-            });
-
-            function updateRect(cx, cy) {
-                const left = Math.min(sx, cx);
-                const top = Math.min(sy, cy);
-                const w = Math.abs(cx - sx);
-                const h = Math.abs(cy - sy);
-                rectEl.style.left = `${left}px`;
-                rectEl.style.top = `${top}px`;
-                rectEl.style.width = `${w}px`;
-                rectEl.style.height = `${h}px`;
-
-                const boxRect = { left, top, right: left + w, bottom: top + h };
-                targets.forEach(t => {
-                    const r = t.getBoundingClientRect();
-                    const hit = !(boxRect.right < r.left || boxRect.left > r.right || boxRect.bottom < r.top || boxRect.top > r.bottom);
-                    if (hit) {
-                        t.dataset.selected = '1';
-                        t.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-sky-500/40 border-4 border-amber-300 flex flex-col items-center justify-center gap-1 scale-110 shadow-2xl';
-                    }
-                });
-                const selectedTotal = targets.filter(t => t.dataset.selected === '1').length;
-                const countEl = document.getElementById('mq-count');
-                if (countEl) countEl.textContent = selectedTotal;
-            }
-        }
-
-        // ==================== 教師管理與 QA 50關跳關器 ====================
-        function populateQaJumpSelect() {
-            const sel = document.getElementById('qa-jump-select');
-            if (!sel) return;
-            const opts = [];
-            WORLDS_DATA.forEach((w, wIdx) => {
-                w.stages.forEach((s, sIdx) => {
-                    opts.push(`<option value="${wIdx},${sIdx}">${s.code} - ${s.title.slice(0, 18)}</option>`);
-                });
-            });
-            sel.innerHTML = opts.join('');
-        }
-
-        function openTeacherModal() {
-            populateQaJumpSelect();
-            document.getElementById('teacher-modal').classList.remove('hidden');
-        }
-        function closeTeacherModal() {
-            document.getElementById('teacher-modal').classList.add('hidden');
-        }
-        window.closeTeacherModal = closeTeacherModal;
-
-        function unlockTeacher() {
-            if (document.getElementById('teacher-pwd').value.trim() === '1234') {
-                window.teacherAdminUnlocked = true;
-                document.getElementById('teacher-lock-box').classList.add('hidden');
-                document.getElementById('teacher-admin-box').classList.remove('hidden');
-                const thDel = document.getElementById('th-teacher-del');
-                if (thDel) thDel.classList.remove('hidden');
-                if (typeof window.renderLeaderboard === 'function') window.renderLeaderboard();
-                showKidToast('👨‍🏫 已解鎖教師管理與雲端金鑰設定！');
-            } else {
-                showKidToast('❌ 密碼錯誤（預設：1234）');
-            }
-        }
-
-        function unlockAll50StagesForTeacher() {
-            window.teacherAdminUnlocked = true;
-            WORLDS_DATA.forEach(w => w.stages.forEach(s => { studentInfo.clearedMap[s.code] = true; }));
-            saveProgress();
-            closeTeacherModal();
-            openWorldMap();
-            showKidToast('🔓 已解鎖全部 5 大關（共 50 小關）！');
-        }
-
-        function qaJumpToSelectedStage() {
-            const val = document.getElementById('qa-jump-select').value;
-            const parts = val.split(',').map(Number);
-            window.teacherAdminUnlocked = true;
-            closeTeacherModal();
-            startSubStage(parts[0], parts[1]);
-        }
-
-        function qaForcePassCurrentStage() {
-            closeTeacherModal();
-            if (!document.getElementById('screen-stage').classList.contains('hidden')) {
-                completeCurrentSubStage();
-            } else {
-                showKidToast('💡 請先進入任一個小關卡畫面再按直接過關喔！');
-            }
-        }
-
-        // ==================== 過關彩帶特效 ====================
-        function fireConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const pieces = Array.from({ length: 65 }, () => ({
-                x: Math.random() * canvas.width,
-                y: -20 - Math.random() * 80,
-                size: 8 + Math.random() * 8,
-                vy: 3 + Math.random() * 4,
-                vx: (Math.random() - 0.5) * 4,
-                color: ['#38bdf8', '#facc15', '#4ade80', '#f472b6', '#c084fc'][Math.floor(Math.random() * 5)]
-            }));
-            let f = 0;
-            function step() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                pieces.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    ctx.fillStyle = p.color;
-                    ctx.fillRect(p.x, p.y, p.size, p.size);
-                });
-                if (++f < 65) requestAnimationFrame(step);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            step();
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadSavedProgress();
-        });
-    </script>
-
-    <!-- ==================== Firebase 雲端即時英雄榜模組 ==================== -->
-    <script type="module">
-        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' && __app_id ? __app_id : 'windows-mouse-master';
-        const CUSTOM_FB_STORAGE_KEY = 'win_mouse_custom_fb_config_v1';
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let cloudScores = [];
-
-        function updateCloudStatusUI(mode, detail) {
-            const dot = document.getElementById('cloud-dot');
-            const txt = document.getElementById('cloud-status-text');
-            const badge = document.getElementById('teacher-cloud-badge');
-
-            if (mode === 'env' || mode === 'custom') {
-                if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-                if (txt) txt.textContent = mode === 'custom' ? '專屬雲端連線中' : '雲端同步中';
-                if (badge) {
-                    badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black';
-                    badge.textContent = '🟢 ' + (detail || '雲端即時連線中');
-                }
-            } else {
-                if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
-                if (txt) txt.textContent = '單機排行榜 (點此設雲端)';
-                if (badge) {
-                    badge.className = 'px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 text-xs font-black';
-                    badge.textContent = '🟡 ' + (detail || '本機單機模式');
-                }
-            }
-        }
-
-        function safeParseJsonObject(rawStr) {
-            if (!rawStr || typeof rawStr !== 'string') return null;
-            const s = rawStr.trim();
-            if (!s) return null;
-            const start = s.indexOf('{');
-            const end = s.lastIndexOf('}');
-            if (start === -1 || end === -1 || end <= start) return null;
-            const sub = s.slice(start, end + 1);
-            try {
-                return JSON.parse(sub);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function resolveStartupFirebaseConfig() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const cloudParam = params.get('cloud');
-                if (cloudParam) {
-                    const decoded = decodeURIComponent(escape(atob(cloudParam)));
-                    const cfg = safeParseJsonObject(decoded);
-                    if (cfg && cfg.apiKey && cfg.projectId) {
-                        localStorage.setItem(CUSTOM_FB_STORAGE_KEY, JSON.stringify(cfg));
-                        return { config: cfg, mode: 'custom', label: '自訂雲端 (' + cfg.projectId + ')' };
-                    }
-                }
-            } catch (e) {}
-
-            try {
-                const saved = localStorage.getItem(CUSTOM_FB_STORAGE_KEY);
-                const cfg = safeParseJsonObject(saved);
-                if (cfg && cfg.apiKey && cfg.projectId) {
-                    const inp = document.getElementById('custom-firebase-input');
-                    if (inp) inp.value = JSON.stringify(cfg);
-                    return { config: cfg, mode: 'custom', label: '自訂雲端 (' + cfg.projectId + ')' };
-                }
-            } catch (e) {}
-
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                const cfg = safeParseJsonObject(String(__firebase_config));
-                if (cfg && cfg.apiKey) {
-                    return { config: cfg, mode: 'env', label: '系統內建雲端' };
-                }
-            }
-            return null;
-        }
-
-        function getFilteredScores() {
-            const filterEl = document.getElementById('lb-class-filter');
-            const cls = filterEl ? filterEl.value : 'ALL';
-            return cloudScores
-                .filter(s => cls === 'ALL' || (s.className || '301班') === cls)
-                .sort((a, b) => (b.clearedCount || 0) - (a.clearedCount || 0) || (b.score || 0) - (a.score || 0));
-        }
-
-        window.renderLeaderboard = function() {
-            const top3Box = document.getElementById('lb-top3-cards');
-            const tbody = document.getElementById('lb-tbody');
-            if (!top3Box || !tbody) return;
-
-            const list = getFilteredScores();
-            const isTeacherUnlocked = Boolean(window.teacherAdminUnlocked);
-
-            const medals = ['🥇 第一名', '🥈 第二名', '🥉 第三名'];
-            const colors = [
-                'border-amber-400 bg-amber-500/20 text-amber-300',
-                'border-slate-300 bg-slate-400/15 text-slate-200',
-                'border-amber-600 bg-amber-700/20 text-amber-400'
-            ];
-
-            top3Box.innerHTML = [0, 1, 2].map(i => {
-                const p = list[i];
-                return `
-                    <div class="rounded-2xl border-2 ${colors[i]} p-3 text-center">
-                        <div class="text-sm sm:text-base font-black">${medals[i]}</div>
-                        <div class="text-lg sm:text-2xl font-black text-white truncate mt-0.5">${p ? p.name : '虛位以待'}</div>
-                        <div class="text-xs sm:text-sm font-bold text-sky-300">${p ? (p.className + ' • 破 ' + (p.clearedCount || 1) + '/50 關 (' + p.score + '分)') : '快來挑戰 50 關！'}</div>
-                    </div>
-                `;
-            }).join('');
-
-            if (list.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-slate-400 text-xl">目前還沒有人上榜，快去挑戰 50 關大冒險搶下第 1 名吧！🚀</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = list.slice(0, 60).map((item, idx) => {
-                const r = idx + 1;
-                const badge = r === 1 ? '🥇 1' : r === 2 ? '🥈 2' : r === 3 ? '🥉 3' : r;
-                const cleared = item.clearedCount || 1;
-                const delBtn = isTeacherUnlocked
-                    ? `<td class="py-3 px-4 text-center"><button data-del-id="${item.id}" class="lb-del-btn px-3 py-1 rounded-lg bg-rose-600 text-white text-sm">刪除</button></td>`
-                    : '<td class="hidden"></td>';
-
-                return `
-                    <tr class="hover:bg-slate-900/80">
-                        <td class="py-3 px-4 font-black text-amber-300">${badge}</td>
-                        <td class="py-3 px-4 text-sky-300">${item.className || '301班'}</td>
-                        <td class="py-3 px-4 font-black text-white">${item.name || '小達人'}</td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 font-black text-base">
-                                ${cleared} / 50 關
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 text-right font-black text-amber-400 text-xl">${item.score || 0}</td>
-                        <td class="py-3 px-4 text-center text-sm text-yellow-200">${item.badge || '🌱 小達人'}</td>
-                        ${delBtn}
-                    </tr>
-                `;
-            }).join('');
-
-            tbody.querySelectorAll('.lb-del-btn').forEach(btn => {
-                btn.onclick = () => window.removeScore(btn.getAttribute('data-del-id'));
-            });
-        };
-
-        window.uploadStudentScore = async function(record) {
-            const safeDocId = `${record.className}_${record.name}`.replace(/[^a-zA-Z0-9_\u4e00-\u9fa5-]/g, '_');
-            if (!currentUser || !db) {
-                const idx = cloudScores.findIndex(x => x.id === safeDocId);
-                if (idx >= 0) cloudScores[idx] = { id: safeDocId, ...record };
-                else cloudScores.push({ id: safeDocId, ...record });
-                window.renderLeaderboard();
-                return;
-            }
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', safeDocId);
-                await setDoc(docRef, { ...record, userId: currentUser.uid });
-            } catch (e) {
-                const idx = cloudScores.findIndex(x => x.id === safeDocId);
-                if (idx >= 0) cloudScores[idx] = { id: safeDocId, ...record };
-                else cloudScores.push({ id: safeDocId, ...record });
-                window.renderLeaderboard();
-            }
-        };
-
-        window.removeScore = async function(id) {
-            cloudScores = cloudScores.filter(x => x.id !== id);
-            window.renderLeaderboard();
-            if (currentUser && db && id) {
-                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', id)); } catch (e) {}
-            }
-        };
-
-        window.clearClassScores = async function() {
-            const list = getFilteredScores();
-            for (const item of list) {
-                await window.removeScore(item.id);
-            }
-            if (typeof window.closeTeacherModal === 'function') window.closeTeacherModal();
-            if (typeof window.showKidToast === 'function') window.showKidToast('🗑️ 已清空該班級排行榜紀錄！');
-        };
-
-        window.exportCsv = function() {
-            const list = getFilteredScores();
-            if (!list.length) return;
-            const rows = [
-                ['名次', '班級', '座號姓名', '突破關卡數(共50關)', '總分', '獲得稱號'],
-                ...list.map((x, i) => [i + 1, x.className, x.name, `${x.clearedCount || 1}/50`, x.score, x.badge || ''])
-            ];
-            const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-            a.download = '三年級滑鼠50關大冒險成績單.csv';
-            a.click();
-        };
-
-        window.applyCustomCloudConfig = async function() {
-            const inp = document.getElementById('custom-firebase-input');
-            const raw = inp ? inp.value : '';
-            const cfg = safeParseJsonObject(raw);
-            if (!cfg || !cfg.apiKey || !cfg.projectId) {
-                if (typeof window.showKidToast === 'function') window.showKidToast('⚠️ 請貼入有效的 JSON 格式金鑰（需含 apiKey 與 projectId）');
-                return;
-            }
-            localStorage.setItem(CUSTOM_FB_STORAGE_KEY, JSON.stringify(cfg));
-            if (typeof window.showKidToast === 'function') window.showKidToast('☁️ 正在使用專屬金鑰連線至雲端...');
-            await connectToFirebaseWithConfig(cfg, 'custom', '自訂雲端 (' + cfg.projectId + ')');
-        };
-
-        window.copyClassroomCloudLink = function() {
-            const inp = document.getElementById('custom-firebase-input');
-            const raw = (inp && inp.value) ? inp.value : (localStorage.getItem(CUSTOM_FB_STORAGE_KEY) || '');
-            const cfg = safeParseJsonObject(raw);
-            let shareUrl = window.location.href.split('?')[0];
-            if (cfg && cfg.apiKey && cfg.projectId) {
-                localStorage.setItem(CUSTOM_FB_STORAGE_KEY, JSON.stringify(cfg));
-                const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
-                shareUrl = shareUrl + '?cloud=' + encodeURIComponent(b64);
-            }
-            const ta = document.createElement('textarea');
-            ta.value = shareUrl;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            if (typeof window.showKidToast === 'function') window.showKidToast('🔗 已複製「含雲端金鑰的全班免登入連線網址」！');
-        };
-
-        window.clearCustomCloudConfig = function() {
-            localStorage.removeItem(CUSTOM_FB_STORAGE_KEY);
-            const inp = document.getElementById('custom-firebase-input');
-            if (inp) inp.value = '';
-            if (typeof window.showKidToast === 'function') window.showKidToast('🧹 已清除自訂金鑰，重新整理頁面後生效');
-        };
-
-        async function connectToFirebaseWithConfig(cfg, mode, label) {
-            try {
-                const appName = mode === 'custom' ? ('custom_' + Date.now()) : undefined;
-                const app = appName ? initializeApp(cfg, appName) : (getApps().length ? getApps()[0] : initializeApp(cfg));
-                auth = getAuth(app);
-                db = getFirestore(app);
-                if (mode === 'env' && typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                onAuthStateChanged(auth, (u) => {
-                    currentUser = u;
-                    if (u) {
-                        updateCloudStatusUI(mode, label);
-                        const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
-                        onSnapshot(colRef, (snap) => {
-                            const arr = [];
-                            snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-                            cloudScores = arr;
-                            window.renderLeaderboard();
-                        }, () => {
-                            updateCloudStatusUI('local', '權限未開 (請開啟 Firestore 測試模式)');
-                        });
-                    }
-                });
-            } catch (e) {
-                updateCloudStatusUI('local', '連線失敗 (請檢查金鑰與匿名登入設定)');
-                window.renderLeaderboard();
-            }
-        }
-
-        async function initCloud() {
-            const resolved = resolveStartupFirebaseConfig();
-            if (!resolved) {
-                updateCloudStatusUI('local', '本機單機模式');
-                window.renderLeaderboard();
-                return;
-            }
-            await connectToFirebaseWithConfig(resolved.config, resolved.mode, resolved.label);
-        }
-        initCloud();
-    </script>
+<body>
+<div id="app">
+  <div id="hud"></div>
+  <div id="main"></div>
+</div>
+<div id="toast"></div>
+<script>
+/* =========================================================
+   電腦王國大冒險 — 滑鼠 × 注音 × 電腦知識 RPG
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const main=$('#main');
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- 遊戲資料 ---------- */
+const WORDS={
+ easy:[['電腦','ㄉㄧㄢˋ ㄋㄠˇ'],['滑鼠','ㄏㄨㄚˊ ㄕㄨˇ'],['鍵盤','ㄐㄧㄢˋ ㄆㄢˊ'],['螢幕','ㄧㄥˊ ㄇㄨˋ'],['網路','ㄨㄤˇ ㄌㄨˋ'],['開機','ㄎㄞ ㄐㄧ'],['關機','ㄍㄨㄢ ㄐㄧ'],['喇叭','ㄌㄚˇ ㄅㄚ'],['耳機','ㄦˇ ㄐㄧ'],['檔案','ㄉㄤˇ ㄢˋ']],
+ mid:[['資料夾','ㄗ ㄌㄧㄠˋ ㄐㄧㄚˊ'],['印表機','ㄧㄣˋ ㄅㄧㄠˇ ㄐㄧ'],['隨身碟','ㄙㄨㄟˊ ㄕㄣ ㄉㄧㄝˊ'],['瀏覽器','ㄌㄧㄡˊ ㄌㄢˇ ㄑㄧˋ'],['密碼','ㄇㄧˋ ㄇㄚˇ'],['病毒','ㄅㄧㄥˋ ㄉㄨˊ'],['下載','ㄒㄧㄚˋ ㄗㄞˇ'],['儲存','ㄔㄨˇ ㄘㄨㄣˊ'],['複製','ㄈㄨˋ ㄓˋ'],['貼上','ㄊㄧㄝ ㄕㄤˋ']],
+ hard:[['我會用滑鼠','ㄨㄛˇ ㄏㄨㄟˋ ㄩㄥˋ ㄏㄨㄚˊ ㄕㄨˇ'],['密碼不能告訴別人','ㄇㄧˋ ㄇㄚˇ ㄅㄨˋ ㄋㄥˊ ㄍㄠˋ ㄙㄨˋ ㄅㄧㄝˊ ㄖㄣˊ'],['上網要注意安全','ㄕㄤˋ ㄨㄤˇ ㄧㄠˋ ㄓㄨˋ ㄧˋ ㄢ ㄑㄩㄢˊ'],['記得常常存檔','ㄐㄧˋ ˙ㄉㄜ ㄔㄤˊ ㄔㄤˊ ㄘㄨㄣˊ ㄉㄤˇ'],['電腦王國萬歲','ㄉㄧㄢˋ ㄋㄠˇ ㄨㄤˊ ㄍㄨㄛˊ ㄨㄢˋ ㄙㄨㄟˋ']]
+};
+const WDMG={easy:14,mid:18,hard:30};
+const QUIZ=[
+ {q:'電腦裡負責「思考、運算」的大腦是哪一個？',a:['CPU 中央處理器','螢幕','喇叭','滑鼠墊'],e:'CPU 就像電腦的大腦，負責計算和下命令。'},
+ {q:'關機或關掉程式之前，最重要的是先做什麼？',a:['儲存檔案','拔掉插頭','用力拍螢幕','什麼都不用做'],e:'先存檔，辛苦做的作業才不會不見！'},
+ {q:'下面哪一個是「輸入裝置」？',a:['鍵盤','螢幕','喇叭','印表機'],e:'鍵盤、滑鼠、麥克風是把資料「送進」電腦的輸入裝置。'},
+ {q:'下面哪一個是「輸出裝置」？',a:['印表機','滑鼠','鍵盤','麥克風'],e:'螢幕、喇叭、印表機把結果「送出來」給我們。'},
+ {q:'「貓咪.jpg」是哪一種檔案？',a:['圖片','音樂','影片','文字文件'],e:'.jpg、.png、.gif 都是圖片檔。'},
+ {q:'「兒歌.mp3」是哪一種檔案？',a:['音樂','圖片','影片','簡報'],e:'.mp3、.wav 是聲音、音樂檔。'},
+ {q:'「校慶.mp4」是哪一種檔案？',a:['影片','音樂','圖片','文字文件'],e:'.mp4、.mov 是影片檔。'},
+ {q:'哪一個密碼最安全？',a:['Tiger#2026sun','123456','自己的生日','password'],e:'好密碼要夠長，混合大小寫英文、數字和符號。'},
+ {q:'網路上的陌生人問你家住哪裡，你應該？',a:['不回答，並告訴爸媽或老師','馬上告訴他','傳照片給他','約他見面'],e:'個人資料要保護好，遇到怪怪的事情一定要告訴大人。'},
+ {q:'收到一個奇怪的連結說「點我送你一百萬」，你應該？',a:['不要點，問大人','馬上點開','分享給全班','輸入密碼領獎'],e:'這很可能是詐騙或病毒，千萬不要點！'},
+ {q:'「資源回收筒」的功用是什麼？',a:['暫放刪除的檔案，還可以還原','讓電腦跑更快','放音樂','充電'],e:'刪掉的檔案會先到資源回收筒，後悔還能救回來。'},
+ {q:'「資料夾」最主要的用途是？',a:['分類整理檔案','讓螢幕變亮','上網','打字'],e:'把檔案分類放進資料夾，找起來又快又方便。'},
+ {q:'硬碟（或 SSD）主要是用來做什麼？',a:['長期儲存檔案','顯示畫面','播放聲音','移動游標'],e:'硬碟就像電腦的倉庫，關機後資料也還在。'},
+ {q:'記憶體（RAM）主要是用來做什麼？',a:['暫時放「正在使用」的資料','永久收藏照片','印出作業','連上網路'],e:'RAM 像工作桌，關機後上面的東西就清空了。'},
+ {q:'長時間使用電腦，應該怎麼做？',a:['每 30 分鐘休息，看看遠方','一直看不要眨眼','把螢幕拉到眼前','關燈玩比較酷'],e:'讓眼睛休息、坐姿端正，才能健康使用電腦。'},
+ {q:'網路上看到的消息，一定都是對的嗎？',a:['不一定，要查證','一定是真的','只要很多人轉就是真的','有圖就是真的'],e:'網路上也有假消息，要多方查證喔。'},
+ {q:'按住 Shift 再按英文字母，會打出？',a:['大寫字母','數字','注音','空白'],e:'Shift + 字母 = 大寫字母。'},
+ {q:'網址開頭的「https」中的 s 代表什麼？',a:['連線有加密，比較安全','速度很慢','網站很小','要付錢'],e:'s 是 Secure（安全），代表資料傳送有加密。'},
+ {q:'在 Windows 裡，切換「中文/英文」輸入常用哪個鍵？',a:['Shift','Delete','Esc','F5'],e:'微軟注音輸入法按一下 Shift 就能切換中英文。'},
+ {q:'USB 隨身碟可以用來？',a:['帶著檔案到別台電腦','讓螢幕變大','當滑鼠用','煮飯'],e:'隨身碟小小一支，可以存檔案帶著走。'}
+];
+const SHORTCUTS=[{k:'C',n:'複製'},{k:'V',n:'貼上'},{k:'X',n:'剪下'},{k:'Z',n:'復原（回到上一步）'},{k:'A',n:'全選'},{k:'S',n:'儲存'}];
+const ZY={Digit1:'ㄅ',KeyQ:'ㄆ',KeyA:'ㄇ',KeyZ:'ㄈ',Digit2:'ㄉ',KeyW:'ㄊ',KeyS:'ㄋ',KeyX:'ㄌ',KeyE:'ㄍ',KeyD:'ㄎ',KeyC:'ㄏ',KeyR:'ㄐ',KeyF:'ㄑ',KeyV:'ㄒ',Digit5:'ㄓ',KeyT:'ㄔ',KeyG:'ㄕ',KeyB:'ㄖ',KeyY:'ㄗ',KeyH:'ㄘ',KeyN:'ㄙ',KeyU:'ㄧ',KeyJ:'ㄨ',KeyM:'ㄩ',Digit8:'ㄚ',KeyI:'ㄛ',KeyK:'ㄜ',Comma:'ㄝ',Digit9:'ㄞ',KeyO:'ㄟ',KeyL:'ㄠ',Period:'ㄡ',Digit0:'ㄢ',KeyP:'ㄣ',Semicolon:'ㄤ',Slash:'ㄥ',Minus:'ㄦ',Digit6:'ˊ',Digit3:'ˇ',Digit4:'ˋ',Digit7:'˙'};
+const KROWS=[['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus'],['KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP'],['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon'],['KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash']];
+const KLAB=c=>({Minus:'-',Semicolon:';',Comma:',',Period:'.',Slash:'/'}[c]||c.replace('Key','').replace('Digit',''));
+
+/* =========================================================
+   ★ 老師設定：貼上 Google Apps Script「網頁應用程式」網址
+     （留空 '' = 單機模式，進度只存在這台電腦，不記錄成績）
+   ========================================================= */
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwhk7uBsXPPtlZlXyhh6OtZajadI2gzWCh9gVkCrIZ1bHyUKeK1D8avBGPPxiwivyQl/exec';
+
+/* ---------- 狀態與存檔 ---------- */
+const FRESH=()=>({name:'',lv:1,exp:0,hp:100,maxHp:100,coins:30,potions:2,crystals:{mouse:false,zhuyin:false,know:false},cleared:false,sound:true});
+let S=FRESH();
+let ACC=null; // 登入的學生帳號 {id,pw,name,cls,seat}；訪客／單機模式為 null
+function save(){if(ACC){cloudSave();return}try{localStorage.setItem('pcquest_v1',JSON.stringify(S))}catch(e){}}
+
+/* ---------- 雲端同步（Google 試算表） ---------- */
+let syncT=null,syncLogs=[],syncBusy=false,dirty=false,syncState='ok';
+async function api(body){const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});return r.json()}
+function cloudSave(log){if(!ACC)return;dirty=true;if(log)syncLogs.push(log);setCloud('wait');clearTimeout(syncT);syncT=setTimeout(flush,syncLogs.length?300:2000)}
+async function flush(){if(!ACC||syncBusy||!dirty)return;syncBusy=true;dirty=false;const acc=ACC,logs=syncLogs;syncLogs=[];
+ try{const r=await api({action:'save',id:acc.id,pw:acc.pw,progress:S,logs});if(!r.ok)throw new Error(r.msg);syncBusy=false;if(dirty)syncT=setTimeout(flush,500);else setCloud('ok')}
+ catch(e){syncBusy=false;if(ACC!==acc)return;syncLogs=logs.concat(syncLogs);dirty=true;setCloud('err');clearTimeout(syncT);syncT=setTimeout(flush,8000)}}
+function beaconFlush(){if(!ACC||!dirty)return;try{navigator.sendBeacon(SCRIPT_URL,new Blob([JSON.stringify({action:'save',id:ACC.id,pw:ACC.pw,progress:S,logs:syncLogs})],{type:'text/plain'}));dirty=false;syncLogs=[]}catch(e){}}
+window.addEventListener('pagehide',beaconFlush);
+function setCloud(st){syncState=st;const el=document.getElementById('cloud');if(!el)return;el.textContent={ok:'☁️✅',wait:'☁️⏳',err:'☁️⚠️'}[st];el.title={ok:'成績已存到雲端',wait:'存檔中…',err:'連不上網路，稍後會自動重試'}[st]}
+function logRec(item,result,detail){cloudSave({item,result,detail:detail||'',lv:S.lv})}
+let where='';
+function loadSave(){try{const d=JSON.parse(localStorage.getItem('pcquest_v1'));if(d&&d.name)return d}catch(e){}return null}
+
+/* ---------- 計時器 / 畫面切換 ---------- */
+let gen=0,timers=[],keyHandler=null;
+function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]}
+function after(f,ms){const g=gen;const t=setTimeout(()=>{if(g===gen)f()},ms);timers.push(t);return t}
+function every(f,ms){const g=gen;const t=setInterval(()=>{if(g===gen)f()},ms);timers.push(t);return t}
+function go(fn){gen++;clearTimers();keyHandler=null;main.innerHTML='';main.className='';fn();hud();window.scrollTo({top:0})}
+document.addEventListener('keydown',e=>{if(keyHandler)keyHandler(e)});
+
+/* ---------- 音效 ---------- */
+let AC=null;
+function beep(f=600,d=.08,type='square',v=.05){if(!S.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d+.03)}catch(e){}}
+const sfx={good:()=>{beep(660);setTimeout(()=>beep(990),70)},bad:()=>beep(150,.22,'sawtooth',.06),hit:()=>beep(320,.06),click:()=>beep(880,.03,'triangle'),win:()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.16),i*120)),up:()=>[392,523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.1,'triangle',.07),i*80))};
+
+/* ---------- UI 小工具 ---------- */
+function toast(t,ms=1600){const d=document.createElement('div');d.textContent=t;$('#toast').appendChild(d);setTimeout(()=>d.remove(),ms)}
+function pop(parent,x,y,text,color){const p=document.createElement('div');p.className='pop';p.style.left=x+'px';p.style.top=y+'px';p.textContent=text;if(color)p.style.color=color;parent.appendChild(p);setTimeout(()=>p.remove(),800)}
+function showModal(html,btns){const ov=document.createElement('div');ov.className='ov';ov.innerHTML=`<div class="modal">${html}<div class="row"></div></div>`;const row=ov.querySelector('.row');btns.forEach(b=>{const x=document.createElement('button');x.className='btn '+(b.c||'');x.textContent=b.t;x.onclick=()=>{sfx.click();ov.remove();b.f&&b.f()};row.appendChild(x)});document.body.appendChild(ov);return ov}
+function dialog(lines,cb){let i=0;const d=document.createElement('div');d.className='dlg';main.appendChild(d);
+ const draw=()=>{const [face,who,txt]=lines[i];d.innerHTML=`<div class="face">${face}</div><div class="who">${who}</div><div class="txt">${txt.replace(/\{name\}/g,esc(S.name))}</div><div class="nx">▼ 用滑鼠點一下繼續</div>`};
+ d.onclick=()=>{sfx.click();i++;if(i>=lines.length){d.remove();cb&&cb()}else draw()};draw()}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const OWL='🦉',OWLN='貓頭鷹老師';
+
+/* ---------- HUD / 角色成長 ---------- */
+const need=()=>S.lv*50;
+const atkBonus=()=>(S.lv-1)*2;
+function hud(){const h=$('#hud');if(!S.name){h.innerHTML='';return}
+ const c=S.crystals;
+ h.innerHTML=`<div class="stat">🧒 ${esc(S.name)} <span class="px">Lv${S.lv}</span></div>${ACC?'<div class="stat" id="cloud"></div>':''}
+ <div class="stat">❤️ <div class="meter"><i style="width:${S.hp/S.maxHp*100}%"></i></div><span class="px">${S.hp}/${S.maxHp}</span></div>
+ <div class="stat">⭐ <div class="meter exp"><i style="width:${S.exp/need()*100}%"></i></div></div>
+ <div class="stat">🪙 <span class="px">${S.coins}</span></div>
+ <button class="btn sm alt" id="potbtn" title="使用補血藥水 +40 HP">🧪 × ${S.potions}</button>
+ <div class="stat" title="收集三顆水晶打倒魔王！">水晶 ${c.mouse?'🟢':'⚪'}${c.zhuyin?'🔵':'⚪'}${c.know?'🟣':'⚪'}</div>
+ <button class="btn sm alt" id="sndbtn" title="音效開關">${S.sound?'🔊':'🔇'}</button>`;
+ $('#potbtn').onclick=usePotion;$('#sndbtn').onclick=()=>{S.sound=!S.sound;save();hud()};setCloud(syncState)}
+function usePotion(){if(S.potions<=0){toast('沒有藥水了，去商店買吧！');return}if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return}S.potions--;S.hp=Math.min(S.maxHp,S.hp+40);sfx.good();toast('🧪 回復 40 HP！');save();hud()}
+function gainExp(n){S.exp+=n;while(S.exp>=need()){S.exp-=need();S.lv++;S.maxHp+=10;S.hp=S.maxHp;sfx.up();toast(`🎉 升級！現在是 Lv${S.lv}，HP 上限 +10`,2400)}save();hud()}
+function damage(n){if(S.hp<=0)return;S.hp=Math.max(0,S.hp-n);main.classList.remove('hurt');void main.offsetWidth;main.classList.add('hurt');hud();if(S.hp<=0)defeat()}
+function defeat(){gen++;clearTimers();keyHandler=null;const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下','');hud();sfx.bad();
+ showModal(`<div class="big">😵</div><h2>你倒下了…</h2><p>貓頭鷹老師把你救回地圖，掉了 ${lost} 枚金幣。<br>去小遊戲廣場賺金幣、到商店買藥水，再來挑戰吧！</p>`,[{t:'回到地圖',f:()=>go(mapScreen)}])}
+
+/* ---------- 拖曳工具（滑鼠 / 觸控皆可） ---------- */
+function makeDrag(el,onDrop){
+ el.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();
+  const r=el.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top,orig=el.style.cssText;
+  el.dataset.drag='1';el.classList.add('dragging');
+  Object.assign(el.style,{position:'fixed',left:r.left+'px',top:r.top+'px',width:r.width+'px',zIndex:999,pointerEvents:'none',margin:0});
+  const mv=ev=>{el.style.left=ev.clientX-ox+'px';el.style.top=ev.clientY-oy+'px'};
+  const up=ev=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);
+   const t=document.elementFromPoint(ev.clientX,ev.clientY);el.style.cssText=orig;el.classList.remove('dragging');delete el.dataset.drag;onDrop(t,el)};
+  window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up)})}
+
+/* =========================================================
+   標題畫面
+   ========================================================= */
+function titleScreen(){
+ if(!SCRIPT_URL)return titleLocal();
+ let last='';try{last=localStorage.getItem('pcquest_lastid')||''}catch(e){}
+ main.innerHTML=`<div class="title"><div class="logo">🖥️</div><h1>電腦王國大冒險</h1>
+ <div class="sub">滑鼠 × 注音打字 × 電腦知識 的冒險 RPG</div>
+ <p style="font-size:18px;font-weight:700">請輸入老師給你的 <b>帳號</b> 和 <b>密碼</b>：</p>
+ <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+ <input class="tin" id="aid" inputmode="numeric" maxlength="12" placeholder="帳號" autocomplete="off" value="${esc(last)}">
+ <input class="tin" id="apw" type="password" inputmode="numeric" maxlength="12" placeholder="密碼" autocomplete="off"></div>
+ <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+ <button class="btn g" id="login">🔑 登入</button><button class="btn alt" id="guest">🙋 訪客試玩（不記錄成績）</button></div>
+ <div class="tip">💡 帳號、密碼都是數字，打錯了可以按 <span class="keycap">Backspace</span> 刪掉</div></div>`;
+ const aid=$('#aid'),apw=$('#apw'),btn=$('#login');setTimeout(()=>(last?apw:aid).focus(),100);
+ const bad=(el,msg)=>{el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);toast(msg,2200)};
+ btn.onclick=async()=>{const id=aid.value.trim(),pw=apw.value.trim();if(!id)return bad(aid,'先打上你的帳號喔！');if(!pw)return bad(apw,'先打上你的密碼喔！');
+  sfx.click();btn.disabled=true;btn.textContent='⏳ 連線中…';const my=gen;
+  try{const r=await api({action:'login',id,pw});if(my!==gen)return;
+   if(!r.ok){btn.disabled=false;btn.textContent='🔑 登入';apw.value='';sfx.bad();return bad(apw,r.msg||'帳號或密碼錯誤')}
+   try{localStorage.setItem('pcquest_lastid',id)}catch(e){}
+   const p=r.progress||{};
+   ACC={id,pw,name:(r.name||'').trim()||(p.name||'').trim(),cls:r.cls,seat:r.seat};syncLogs=[];dirty=false;syncState='ok';
+   S=Object.assign(FRESH(),p);S.name=ACC.name;
+   if(!S.name)go(nameScreen);
+   else if(!p.name){logRec('登入','第一次登入');go(introStory)}
+   else{logRec('登入','繼續冒險');go(mapScreen)}}
+  catch(e){if(my!==gen)return;btn.disabled=false;btn.textContent='🔑 登入';sfx.bad();toast('連不上網路，請檢查網路或告訴老師',2600)}};
+ [aid,apw].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){if(el===aid&&!apw.value)apw.focus();else btn.click()}}));
+ $('#guest').onclick=()=>{sfx.click();go(titleLocal)}}
+function nameScreen(){
+ main.innerHTML=`<div class="title"><div class="logo">🦉</div><h1 style="font-size:36px">歡迎來到電腦王國！</h1>
+ <p style="font-size:18px;font-weight:700">第一次來嗎？請用 <span class="keycap">注音輸入法</span> 打出你的名字：</p>
+ <input class="tin" id="nm" maxlength="8" placeholder="例如：王小明" autocomplete="off">
+ <div class="tip">💡 切換中文／英文：按一下 <span class="keycap">Shift</span>，或按 <span class="keycap">Ctrl</span>+<span class="keycap">空白鍵</span><br>打完注音按 <span class="keycap">空白鍵</span> 選字，名字取好之後就不能改了喔！</div>
+ <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" id="ok">⚔️ 開始冒險</button><button class="btn alt" id="out">🚪 登出</button></div></div>`;
+ const nm=$('#nm');setTimeout(()=>nm.focus(),100);
+ const bad=msg=>{sfx.bad();nm.classList.add('shake');setTimeout(()=>nm.classList.remove('shake'),400);toast(msg,2200)};
+ $('#ok').onclick=()=>{const v=nm.value.trim();
+  if(!v)return bad('先打上你的名字喔！');
+  if(!/^[一-鿿]+$/.test(v))return bad('要用注音輸入法打「中文」名字喔！');
+  sfx.click();S.name=v;ACC.name=v;logRec('登入','第一次登入','取名：'+v);go(introStory)};
+ nm.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)$('#ok').click()});
+ $('#out').onclick=logout}
+function logout(){beaconFlush();clearTimeout(syncT);ACC=null;S=FRESH();go(titleScreen)}
+
+function titleLocal(){
+ const old=loadSave();
+ main.innerHTML=`<div class="title"><div class="logo">🖥️</div><h1>電腦王國大冒險</h1>
+ <div class="sub">滑鼠 × 注音打字 × 電腦知識 的冒險 RPG</div>
+ <p style="font-size:18px;font-weight:700">勇者，請用 <span class="keycap">注音輸入法</span> 打出你的名字：</p>
+ <input class="tin" id="nm" maxlength="8" placeholder="例如：小明" autocomplete="off">
+ <div class="tip">💡 切換中文／英文：按一下 <span class="keycap">Shift</span>，或按 <span class="keycap">Ctrl</span>+<span class="keycap">空白鍵</span></div>
+ <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+ <button class="btn g" id="start">⚔️ 開始新冒險</button>
+ ${old?`<button class="btn alt" id="cont">📂 繼續冒險（${esc(old.name)} Lv${old.lv}）</button>`:''}</div></div>`;
+ const nm=$('#nm');setTimeout(()=>nm.focus(),100);
+ $('#start').onclick=()=>{const v=nm.value.trim();if(!v){nm.classList.add('shake');setTimeout(()=>nm.classList.remove('shake'),400);toast('先打上你的名字喔！');return}
+  sfx.click();S=FRESH();S.name=v;save();go(introStory)};
+ nm.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)$('#start').click()});
+ if(old)$('#cont').onclick=()=>{sfx.click();S=Object.assign(FRESH(),old);go(mapScreen)}}
+
+function introStory(){
+ main.innerHTML=`<div class="scene" style="background:linear-gradient(#264653,#2a9d8f)">🏯🦠</div>`;
+ dialog([[OWL,OWLN,'{name}，歡迎來到「電腦王國」！'],[OWL,OWLN,'可怕的 <b>Bug魔王</b> 🦠 把病毒散布到王國各地，電腦都當機了！'],[OWL,OWLN,'要打倒牠，你需要收集三顆神奇水晶：<br>🟢 滑鼠水晶、🔵 注音水晶、🟣 知識水晶。'],[OWL,OWLN,'先到地圖上的 <b>🌲 滑鼠森林</b> 練習滑鼠吧！把滑鼠移到地點上，會出現說明喔。']],()=>go(mapScreen))}
+
+/* =========================================================
+   世界地圖
+   ========================================================= */
+const NODES=[
+ {id:'shop',name:'道具商店',e:'🏪',x:13,y:22,d:'買藥水、升級裝備',go:()=>go(shopScreen)},
+ {id:'forest',name:'滑鼠森林',e:'🌲',x:17,y:68,d:'練習：點一下、點兩下、右鍵、拖曳',done:()=>S.crystals.mouse,go:()=>go(forestIntro)},
+ {id:'village',name:'注音村',e:'🏘️',x:43,y:36,d:'用注音輸入法打字攻擊！',lock:()=>!S.crystals.mouse,lockMsg:'先拿到 🟢 滑鼠水晶才能進入注音村！',done:()=>S.crystals.zhuyin,go:()=>go(villageIntro)},
+ {id:'castle',name:'知識城堡',e:'🏰',x:68,y:66,d:'電腦知識問答＋快捷鍵',lock:()=>!S.crystals.zhuyin,lockMsg:'先拿到 🔵 注音水晶才能進入知識城堡！',done:()=>S.crystals.know,go:()=>go(castleIntro)},
+ {id:'boss',name:'Bug魔王城',e:'🌋',x:87,y:22,d:'最終決戰！',lock:()=>!(S.crystals.mouse&&S.crystals.zhuyin&&S.crystals.know),lockMsg:'要集滿三顆水晶，魔王城的大門才會打開！',done:()=>S.cleared,go:()=>go(bossIntro)},
+ {id:'arcade',name:'小遊戲廣場',e:'🎡',x:45,y:85,d:'玩小遊戲賺金幣和經驗',go:()=>go(arcadeScreen)}
+];
+function mapScreen(){
+ const P=id=>NODES.find(n=>n.id===id);const pts=['forest','village','castle','boss'].map(id=>`${P(id).x},${P(id).y}`).join(' ');
+ main.innerHTML=`<div class="topbar"><h2>🗺️ 電腦王國地圖</h2><button class="btn sm alt" id="help">📖 操作說明</button><button class="btn sm alt" id="ttl">${ACC?'🚪 登出':'🏠 標題'}</button></div>
+ <div class="map"><div class="river"></div><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#fffbea" stroke-width="1.2" stroke-dasharray="2 2"/><polyline points="${P('forest').x},${P('forest').y} ${P('arcade').x},${P('arcade').y}" fill="none" stroke="#fffbea" stroke-width=".8" stroke-dasharray="1.5 2"/><polyline points="${P('forest').x},${P('forest').y} ${P('shop').x},${P('shop').y}" fill="none" stroke="#fffbea" stroke-width=".8" stroke-dasharray="1.5 2"/></svg>
+ ${NODES.map(n=>{const lk=n.lock&&n.lock(),dn=n.done&&n.done();return `<button class="node ${lk?'locked':''} ${dn?'done':''}" data-id="${n.id}" style="left:${n.x}%;top:${n.y}%"><span class="tipx">${lk?'🔒 尚未開放':n.d}</span><span class="ico">${n.e}</span><span class="lbl">${lk?'🔒 ':''}${dn?'✅ ':''}${n.name}</span></button>`}).join('')}
+ </div><div class="hint">${OWL} ${nextHint()}</div>`;
+ main.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const n=P(b.dataset.id);sfx.click();if(n.lock&&n.lock()){toast(n.lockMsg);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);return}n.go()});
+ $('#help').onclick=helpModal;$('#ttl').onclick=()=>{if(ACC)logout();else{S=FRESH();go(titleScreen)}};save()}
+function nextHint(){const c=S.crystals;
+ if(S.cleared)return '你已經是電腦王國的英雄了！可以繼續玩小遊戲挑戰高分喔。';
+ if(!c.mouse)return '下一步：到 🌲 <b>滑鼠森林</b> 收集滑鼠水晶！';
+ if(!c.zhuyin)return '下一步：到 🏘️ <b>注音村</b> 用打字打敗錯字幽靈！記得切換到注音輸入法。';
+ if(!c.know)return '下一步：到 🏰 <b>知識城堡</b> 回答電腦知識問題！';
+ return '三顆水晶到齊了！準備好藥水，前往 🌋 <b>Bug魔王城</b> 最終決戰！'}
+function helpModal(){showModal(`<h2>📖 操作說明</h2><p style="text-align:left">🖱️ <b>左鍵點一下</b>：選擇、按按鈕<br>🖱️ <b>左鍵點兩下（雙擊）</b>：打開東西<br>🖱️ <b>右鍵</b>：叫出選單（遊戲中用來打 👾）<br>✊ <b>拖曳</b>：按住左鍵不放、移動、再放開<br>⌨️ <b>切換中英文</b>：Shift 或 Ctrl+空白鍵<br>⌨️ <b>選字</b>：打完注音後按空白鍵或數字選字，Enter 確定<br>🧪 HP 不夠時，點上方的藥水補血</p>`,[{t:'我知道了！'}])}
+
+/* =========================================================
+   第一關：滑鼠森林
+   ========================================================= */
+function forestIntro(){
+ main.innerHTML=`<div class="scene" style="background:linear-gradient(#b7e4c7,#40916c)">🌲🪲🌲</div>`;
+ dialog([[OWL,OWLN,'這裡是滑鼠森林，<b>蟲蟲大王</b> 🪲 帶著一群小蟲在搗蛋！'],[OWL,OWLN,'🐛 用<b>左鍵點一下</b>　🐞 用<b>左鍵快速點兩下</b>　👾 要按<b>右鍵</b>！'],[OWL,OWLN,'看到 💎 寶石時，<b>按住左鍵拖曳</b>到右下角的 👜 包包，傷害最高！'],[OWL,OWLN,'60 秒內把蟲蟲大王的 HP 打到 0 就贏了，點錯會扣 HP 喔。出發！']],forestBattle)}
+function forestBattle(){
+ let bhp=100,time=60,alive=0,over=false;where='滑鼠森林';
+ main.innerHTML=`<div class="foe" id="foe"><div class="m">🪲</div><div class="info"><b>蟲蟲大王</b> <span class="px" id="bhpt">100/100</span><div class="meter foehp"><i id="bhp" style="width:100%"></i></div></div><div class="center"><div class="px">TIME</div><div class="px" id="tm" style="font-size:22px;margin-top:6px">60</div></div></div>
+ <div class="arena" id="arena"><div class="bag" id="bag">👜</div></div>
+ <div class="legend"><span>🐛 點一下</span><span>🐞 點兩下</span><span>👾 右鍵</span><span>💎 拖到 👜</span></div>`;
+ const ar=$('#arena');ar.oncontextmenu=e=>e.preventDefault();
+ const hitBoss=(el,d)=>{if(over)return;const r=el.getBoundingClientRect(),a=ar.getBoundingClientRect();pop(ar,r.left-a.left+20,r.top-a.top,'-'+d);el.remove();alive--;sfx.hit();bhp=Math.max(0,bhp-d);
+  $('#bhp').style.width=bhp+'%';$('#bhpt').textContent=bhp+'/100';const f=$('#foe');f.classList.remove('hit');void f.offsetWidth;f.classList.add('hit');
+  if(bhp<=0){over=true;clearTimers();after(()=>winArea('mouse'),400)}};
+ const wrong=(el,msg)=>{if(over)return;sfx.bad();toast(msg);el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),350);damage(3)};
+ const spawn=()=>{if(over||alive>=6)return;const w=ar.clientWidth,h=ar.clientHeight;let x,y;do{x=rnd(w-60);y=rnd(h-60)}while(x>w-140&&y>h-140);
+  const r=Math.random(),t=r<.4?'click':r<.65?'dbl':r<.9?'right':'gem';
+  const el=document.createElement('div');el.className='bug'+(t==='gem'?' gem':'');el.textContent={click:'🐛',dbl:'🐞',right:'👾',gem:'💎'}[t];el.style.left=x+'px';el.style.top=y+'px';ar.appendChild(el);alive++;
+  if(t==='click'){el.onclick=()=>hitBoss(el,5);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'🐛 要用「左鍵」點一下！')}}
+  if(t==='dbl'){el.ondblclick=()=>hitBoss(el,7);el.oncontextmenu=e=>{e.preventDefault();wrong(el,'🐞 要用「左鍵」快速點兩下！')}}
+  if(t==='right'){el.oncontextmenu=e=>{e.preventDefault();hitBoss(el,7)};el.onclick=()=>wrong(el,'👾 要按滑鼠「右鍵」！')}
+  if(t==='gem'){makeDrag(el,(target)=>{if(target&&target.closest('#bag')){ar.appendChild(el);hitBoss(el,12);toast('💎 拖曳成功！大傷害！')}else if(el.dataset.exp&&el.isConnected){el.remove();alive--}})}
+  after(()=>{if(!el.isConnected)return;if(el.dataset.drag)el.dataset.exp='1';else{el.remove();alive--}},t==='gem'?5500:2700)};
+ every(spawn,800);spawn();
+ every(()=>{time--;$('#tm').textContent=time;if(time<=0&&!over){over=true;clearTimers();sfx.bad();logRec('滑鼠森林','時間到',`蟲蟲大王剩 ${bhp} HP`);showModal(`<div class="big">⏰</div><h2>時間到！</h2><p>蟲蟲大王還剩 ${bhp} HP，再練習一次就能打敗牠！</p>`,[{t:'再挑戰',c:'g',f:()=>go(forestBattle)},{t:'回地圖',c:'alt',f:()=>go(mapScreen)}])}},1000)}
+
+/* =========================================================
+   通用戰鬥框架
+   ========================================================= */
+function battle(cfg){
+ let mhp=cfg.hp,atk=0;const my=gen;where=cfg.area||cfg.name;
+ main.innerHTML=`<div class="foe" id="foe"><div class="m">${cfg.emoji}</div><div class="info"><b>${cfg.name}</b> <span class="px" id="mhpt">${mhp}/${cfg.hp}</span><div class="meter foehp"><i id="mhp" style="width:100%"></i></div>
+ ${cfg.atkEvery?`<div style="font-size:12px;margin-top:6px;color:#666">敵人蓄力中…（滿了會攻擊你 ${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div>`:''}</div>
+ <button class="btn sm alt" id="flee">🏃 逃跑</button></div><div id="challenge"></div>`;
+ $('#flee').onclick=()=>go(mapScreen);
+ const ch=$('#challenge'),foe=$('#foe');
+ if(cfg.atkEvery)every(()=>{atk+=100;$('#atk').style.width=Math.min(100,atk/cfg.atkEvery*100)+'%';if(atk>=cfg.atkEvery){atk=0;foe.classList.remove('atk');void foe.offsetWidth;foe.classList.add('atk');sfx.bad();toast(`${cfg.name} 攻擊！-${cfg.atkDmg} HP`);damage(cfg.atkDmg)}},100);
+ const next=()=>{keyHandler=null;cfg.next(ch,(ok,dmg)=>{if(my!==gen)return;keyHandler=null;
+  if(ok){dmg+=atkBonus();mhp=Math.max(0,mhp-dmg);$('#mhp').style.width=mhp/cfg.hp*100+'%';$('#mhpt').textContent=mhp+'/'+cfg.hp;foe.classList.remove('hit');void foe.offsetWidth;foe.classList.add('hit');sfx.good();pop(foe,90,10,'-'+dmg);
+   if(mhp<=0){clearTimers();after(cfg.onWin,500);return}}
+  else{damage(cfg.missDmg);if(S.hp<=0)return}
+  after(next,cfg.gap||700)})};
+ next()}
+
+/* ---------- 各種挑戰 ---------- */
+let lastWord='';
+function pickWord(level){let w;do{w=WORDS[level][rnd(WORDS[level].length)]}while(w[0]===lastWord&&WORDS[level].length>1);lastWord=w[0];return {w:w[0],z:w[1],d:WDMG[level]}}
+function runTyping(w,ch,done){let fin=false,comp=false;
+ ch.innerHTML=`<div style="font-weight:700;color:#666">⌨️ 用注音輸入法打出這個${w.w.length>3?'句子':'詞'}：</div><div class="zy">${w.z}</div><div class="word">${w.w}</div>
+ <input class="tin" id="ti" autocomplete="off" placeholder="在這裡打字…"><div style="margin-top:12px"><button class="btn sm alt" id="skip">跳過（會被打）</button></div>
+ <div class="tip">打對會自動攻擊！選字：按空白鍵或數字鍵　｜　切換中英：Shift</div>`;
+ const inp=ch.querySelector('#ti');setTimeout(()=>inp.focus(),30);
+ const norm=s=>s.replace(/[\s，,。.！!]/g,'');
+ const check=enter=>{if(fin)return;const v=norm(inp.value);
+  if(v===w.w){fin=true;inp.classList.add('ok');inp.blur();done(true,w.d)}
+  else if(enter&&v.length){sfx.bad();toast('有字打錯囉，再檢查一下！');inp.classList.add('shake');setTimeout(()=>inp.classList.remove('shake'),400);damage(3)}};
+ inp.addEventListener('compositionstart',()=>comp=true);
+ inp.addEventListener('compositionend',()=>{comp=false;setTimeout(()=>check(false),0)});
+ inp.addEventListener('input',()=>{if(!comp)check(false)});
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&!comp)check(true)});
+ ch.querySelector('#skip').onclick=()=>{if(fin)return;fin=true;done(false)}}
+let quizBag=[];
+function pickQuiz(){if(!quizBag.length)quizBag=shuffle(QUIZ);return quizBag.pop()}
+function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a);
+ ch.innerHTML=`<div style="font-weight:700;color:#666">❓ 電腦知識問答</div><div class="q">${q.q}</div><div class="opts">${opts.map((o,i)=>`<button class="btn" data-i="${i}">${o}</button>`).join('')}</div><div class="expl" id="ex"></div>`;
+ ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;const ok=opts[b.dataset.i]===q.a[0];
+  ch.querySelectorAll('.opts .btn').forEach(x=>{if(opts[x.dataset.i]===q.a[0])x.classList.add('right')});if(!ok)b.classList.add('wrong');
+  ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg),1600)})}
+function runShortcut(s,ch,done,dmg=25){let fin=false;const end=ok=>{if(fin)return;fin=true;keyHandler=null;ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg),900)};
+ const mac=/Mac/.test(navigator.platform);
+ ch.innerHTML=`<div style="font-weight:700;color:#666">⚡ 快捷鍵挑戰（真的按按看！）</div><div class="q" style="font-size:30px">請按下「${s.n}」的快捷鍵</div>
+ <div style="font-size:40px;margin:10px"><span class="keycap">${mac?'⌘ / Ctrl':'Ctrl'}</span> + <span class="keycap" id="hk">？</span></div>
+ <div class="expl" id="sr">按住 Ctrl 不放，再按一個英文字母</div><div class="tip">10 秒內作答，5 秒後會出現提示</div>`;
+ after(()=>{if(!fin)ch.querySelector('#hk').textContent=s.k},5000);after(()=>end(false),10000);
+ if(document.activeElement)document.activeElement.blur();
+ keyHandler=e=>{if(!(e.ctrlKey||e.metaKey))return;if(!e.code.startsWith('Key'))return;e.preventDefault();end(e.code==='Key'+s.k)}}
+function runClick(ch,done,dmg=25){let fin=false,left=5;
+ ch.innerHTML=`<div style="font-weight:700;color:#666">🖱️ 7 秒內清光所有蟲蟲！ 🐛點一下　🐞點兩下　👾右鍵</div><div class="mini-arena" id="ma"></div>`;
+ const ma=ch.querySelector('#ma');ma.oncontextmenu=e=>e.preventDefault();
+ const kill=el=>{if(fin)return;el.remove();sfx.hit();left--;if(!left){fin=true;done(true,dmg)}};
+ for(let i=0;i<5;i++){const t=['click','dbl','right'][rnd(3)],el=document.createElement('div');el.className='bug';el.textContent={click:'🐛',dbl:'🐞',right:'👾'}[t];
+  el.style.left=3+rnd(80)+'%';el.style.top=10+rnd(70)+'%';ma.appendChild(el);
+  if(t==='click')el.onclick=()=>kill(el);if(t==='dbl')el.ondblclick=()=>kill(el);if(t==='right')el.oncontextmenu=e=>{e.preventDefault();kill(el)}}
+ after(()=>{if(!fin){fin=true;toast('時間到！');done(false)}},7000)}
+
+/* =========================================================
+   第二關：注音村
+   ========================================================= */
+function villageIntro(){
+ main.innerHTML=`<div class="scene" style="background:linear-gradient(#ffe5b4,#f4a261)">🏘️👻🏘️</div>`;
+ dialog([[OWL,OWLN,'注音村被 <b>錯字幽靈</b> 👻 佔領了，村民打的字全都變成亂碼！'],[OWL,OWLN,'畫面上會出現詞語和注音，請用<b>注音輸入法</b>打出來。打對就會自動攻擊！'],[OWL,OWLN,'小提醒：按 <span class="keycap">Shift</span> 切換中英文；打完一個字的注音後按 <span class="keycap">空白鍵</span> 選字。'],[OWL,OWLN,'幽靈蓄力滿了會攻擊你，動作要快！越後面詞越難喔！']],()=>{
+  const cfg={name:'錯字幽靈',area:'注音村',emoji:'👻',hp:110,atkEvery:20000,atkDmg:10,missDmg:6,
+   next:(ch,done)=>{const r=(main.querySelector('#mhp')?.style.width||'100%');const p=parseFloat(r);runTyping(pickWord(p>66?'easy':p>33?'mid':'hard'),ch,done)},
+   onWin:()=>winArea('zhuyin')};battle(cfg)})}
+
+/* =========================================================
+   第三關：知識城堡
+   ========================================================= */
+function castleIntro(){
+ main.innerHTML=`<div class="scene" style="background:linear-gradient(#cdb4db,#6d597a)">🏰🤖🏰</div>`;
+ dialog([[OWL,OWLN,'知識城堡的守衛是 <b>亂碼機器人</b> 🤖，牠只怕「正確的電腦知識」！'],[OWL,OWLN,'用滑鼠點選正確答案攻擊牠。有時候會出現 <b>快捷鍵挑戰</b>，要真的按下鍵盤喔！'],[OWL,OWLN,'快捷鍵小抄：Ctrl+C 複製、Ctrl+V 貼上、Ctrl+X 剪下、Ctrl+Z 復原、Ctrl+A 全選、Ctrl+S 儲存。']],()=>{
+  let n=0;battle({name:'亂碼機器人',area:'知識城堡',emoji:'🤖',hp:130,atkEvery:25000,atkDmg:10,missDmg:10,
+   next:(ch,done)=>{n++;if(n%3===0)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runQuiz(pickQuiz(),ch,done)},
+   onWin:()=>winArea('know')})})}
+
+/* =========================================================
+   最終關：Bug魔王
+   ========================================================= */
+function bossIntro(){
+ main.innerHTML=`<div class="scene" style="background:linear-gradient(#3d0c11,#9d0208)">🌋🦠🌋</div>`;
+ dialog([['🦠','Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],['🦠','Bug魔王','來吧！讓我的病毒吞掉你的檔案！']],()=>{
+  battle({name:'Bug魔王',area:'Bug魔王城',emoji:'🦠',hp:220,atkEvery:16000,atkDmg:12,missDmg:12,
+   next:(ch,done)=>{const r=rnd(4);if(r===0)runTyping(pickWord(Math.random()<.5?'mid':'hard'),ch,done);else if(r===1)runQuiz(pickQuiz(),ch,done,22);else if(r===2)runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,done);else runClick(ch,done)},
+   onWin:()=>{sfx.win();const first=!S.cleared;S.cleared=true;gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP`);go(ending)}})})}
+
+function winArea(key){sfx.win();const first=!S.crystals[key];S.crystals[key]=true;gainExp(first?60:25);S.coins+=first?40:15;save();hud();
+ logRec({mouse:'滑鼠森林',zhuyin:'注音村',know:'知識城堡'}[key],'過關',(first?'獲得水晶':'再次挑戰')+`，剩 ${S.hp} HP`);
+ const nm={mouse:'🟢 滑鼠水晶',zhuyin:'🔵 注音水晶',know:'🟣 知識水晶'}[key];
+ showModal(`<div class="big">🎉</div><h2>勝利！</h2><p>${first?`獲得 <b>${nm}</b>！<br>`:''}經驗 +${first?60:25}　金幣 +${first?40:15}</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}])}
+
+function ending(){
+ const d=new Date();
+ main.innerHTML=`<div class="cert"><div style="font-size:70px">🏆</div><h1>電腦小勇者證書</h1>
+ <p style="font-size:20px;line-height:1.9">茲證明 <b style="font-size:30px;color:var(--blue)">${esc(S.name)}</b><br>精通滑鼠操作、注音打字與電腦知識，<br>成功打倒 Bug魔王 🦠，拯救了電腦王國！</p>
+ <p class="px" style="margin-top:20px">LV ${S.lv}　　${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}</p><p>🦉 貓頭鷹老師 頒發</p></div>
+ <div class="center" style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" onclick="go(mapScreen)">🗺️ 回地圖繼續玩</button><button class="btn alt" onclick="go(arcadeScreen)">🎡 小遊戲廣場</button></div>`;
+ dialog([[OWL,OWLN,'太厲害了，{name}！你是電腦王國真正的英雄！'],[OWL,OWLN,'記得：上網要安全、密碼不告訴別人、常常存檔，還有用電腦要記得休息喔！']])}
+
+/* =========================================================
+   道具商店
+   ========================================================= */
+function shopScreen(){
+ const items=[{e:'🧪',n:'補血藥水',d:'回復 40 HP（放在背包，隨時可用）',p:20,f:()=>{S.potions++}},{e:'🍱',n:'勇者便當',d:'立刻回滿 HP',p:15,f:()=>{if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return false}S.hp=S.maxHp}},{e:'🛡️',n:'防毒盾牌',d:'HP 上限永久 +20',p:80,f:()=>{S.maxHp+=20;S.hp+=20}},{e:'📜',n:'經驗卷軸',d:'獲得 40 經驗值',p:35,f:()=>{gainExp(40)}}];
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>🏪 道具商店</h2><div class="stat">🪙 ${S.coins}</div></div>
+ <p>🐱 老闆貓：「歡迎光臨！金幣不夠的話，去 🎡 小遊戲廣場賺吧！」</p>
+ <div class="shop">${items.map((it,i)=>`<div class="item"><div class="e">${it.e}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn" data-i="${i}" ${S.coins<it.p?'disabled':''}>🪙 ${it.p} 購買</button></div>`).join('')}</div>`;
+ main.querySelectorAll('.item .btn').forEach(b=>b.onclick=()=>{const it=items[b.dataset.i];if(S.coins<it.p)return;if(it.f()===false)return;S.coins-=it.p;sfx.good();toast(`買了 ${it.e} ${it.n}！`);save();go(shopScreen)})}
+
+/* =========================================================
+   小遊戲廣場
+   ========================================================= */
+function arcadeScreen(){
+ const g=[{e:'🗂️',n:'檔案分類大師',d:'看副檔名，把檔案拖曳到正確的資料夾',s:'滑鼠拖曳',f:fileSort},{e:'⌨️',n:'注音鍵盤反應王',d:'看到注音符號，按下鍵盤上對應的鍵',s:'鍵盤位置',f:zhuyinKeys},{e:'🥷',n:'快捷鍵忍者',d:'10 題快捷鍵連續挑戰',s:'快捷鍵',f:ninja},{e:'🃏',n:'電腦零件記憶翻牌',d:'把零件圖示和名稱配對',s:'滑鼠點擊',f:memory}];
+ main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>🎡 小遊戲廣場</h2></div><p>每個小遊戲都能賺 🪙 金幣和 ⭐ 經驗，玩越好拿越多！</p>
+ <div class="grid">${g.map((x,i)=>`<div class="gcard" data-i="${i}"><div class="e">${x.e}</div><h3>${x.n}</h3><p>${x.d}</p><p>🎯 練習：<b>${x.s}</b></p></div>`).join('')}</div>`;
+ main.querySelectorAll('.gcard').forEach(c=>c.onclick=()=>{sfx.click();go(g[c.dataset.i].f)})}
+const GNAME={fileSort:'檔案分類大師',zhuyinKeys:'注音鍵盤反應王',ninja:'快捷鍵忍者',memory:'電腦零件記憶翻牌'};
+function reward(coins,exp,msg,again){S.coins+=coins;gainExp(exp);save();hud();logRec('🎡 '+(GNAME[again.name]||'小遊戲'),'完成',msg);sfx.win();showModal(`<div class="big">🎊</div><h2>遊戲結束</h2><p>${msg}<br>🪙 +${coins}　⭐ +${exp}</p>`,[{t:'再玩一次',c:'g',f:()=>go(again)},{t:'回廣場',c:'alt',f:()=>go(arcadeScreen)}])}
+const back=t=>`<div class="topbar"><button class="btn sm alt" onclick="go(arcadeScreen)">⬅ 廣場</button><h2>${t}</h2><div class="px" id="info"></div></div>`;
+
+/* --- 檔案分類大師 --- */
+function fileSort(){
+ const ALL=[['貓咪.jpg','pic'],['風景.png','pic'],['小狗.gif','pic'],['全家福.jpeg','pic'],['兒歌.mp3','mus'],['鋼琴.wav','mus'],['鳥叫聲.mp3','mus'],['校慶.mp4','vid'],['煙火.mov','vid'],['跳舞.mp4','vid'],['作業.docx','doc'],['日記.txt','doc'],['報告.pdf','doc'],['成績.xlsx','doc']];
+ const files=shuffle(ALL).slice(0,10);let left=files.length,miss=0;const t0=Date.now();
+ main.innerHTML=back('🗂️ 檔案分類大師')+`<p>看檔名後面的 <b>副檔名</b>（點後面的字），把檔案<b>按住拖曳</b>到正確的資料夾！</p><div class="tray" id="tray"></div>
+ <div class="folders">${[['pic','🖼️','圖片','.jpg .png .gif'],['mus','🎵','音樂','.mp3 .wav'],['vid','🎬','影片','.mp4 .mov'],['doc','📄','文件','.docx .txt .pdf .xlsx']].map(f=>`<div class="folder" data-k="${f[0]}"><div class="fi">📁${f[1]}</div><div class="fn">${f[2]}</div><div class="cnt">0 個檔案</div></div>`).join('')}</div>`;
+ const tray=$('#tray');const cnt={};
+ files.forEach(([nm,k])=>{const el=document.createElement('div');el.className='file';el.innerHTML=`<div class="fe">📄</div><div class="nm">${nm}</div>`;tray.appendChild(el);
+  makeDrag(el,target=>{const f=target&&target.closest('.folder');if(!f)return;
+   if(f.dataset.k===k){el.remove();left--;cnt[k]=(cnt[k]||0)+1;f.querySelector('.cnt').textContent=cnt[k]+' 個檔案';f.classList.add('flash');setTimeout(()=>f.classList.remove('flash'),250);sfx.good();
+    if(!left){const sec=Math.round((Date.now()-t0)/1000);reward(Math.max(8,30-miss*3),15,`用了 ${sec} 秒，放錯 ${miss} 次`,fileSort)}}
+   else{miss++;sfx.bad();toast('放錯資料夾囉！再看看副檔名');f.classList.add('shake');setTimeout(()=>f.classList.remove('shake'),350)}})})}
+
+/* --- 注音鍵盤反應王 --- */
+function zhuyinKeys(){
+ const pool=Object.keys(ZY).filter(c=>!/[ˊˇˋ˙]/.test(ZY[c]));let time=30,score=0,miss=0,cur,hint=true,started=false;
+ main.innerHTML=back('⌨️ 注音鍵盤反應王')+`<div class="center"><p>看到注音符號，就按下鍵盤上對應的鍵（大千式注音鍵盤）。<b>不用切換輸入法</b>，直接按就可以！</p>
+ <div class="target" id="tg">準備</div><div><label style="font-weight:700"><input type="checkbox" id="hint" checked> 顯示提示（黃色鍵）</label></div>
+ <div class="kb" id="kb">${KROWS.map(r=>`<div class="kr">${r.map(c=>`<div class="key" data-c="${c}"><b>${KLAB(c)}</b><span>${ZY[c]}</span></div>`).join('')}</div>`).join('')}</div>
+ <div style="margin-top:10px"><button class="btn g" id="go">▶ 開始（30 秒）</button></div></div>`;
+ const info=$('#info'),tg=$('#tg');const K=c=>main.querySelector(`.key[data-c="${c}"]`);
+ $('#hint').onchange=e=>{hint=e.target.checked;mark()};
+ const mark=()=>{main.querySelectorAll('.key.hl').forEach(k=>k.classList.remove('hl'));if(hint&&cur)K(cur).classList.add('hl')};
+ const nextK=()=>{let n;do{n=pool[rnd(pool.length)]}while(n===cur);cur=n;tg.textContent=ZY[cur];mark()};
+ const flash=(c,cl)=>{const k=K(c);if(!k)return;k.classList.add(cl);setTimeout(()=>k.classList.remove(cl),180)};
+ $('#go').onclick=e=>{if(started)return;started=true;e.target.remove();if(document.activeElement)document.activeElement.blur();nextK();info.textContent=`${time}s  ${score}分`;
+  every(()=>{time--;info.textContent=`${time}s  ${score}分`;if(time<=0){clearTimers();keyHandler=null;reward(Math.min(40,score*2),Math.min(30,score),`答對 ${score} 個、按錯 ${miss} 次`,zhuyinKeys)}},1000);
+  keyHandler=ev=>{if(ev.repeat||ev.ctrlKey||ev.metaKey||ev.altKey)return;if(!(ev.code in ZY))return;ev.preventDefault();
+   if(ev.code===cur){score++;sfx.hit();flash(ev.code,'ok');nextK()}else{miss++;sfx.bad();flash(ev.code,'no')}info.textContent=`${time}s  ${score}分`}}}
+
+/* --- 快捷鍵忍者 --- */
+function ninja(){let round=0,score=0;
+ main.innerHTML=back('🥷 快捷鍵忍者')+`<div id="challenge"></div><div class="cheat">${SHORTCUTS.map(s=>`<span>Ctrl+${s.k}＝${s.n}</span>`).join('')}</div>`;
+ const ch=$('#challenge'),info=$('#info');
+ const nx=()=>{round++;info.textContent=`第${round}/10題 ${score}分`;runShortcut(SHORTCUTS[rnd(SHORTCUTS.length)],ch,ok=>{if(ok)score++;if(round>=10)reward(score*3,score*2,`10 題答對 ${score} 題`,ninja);else after(nx,200)})};nx()}
+
+/* --- 電腦零件記憶翻牌 --- */
+function memory(){
+ const P=[['🖱️','滑鼠'],['⌨️','鍵盤'],['🖥️','螢幕'],['🖨️','印表機'],['🎧','耳機'],['🎤','麥克風']];
+ const deck=shuffle(P.flatMap((p,i)=>[{k:i,v:p[0],t:0},{k:i,v:p[1],t:1}]));let open=[],moves=0,got=0,lock=false;
+ main.innerHTML=back('🃏 電腦零件記憶翻牌')+`<p class="center">點牌翻開，把 <b>圖示</b> 和 <b>名稱</b> 配成一對！</p><div class="cards">${deck.map((c,i)=>`<div class="mc" data-i="${i}">?</div>`).join('')}</div>`;
+ const info=$('#info');info.textContent='步數 0';
+ main.querySelectorAll('.mc').forEach(el=>el.onclick=()=>{const c=deck[el.dataset.i];if(lock||el.classList.contains('up')||el.classList.contains('got'))return;sfx.click();
+  el.classList.add('up');if(c.t)el.classList.add('txt');el.textContent=c.v;open.push(el);
+  if(open.length===2){moves++;info.textContent='步數 '+moves;const [a,b]=open.map(x=>deck[x.dataset.i]);
+   if(a.k===b.k){open.forEach(x=>{x.classList.add('got')});open=[];got++;sfx.good();if(got===P.length)after(()=>reward(Math.max(8,36-(moves-6)*2),15,`用了 ${moves} 步完成！`,memory),400)}
+   else{lock=true;after(()=>{open.forEach(x=>{x.classList.remove('up','txt');x.textContent='?'});open=[];lock=false},800)}}})}
+
+/* ---------- 啟動 ---------- */
+go(titleScreen);
+</script>
 </body>
 </html>
