@@ -36,6 +36,12 @@ h1,h2,h3{margin:.2em 0}
 .center{text-align:center}
 .tip{color:#666;font-size:14px;margin-top:8px}
 input.tin{font:inherit;font-size:30px;font-weight:700;padding:10px 14px;border:4px solid var(--ink);border-radius:12px;width:min(460px,90%);text-align:center;background:#fff;outline:none;user-select:text;-webkit-user-select:text}
+.regbox{display:flex;flex-direction:column;gap:8px;align-items:center;max-width:560px;margin:0 auto}
+.regrow{display:grid;grid-template-columns:110px 1fr;grid-template-areas:"l i" ". t";align-items:center;column-gap:10px;width:100%;text-align:left}
+.regrow>span{grid-area:l;font-weight:900;font-size:18px}.regrow>small{grid-area:t;color:#777;font-size:13px;margin-top:2px}
+.regrow input.tin{grid-area:i;width:100%;font-size:22px;padding:6px 12px}
+.regcard{display:inline-flex;flex-direction:column;gap:8px;background:#fff;border:4px dashed var(--ink);border-radius:14px;padding:14px 26px;font-size:22px;font-weight:700;text-align:left}
+.regcard b{font-size:28px;color:var(--blue);letter-spacing:2px}
 input.tin:focus{border-color:var(--blue);box-shadow:0 0 0 4px #118ab233}
 input.tin.ok{border-color:var(--green);background:#e6fff6}
 .shake{animation:shake .35s}
@@ -829,32 +835,82 @@ function titleScreen(){
  let last='';try{last=localStorage.getItem('pcquest_lastid')||''}catch(e){}
  main.innerHTML=`<div class="title"><div class="logo">${ch('pc')}</div><h1>電腦王國大冒險</h1>
  <div class="sub">滑鼠 × 注音打字 × 電腦知識 的冒險 RPG</div>
- <p style="font-size:18px;font-weight:700">請輸入老師給你的 <b>帳號</b> 和 <b>密碼</b>：</p>
+ <p style="font-size:18px;font-weight:700">請輸入你的 <b>帳號</b> 和 <b>密碼</b>：</p>
  <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
- <input class="tin" id="aid" inputmode="numeric" maxlength="12" placeholder="帳號" autocomplete="off" value="${esc(last)}">
- <input class="tin" id="apw" type="password" inputmode="numeric" maxlength="12" placeholder="密碼" autocomplete="off"></div>
+ <input class="tin" id="aid" maxlength="12" placeholder="帳號" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(last)}">
+ <input class="tin" id="apw" type="password" maxlength="12" placeholder="密碼" autocomplete="off"></div>
  <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
- <button class="btn g" id="login">🔑 登入</button><button class="btn alt" id="guest">🙋 訪客試玩（不記錄成績）</button></div>
- <div style="margin-top:14px"><button class="btn sm alt" id="tlogin">🎓 教師登入</button></div>
- <div class="tip">💡 帳號、密碼都是數字，打錯了可以按 <span class="keycap">Backspace</span> 刪掉</div></div>`;
+ <button class="btn g" id="login">🔑 登入</button><button class="btn" id="reg">🆕 第一次來？註冊帳號</button></div>
+ <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn sm alt" id="guest">🙋 訪客試玩（不記錄成績）</button><button class="btn sm alt" id="tlogin">🎓 教師登入</button></div>
+ <div class="tip">💡 打錯了可以按 <span class="keycap">Backspace</span> 刪掉</div></div>`;
  const aid=$('#aid'),apw=$('#apw'),btn=$('#login');setTimeout(()=>(last?apw:aid).focus(),100);
  const bad=(el,msg)=>{el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);toast(msg,2200)};
  btn.onclick=async()=>{const id=aid.value.trim(),pw=apw.value.trim();if(!id)return bad(aid,'先打上你的帳號喔！');if(!pw)return bad(apw,'先打上你的密碼喔！');
   sfx.click();btn.disabled=true;btn.textContent='⏳ 連線中…';const my=gen;
   try{const r=await api({action:'login',id,pw});if(my!==gen)return;
    if(!r.ok){btn.disabled=false;btn.textContent='🔑 登入';apw.value='';sfx.bad();return bad(apw,r.msg||'帳號或密碼錯誤')}
-   try{localStorage.setItem('pcquest_lastid',id)}catch(e){}
-   const p=migrateSave(r.progress||{});
-   ACC={id,pw,sid:r.sid,name:(r.name||'').trim()||(p.name||'').trim(),cls:r.cls,seat:r.seat};syncLogs=[];syncQA=[];dirty=false;syncState='ok';SLOW=!!r.slow;
-   S=Object.assign(FRESH(),p);S.name=ACC.name;
-   GLOCK=r.grade===3||r.grade===4;if(GLOCK&&S.grade!==r.grade){S.grade=r.grade;quizBag=[]} // 老師在名單指定了年級 → 固定，學生不能改
-   if(!S.name)go(nameScreen);
-   else if(!p.name){logRec('登入','第一次登入');go(introStory)}
-   else{logRec('登入','繼續冒險');go(mapScreen)}}
+   enterAccount(id,pw,r)}
   catch(e){if(my!==gen)return;btn.disabled=false;btn.textContent='🔑 登入';sfx.bad();toast('連不上網路，請檢查網路或告訴老師',2600)}};
  [aid,apw].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){if(el===aid&&!apw.value)apw.focus();else btn.click()}}));
+ $('#reg').onclick=()=>{sfx.click();go(registerScreen)};
  $('#guest').onclick=()=>{sfx.click();go(titleLocal)};
  $('#tlogin').onclick=()=>{sfx.click();go(teacherLogin)}}
+// 登入或註冊成功 → 載入雲端進度，進入遊戲
+function enterAccount(id,pw,r){
+ try{localStorage.setItem('pcquest_lastid',id)}catch(e){}
+ const p=migrateSave(r.progress||{});
+ ACC={id,pw,sid:r.sid,name:(r.name||'').trim()||(p.name||'').trim(),cls:r.cls,seat:r.seat};syncLogs=[];syncQA=[];dirty=false;syncState='ok';SLOW=!!r.slow;
+ S=Object.assign(FRESH(),p);S.name=ACC.name;
+ GLOCK=r.grade===3||r.grade===4;if(GLOCK&&S.grade!==r.grade){S.grade=r.grade;quizBag=[]} // 老師在名單指定了年級 → 固定，學生不能改
+ if(!S.name)go(nameScreen);
+ else if(!p.name){logRec('登入','第一次登入');go(introStory)}
+ else{logRec('登入','繼續冒險');go(mapScreen)}}
+
+/* ---------- 學生自己註冊帳號 ---------- */
+function registerScreen(){
+ const row=(lab,inp,tip)=>`<label class="regrow"><span>${lab}</span>${inp}${tip?`<small>${tip}</small>`:''}</label>`;
+ main.innerHTML=`<div class="title"><div class="logo">${OWL}</div><h1 style="font-size:32px">🆕 註冊新帳號</h1>
+ <p style="font-size:16px;font-weight:700;margin:4px 0 12px">填好下面的資料，以後就用你自己的帳號登入，成績會記錄給老師看。</p>
+ <div class="regbox">
+ ${row('🏫 班級','<input class="tin" id="rcls" inputmode="numeric" maxlength="3" placeholder="例如 301" autocomplete="off">','3 個數字')}
+ ${row('🔢 座號','<input class="tin" id="rseat" inputmode="numeric" maxlength="2" placeholder="例如 5" autocomplete="off">','')}
+ ${row('🙂 姓名','<input class="tin" id="rname" maxlength="6" placeholder="例如 王小明" autocomplete="off">','用注音打中文')}
+ ${row('👤 帳號','<input class="tin" id="rid" maxlength="12" placeholder="自己取" autocomplete="off" autocapitalize="off" spellcheck="false">','英文或數字，3～12 個')}
+ ${row('🔒 密碼','<input class="tin" id="rpw" type="password" maxlength="12" placeholder="自己取" autocomplete="new-password">','英文或數字，4～12 個')}
+ ${row('🔒 再打一次','<input class="tin" id="rpw2" type="password" maxlength="12" placeholder="再打一次密碼" autocomplete="new-password">','')}
+ </div>
+ <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn g" id="rok">✅ 註冊</button><button class="btn alt" id="rback">⬅ 返回登入</button></div>
+ <div class="tip">💡 不要用其他網站的密碼！帳號密碼要記好，可以抄在聯絡簿上</div></div>`;
+ const f={cls:$('#rcls'),seat:$('#rseat'),name:$('#rname'),id:$('#rid'),pw:$('#rpw'),pw2:$('#rpw2')},btn=$('#rok');
+ setTimeout(()=>f.cls.focus(),100);
+ // 帳號還沒自己改過時，自動幫忙填「班級＋兩位數座號」（例：301 班 5 號 → 30105）
+ let idTouched=false;f.id.addEventListener('input',()=>{idTouched=true});
+ const sug=()=>{if(idTouched)return;const c=f.cls.value.trim(),s=f.seat.value.trim();f.id.value=/^\d{3}$/.test(c)&&/^\d{1,2}$/.test(s)&&+s>0?c+s.padStart(2,'0'):''};
+ f.cls.addEventListener('input',sug);f.seat.addEventListener('input',sug);
+ const bad=(el,msg)=>{sfx.bad();el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);el.focus();toast(msg,2600)};
+ btn.onclick=async()=>{
+  const v={cls:f.cls.value.trim(),seat:f.seat.value.trim(),name:f.name.value.trim(),id:f.id.value.trim(),pw:f.pw.value.trim()};
+  if(!/^[1-9]\d{2}$/.test(v.cls))return bad(f.cls,'班級要打 3 個數字，例如 301');
+  if(!/^\d{1,2}$/.test(v.seat)||+v.seat<1||+v.seat>40)return bad(f.seat,'座號要打 1～40 的數字');
+  if(!/^[一-鿿]{2,6}$/.test(v.name))return bad(f.name,'姓名要用注音輸入法打 2～6 個中文字');
+  if(!/^[A-Za-z0-9]{3,12}$/.test(v.id))return bad(f.id,'帳號要用 3～12 個英文字母或數字');
+  if(!/^[A-Za-z0-9]{4,12}$/.test(v.pw))return bad(f.pw,'密碼要用 4～12 個英文字母或數字');
+  if(f.pw2.value.trim()!==v.pw){f.pw2.value='';return bad(f.pw2,'兩次密碼不一樣，請再打一次')}
+  sfx.click();btn.disabled=true;btn.textContent='⏳ 註冊中…';const my=gen;
+  try{const r=await api(Object.assign({action:'register'},v));if(my!==gen)return;
+   if(!r.ok){btn.disabled=false;btn.textContent='✅ 註冊';return bad(f[r.f]||btn,r.msg||'註冊失敗')}
+   sfx.up();go(()=>regDone(v,r))}
+  catch(e){if(my!==gen)return;btn.disabled=false;btn.textContent='✅ 註冊';sfx.bad();toast('連不上網路，請檢查網路或告訴老師',2600)}};
+ Object.values(f).forEach((el,i,a)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){if(a[i+1])a[i+1].focus();else btn.click()}}));
+ $('#rback').onclick=()=>go(titleScreen)}
+function regDone(v,r){
+ main.innerHTML=`<div class="title"><div class="logo">${OWL}</div><h1 style="font-size:34px">🎉 註冊成功！</h1>
+ <p style="font-size:17px;font-weight:700">請把帳號密碼<b>抄在聯絡簿</b>，下次登入要用：</p>
+ <div class="regcard"><div>🏫 ${esc(v.cls)} 班 ${esc(String(+v.seat))} 號　${esc(r.name||v.name)}</div>
+ <div>👤 帳號：<b>${esc(v.id)}</b></div><div>🔒 密碼：<b>${esc(v.pw)}</b></div></div>
+ <div style="margin-top:20px"><button class="btn g" id="go">⚔️ 抄好了，開始冒險</button></div></div>`;
+ $('#go').onclick=()=>{sfx.click();enterAccount(v.id,v.pw,r)}}
+
 function nameScreen(){
  main.innerHTML=`<div class="title"><div class="logo">${OWL}</div><h1 style="font-size:36px">歡迎來到電腦王國！</h1>
  <p style="font-size:18px;font-weight:700">第一次來嗎？請用 <span class="keycap">注音輸入法</span> 打出你的名字：</p>
