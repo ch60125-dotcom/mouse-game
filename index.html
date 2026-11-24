@@ -110,6 +110,9 @@ input.tin.ok{border-color:var(--green);background:#e6fff6}
 .stage.atk .enemy .sv{animation:enemyLunge .5s}
 @keyframes enemyLunge{40%{transform:translateX(-80px) scale(1.15)}}
 .enemy.rage .sv{filter:drop-shadow(0 0 14px #ef476f) saturate(1.6)}
+.enemy.core .sv{filter:drop-shadow(0 0 18px #9b5de5) drop-shadow(0 0 6px #fff) saturate(1.8) hue-rotate(-20deg)}
+.lim{color:#9d0208;font-weight:700}
+.phase{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;background:#22223b;color:#ffc93c;font-size:12px;font-weight:900;vertical-align:middle}
 .enemy.ko .sv{animation:ko .7s forwards}
 @keyframes ko{to{transform:translateY(30px) rotate(25deg) scale(.6);opacity:0}}
 .stage.quake{animation:shake .3s 2}
@@ -799,7 +802,9 @@ function gradePick(cb){
 function wordLevel(hard){return G3()?(hard?'mid':'easy'):(hard?'hard':'mid')}
 const pickShortcut=()=>{const pool=G3()?SHORTCUTS.slice(0,6):SHORTCUTS;return pool[rnd(pool.length)]};
 // 舊存檔：把圖鑑「注音詞語」卡片從舊題庫的編號換成新題庫的編號
-function migrateSave(p){if(p&&p.codex&&Array.isArray(p.codex.w)&&p.codexWv!==2)p.codex.w=[...new Set(p.codex.w.map(i=>ALLW.findIndex(x=>x[0]===OLD_W[i])).filter(i=>i>=0))];if(p)p.codexWv=2;return p}
+function migrateSave(p){if(p&&p.codex&&Array.isArray(p.codex.w)&&p.codexWv!==2)p.codex.w=[...new Set(p.codex.w.map(i=>ALLW.findIndex(x=>x[0]===OLD_W[i])).filter(i=>i>=0))];if(p)p.codexWv=2;
+ // 舊存檔：從 HP 上限推算已經買過幾個防毒盾牌（每升 1 級 +10、每個盾牌 +20）
+ if(p&&p.maxHp&&p.shieldN==null)p.shieldN=Math.max(0,Math.round((p.maxHp-100-((p.lv||1)-1)*10)/20));return p}
 function heroPick(cb){let sel=S.hero||'boy';const ov=document.createElement('div');ov.className='ov';
  ov.innerHTML=`<div class="modal"><h2>選擇你的勇者造型</h2><p>先選一個基本造型，之後可以到「👕 紙娃娃衣櫥」自由搭配！</p><div class="heroes">${HEROES.map(h=>`<button class="hpick ${h.id===sel?'sel':''}" data-h="${h.id}">${ch('hero_'+h.id)}<b>${h.n}</b></button>`).join('')}</div><div class="row"><button class="btn g" id="hok">✔ 就是它了！</button></div></div>`;
  document.body.appendChild(ov);
@@ -811,7 +816,8 @@ function damage(n){if(S.hp<=0||(TEACHER&&GOD))return;S.hp=Math.max(0,S.hp-n);mai
 function defeat(){gen++;clearTimers();keyHandler=null;
  if(towerRun){const f=towerRun.floor;S.hp=Math.ceil(S.maxHp/2);const r=towerEnd('倒下');hud();sfx.bad();
   showModal(`<div class="big">🗼</div><h2>挑戰結束！</h2><p>你在第 <b>${f}</b> 層倒下了。<br>這次從第 ${r.start} 層出發，突破到第 <b>${r.cleared}</b> 層。<br>🏅 最高紀錄：第 ${S.tower.best||0} 層</p><p class="tip">在無盡塔倒下不會掉金幣，休息一下再來挑戰吧！</p>`,[{t:'回到地圖',c:'g',f:()=>go(mapScreen)}]);return}
- const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下','');hud();sfx.bad();
+ if(where==='Bug魔王城'&&!TEACHER)S.bossLoss=(S.bossLoss||0)+1;
+ const lost=Math.floor(S.coins*.1);S.coins-=lost;S.hp=Math.ceil(S.maxHp/2);save();logRec(where||'戰鬥','倒下',where==='Bug魔王城'?`第 ${S.bossLoss} 次`:'');hud();sfx.bad();
  showModal(`<div class="big">😵</div><h2>你倒下了…</h2><p>貓頭鷹老師把你救回地圖，掉了 ${lost} 枚金幣。<br>去小遊戲廣場賺金幣、到商店買藥水，再來挑戰吧！</p>`,[{t:'回到地圖',f:()=>go(mapScreen)}])}
 
 /* ---------- 拖曳工具（滑鼠 / 觸控皆可） ---------- */
@@ -1083,12 +1089,12 @@ const SKILLS=[
  {id:'power',n:'超級攻擊',ic:'⚡',cost:60,d:'下一次答對造成 2 倍傷害',ok:()=>S.lv>=3||TEACHER,lockMsg:'升到 Lv3 才能學會超級攻擊！'}
 ];
 function battle(cfg){
- if(G3())cfg={...cfg,hp:Math.round(cfg.hp*.85),atkEvery:Math.round(cfg.atkEvery*1.3)}; // 三年級：敵人血量少 15%、攻擊慢 30%
- let mhp=cfg.hp,atk=0,mp=0,combo=0,maxCombo=0,miss=0,shield=false,power=false,rage=false,won=false,atkEvery=cfg.atkEvery*(SLOW?2:1);
+ if(G3()&&!cfg.fixed)cfg={...cfg,hp:Math.round(cfg.hp*.85),atkEvery:Math.round(cfg.atkEvery*1.3)}; // 三年級：敵人血量少 15%、攻擊慢 30%（魔王另有專屬數值）
+ let mhp=cfg.hp,atk=0,mp=0,combo=0,maxCombo=0,miss=0,shield=false,power=false,rage=false,won=false,atkEvery=cfg.atkEvery*(SLOW?2:1),phase=0;
  const my=gen;where=cfg.area||cfg.name;busy=true;
  main.innerHTML=`<div class="stage" id="foe" style="background:${cfg.bg||'#fff'}">
   <div class="side left"><div class="nm">${esc(S.name)} <span class="px">Lv${S.lv}</span></div><div class="meter"><i id="php" style="width:${S.hp/S.maxHp*100}%"></i></div><div class="lab">能量 <span id="mpt">0</span>/100</div><div class="meter mp"><i id="pmp" style="width:0"></i></div></div>
-  <div class="side right"><div class="nm">${cfg.name} <span class="px" id="mhpt">${mhp}/${cfg.hp}</span></div><div class="meter foehp"><i id="mhp" style="width:100%"></i></div><div class="lab">攻擊蓄力（${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div></div>
+  <div class="side right"><div class="nm">${cfg.name} <span class="px" id="mhpt">${mhp}/${cfg.hp}</span>${cfg.phases?`<span class="phase" id="phase">${cfg.tag0||''}</span>`:''}</div><div class="meter foehp"><i id="mhp" style="width:100%"></i></div><div class="lab">攻擊蓄力（${cfg.atkDmg} HP）</div><div class="meter atk"><i id="atk" style="width:0"></i></div></div>
   <div class="fighter hero" id="hero">${doll()}<div class="shieldfx" id="shieldfx"></div></div>${petHTML()}
   <div class="fighter enemy" id="enemy">${ch(cfg.art)}</div>
   <div class="combo" id="combo"></div><div class="say" id="say"></div>
@@ -1110,7 +1116,10 @@ function battle(cfg){
   if(shield){shield=false;$('#shieldfx').classList.remove('on');const p=rel(hero);pop(st,p.x,p.y-80,'防火牆擋下！','#118ab2');sfx.good();return}
   fx(hero,'hurt',360);damage(n);updHero()};
  const finish=()=>{endTut();stAdd('wins');petWin();const stars=1+(S.hp/S.maxHp>=.5?1:0)+(miss===0||maxCombo>=5?1:0);codexAdd('e',cfg.art);quest('win');if(stars===3)quest('star3');cfg.onWin({stars,maxCombo,miss})};
- const checkRage=()=>{if(cfg.rage&&!rage&&mhp>0&&mhp<=cfg.hp/2){rage=true;atkEvery=Math.round(atkEvery*.6);enemy.classList.add('rage');fx(st,'quake',600);sfx.bad();say(cfg.rage,2600)}};
+ const checkRage=()=>{if(cfg.rage&&!rage&&mhp>0&&mhp<=cfg.hp/2){rage=true;atkEvery=Math.round(atkEvery*.6);enemy.classList.add('rage');fx(st,'quake',600);sfx.bad();say(cfg.rage,2600)}
+  // 多階段敵人（魔王）：血量降到門檻就進入下一階段，攻擊變快、題型變多
+  while(cfg.phases&&phase<cfg.phases.length&&mhp>0&&mhp<=cfg.hp*cfg.phases[phase].at){const p=cfg.phases[phase++];atkEvery=Math.round(atkEvery*p.spd);
+   enemy.classList.add(p.cls);fx(st,'quake',700);sfx.bad();say(p.say,3000);const ph=$('#phase');if(ph)ph.textContent=p.tag}};
  $('#flee').onclick=()=>{if(cfg.onFlee)cfg.onFlee();else go(mapScreen)};
  const endTut=()=>{if(S.tut)return;S.tut=true;save();$('#tutor')?.remove();main.querySelector('.skills')?.classList.remove('glow')};
  if($('#tutok'))$('#tutok').onclick=()=>{sfx.click();endTut();const inp=chal.querySelector('input');if(inp)inp.focus()};
@@ -1138,7 +1147,7 @@ function battle(cfg){
     after(next,cfg.gap||700)})}
   else{combo=0;miss++;showCombo();hurt(cfg.missDmg);if(S.hp<=0)return;after(next,cfg.gap||700)}};
  chal.hurt=hurt;
- const next=()=>{if(won)return;keyHandler=null;chal.hint=null;cfg.next(chal,onAnswer);
+ const next=()=>{if(won)return;keyHandler=null;chal.hint=null;cfg.next(chal,onAnswer,phase);
   if(PET==='owl'&&PLV>=2&&chal.hint&&Math.random()<PLV*.08){chal.hint();chal.hint=null;say('🦉 小貓頭鷹偷偷給你提示！',1800)}};
  updMP();next()}
 
@@ -1173,8 +1182,8 @@ function runQuiz(q,ch,done,dmg=20){let fin=false;const opts=shuffle(q.a),t0=Date
  ch.querySelectorAll('.opts .btn').forEach(b=>b.onclick=()=>{if(fin)return;fin=true;ch.hint=null;const ok=opts[b.dataset.i]===q.a[0],fast=Date.now()-t0<6000*(SLOW?1.5:1);recQA('電腦知識',q.q,ok);if(ok)stAdd('quizOK');wrongMark('q',QUIZ.indexOf(q),ok);if(ok){codexAdd('q',QUIZ.indexOf(q));quest('quiz')}
   ch.querySelectorAll('.opts .btn').forEach(x=>{if(opts[x.dataset.i]===q.a[0])x.classList.add('right')});if(!ok)b.classList.add('wrong');
   ch.querySelector('#ex').textContent=(ok?'⭕ 答對了！':'❌ 答錯了！')+q.e;after(()=>done(ok,dmg,fast),1600)})}
-function runShortcut(s,ch,done,dmg=25){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;ch.hint=null;keyHandler=null;const fast=Date.now()-t0<3500*(SLOW?1.5:1);recQA('快捷鍵',`Ctrl+${s.k}（${s.n}）`,ok);if(ok)stAdd('scOK');wrongMark('k',SHORTCUTS.indexOf(s),ok);if(ok)codexAdd('k',SHORTCUTS.indexOf(s));ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
- if(TOUCH){ // 平板沒有實體鍵盤：改成選擇題
+function runShortcut(s,ch,done,dmg=25,mc=false){let fin=false;const t0=Date.now();const end=ok=>{if(fin)return;fin=true;ch.hint=null;keyHandler=null;const fast=Date.now()-t0<3500*(SLOW?1.5:1);recQA('快捷鍵',`Ctrl+${s.k}（${s.n}）`,ok);if(ok)stAdd('scOK');wrongMark('k',SHORTCUTS.indexOf(s),ok);if(ok)codexAdd('k',SHORTCUTS.indexOf(s));ch.querySelector('#sr').textContent=ok?'⭕ 正確！':`❌ 答案是 Ctrl + ${s.k}`;after(()=>done(ok,dmg,fast),900)};
+ if(TOUCH||mc){ // 平板沒有實體鍵盤（或三年級打魔王）：改成選擇題
   const pool=G3()?SHORTCUTS.slice(0,6):SHORTCUTS,opts=shuffle([s,...shuffle(pool.filter(x=>x!==s)).slice(0,3)]);
   ch.innerHTML=`<div style="font-weight:700;color:#666">⚡ 快捷鍵挑戰（選出正確的快捷鍵）</div><div class="q" style="font-size:28px">「${s.n}」的快捷鍵是哪一個？</div>
   <div class="opts">${opts.map(o=>`<button class="btn" data-k="${o.k}"><span class="keycap">Ctrl</span> + <span class="keycap">${o.k}</span></button>`).join('')}</div><div class="expl" id="sr"></div><div class="tip">${SLOW?15:10} 秒內作答</div>`;
@@ -1260,12 +1269,31 @@ function harborIntro(){
 /* =========================================================
    最終關：Bug魔王
    ========================================================= */
+// 魔王數值：三、四年級分開（用模擬調整過：正確率 85% 的學生幾乎都打得贏，正確率 70% 的四年級約三成會輸）
+const BOSS_CFG={3:{hp:440,atkEvery:24000,atkDmg:8},4:{hp:520,atkEvery:24000,atkDmg:9}};
+let bossAi=[];
 function bossIntro(){
- main.innerHTML=scene('volcano');
- dialog([[BOSS,'Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],[BOSS,'Bug魔王','來吧！讓我的病毒吞掉你的檔案！']],()=>{
-  battle({name:'Bug魔王',area:'Bug魔王城',art:'boss',bg:'linear-gradient(90deg,#3d0c11,#9d0208)',rage:'可惡！我生氣了！病毒全開！',hp:300,atkEvery:16000,atkDmg:12,missDmg:12,
-   next:(ch,done)=>{const r=rnd(4);if(r===0)runTyping(pickWord(wordLevel(Math.random()<.5)),ch,done);else if(r===1)runQuiz(pickQuiz(),ch,done,22);else if(r===2)runShortcut(pickShortcut(),ch,done);else runClick(ch,done)},
-   onWin:r=>{sfx.win();const first=!S.cleared;S.cleared=true;recordStars('boss',r.stars||1);gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',`${r.stars||1}星，`+(first?'第一次打倒魔王':'再次打倒魔王')+`，剩 ${S.hp} HP，最高 ${r.maxCombo||0} 連擊`);confetti();go(ending)}})})}
+ const lose=S.bossLoss||0;
+ const start=weak=>{main.innerHTML=scene('volcano');
+  dialog([[BOSS,'Bug魔王','哈哈哈！小小的 {name}，竟然敢來挑戰我？'],[OWL,OWLN,'{name}，用你學到的所有本領——<b>滑鼠、注音打字、電腦知識、快捷鍵</b>——打倒牠！'],[BOSS,'Bug魔王','我有三種型態，你撐得過去嗎？哈哈哈！']],()=>bossBattle(weak))};
+ // 已經輸 2 次以上：貓頭鷹老師問要不要讓魔王弱一點，避免一直卡關
+ if(lose>=2&&!TEACHER){main.innerHTML=scene('volcano');
+  showModal(`<div class="big">${OWL}</div><h2>要不要讓魔王弱一點？</h2><p>你已經挑戰 ${lose} 次了，很勇敢！<br>貓頭鷹老師可以先削弱魔王的血量（<b>-20%</b>）。</p><p class="tip">💡 也可以先去商店買藥水、到小遊戲廣場練習再來。</p>`,
+   [{t:'💪 好，讓牠弱一點',c:'g',f:()=>start(true)},{t:'⚔️ 不用，正常挑戰',f:()=>start(false)}]);return}
+ start(false)}
+function bossBattle(weak){
+ const g=G3()?3:4,b=BOSS_CFG[g],hp=Math.round(b.hp*(weak?.8:1));
+ const word=()=>pickWord(wordLevel(Math.random()<.5));
+ // 第三階段加入學過的網路安全、AI 判斷題
+ const extra=[...(S.badges.safe?['safe']:[]),...(S.badges.ai?['ai']:[])];
+ const kinds=[['type','type','quiz'],['type','quiz','sc','click'],['type','quiz','sc','click',...extra,...extra]];
+ battle({name:'Bug魔王',area:'Bug魔王城',art:'boss',bg:'linear-gradient(90deg,#3d0c11,#9d0208)',fixed:true,hp,atkEvery:b.atkEvery,atkDmg:b.atkDmg,missDmg:b.atkDmg,
+  tag0:'第一型態',phases:[{at:.6,spd:.8,cls:'rage',tag:'😡 第二型態',say:'可惡！我生氣了！快捷鍵病毒出動！'},{at:.25,spd:.75,cls:'core',tag:'💀 病毒核心',say:'最終型態！病毒核心全開！'}],
+  next:(ch,done,ph)=>{const pool=kinds[Math.min(ph,2)],k=pool[rnd(pool.length)];
+   if(k==='type')runTyping(word(),ch,done);else if(k==='quiz')runQuiz(pickQuiz(),ch,done,22);
+   else if(k==='sc')runShortcut(pickShortcut(),ch,done,25,g===3);else if(k==='click')runClick(ch,done);
+   else if(k==='safe')runSafety(pickSafety(),ch,done);else{if(!bossAi.length)bossAi=shuffle(AIQ);runAI(bossAi.pop(),ch,done)}},
+  onWin:r=>{sfx.win();const first=!S.cleared;S.cleared=true;S.bossLoss=0;recordStars('boss',r.stars||1);gainExp(150);S.coins+=100;save();logRec('Bug魔王城','通關',`${r.stars||1}星，`+(first?'第一次打倒魔王':'再次打倒魔王')+`（${g} 年級${weak?'・弱化魔王':''}），剩 ${S.hp} HP，最高 ${r.maxCombo||0} 連擊`);confetti();go(ending)}})}
 
 function starRow(n){return `<div class="starrow">${[0,1,2].map(i=>`<span class="${i<n?'on':''}" style="animation-delay:${.2+i*.25}s">★</span>`).join('')}</div>`}
 function resStats(res){return `<div class="rstat">${res.maxCombo!=null?`最高連擊 <b>${res.maxCombo}</b>`:''}${res.miss!=null?`　失誤 <b>${res.miss}</b>`:''}　剩餘 HP <b>${S.hp}</b></div><div class="tip" style="margin:4px 0 0">★ 過關　★ 剩 50% 以上 HP　★ 零失誤或 5 連擊</div>`}
@@ -1291,13 +1319,20 @@ function ending(){
 /* =========================================================
    道具商店
    ========================================================= */
+const SHIELD_MAX=5,SCROLL_DAY=3; // 避免用金幣硬拚：盾牌總共 5 個、經驗卷軸每天 3 個
 function shopScreen(){
- const items=[{e:'potion',n:'補血藥水',d:'回復 40 HP（放在背包，隨時可用）',p:20,f:()=>{S.potions++}},{e:'bento',n:'勇者便當',d:'立刻回滿 HP',p:15,f:()=>{if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return false}S.hp=S.maxHp}},{e:'shield',n:'防毒盾牌',d:'HP 上限永久 +20',p:80,f:()=>{S.maxHp+=20;S.hp+=20}},{e:'scroll',n:'經驗卷軸',d:'獲得 40 經驗值',p:35,f:()=>{gainExp(40)}}];
+ const items=[{e:'potion',n:'補血藥水',d:'回復 40 HP（放在背包，隨時可用）',p:20,f:()=>{S.potions++}},{e:'bento',n:'勇者便當',d:'立刻回滿 HP',p:15,f:()=>{if(S.hp>=S.maxHp){toast('HP 已經是滿的！');return false}S.hp=S.maxHp}},{e:'shield',n:'防毒盾牌',d:'HP 上限永久 +20',p:80,
+   left:()=>SHIELD_MAX-(S.shieldN||0),limit:`最多買 ${SHIELD_MAX} 個`,
+   f:()=>{S.shieldN=(S.shieldN||0)+1;S.maxHp+=20;S.hp+=20}},
+  {e:'scroll',n:'經驗卷軸',d:'獲得 40 經驗值',p:35,
+   left:()=>SCROLL_DAY-(S.scrollDay&&S.scrollDay.d===today()?S.scrollDay.n:0),limit:`每天最多 ${SCROLL_DAY} 個`,
+   f:()=>{const t=today();if(!S.scrollDay||S.scrollDay.d!==t)S.scrollDay={d:t,n:0};S.scrollDay.n++;gainExp(40)}}];
  main.innerHTML=`<div class="topbar"><button class="btn sm alt" onclick="go(mapScreen)">⬅ 地圖</button><h2>${ic('shop')} 道具商店</h2><div class="stat">${COIN} ${S.coins}</div></div>
  <div class="keeper"><div class="kp">${ch('kitty')}</div><div class="bubble"><b>老闆貓</b>：「歡迎光臨喵！想買新衣服、帽子和寵物，請到隔壁的 <a href="#" id="todress">👕 紙娃娃衣櫥</a>！」</div></div>
- <div class="shop">${items.map((it,i)=>`<div class="item"><div class="e">${ch(it.e)}</div><h3>${it.n}</h3><p>${it.d}</p><button class="btn" data-i="${i}" ${S.coins<it.p?'disabled':''}>${COIN} ${it.p} 購買</button></div>`).join('')}</div>`;
+ <div class="shop">${items.map((it,i)=>{const left=it.left?Math.max(0,it.left()):1;
+  return `<div class="item"><div class="e">${ch(it.e)}</div><h3>${it.n}</h3><p>${it.d}${it.left?`<br><small class="lim">${it.limit}・${left?`還可以買 ${left} 個`:'已經買滿了'}</small>`:''}</p><button class="btn" data-i="${i}" ${S.coins<it.p||!left?'disabled':''}>${left?`${COIN} ${it.p} 購買`:'已買滿'}</button></div>`}).join('')}</div>`;
  $('#todress').onclick=e=>{e.preventDefault();sfx.click();go(()=>dresserScreen('hat'))};
- main.querySelectorAll('.item .btn').forEach(b=>b.onclick=()=>{const it=items[b.dataset.i];if(S.coins<it.p)return;if(it.f()===false)return;S.coins-=it.p;sfx.good();toast(`🛍️ 買了 ${it.n}！`);save();go(shopScreen)})}
+ main.querySelectorAll('.item .btn').forEach(b=>b.onclick=()=>{const it=items[b.dataset.i];if(S.coins<it.p)return;if(it.left&&it.left()<=0){toast('這個道具已經買滿了');return}if(it.f()===false)return;S.coins-=it.p;sfx.good();toast(`🛍️ 買了 ${it.n}！`);save();go(shopScreen)})}
 
 /* =========================================================
    小遊戲廣場
